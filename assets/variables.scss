@@ -2,3 +2,14 @@
 //
 // The variables you want to modify
 // $font-size-root: 20px;
+@import '~vuetify/src/styles/styles.sass';
+$body-font-family : 'montserrat', arial  !important;
+$heading-font-family : 'montserrat', arial  !important;
+$snackbar-border-radius : 18px;
+
+@each $heading, $style in $headings {
+    $headings: map-merge($headings, ($heading: map-merge($style, ('font-family': $heading-font-family))));
+}
+
+
+

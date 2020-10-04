@@ -1,17 +1,19 @@
 <template>
   <div>
-    <h1>{{ page.title }}</h1>
-    <p>{{ page.description }}</p>
-    <nuxt-content :document="page"/>
+
+    <h1>{{ page }}</h1>
+        <article>
+            <nuxt-content :document="page" />
+        </article>
+
   </div>
 </template>
 
 <script>
   export default {
   async asyncData({ $content, params, error }) {
-    const slug = params.slug || "index";
-    const page = await $content('projects/' + slug)
-      .fetch()
+    const slug = params.slug;
+    const page = await $content('projects/', slug ,{ deep: true }).fetch()
 
       .catch(err => {
         error({ statusCode: 404, message: "Page not found" });
@@ -22,8 +24,9 @@
     };
   },
   created() {
-    console.log(this.$nuxt)
-  }}
+  }
+
+  }
 </script>
 
 <style lang="scss" scoped>
