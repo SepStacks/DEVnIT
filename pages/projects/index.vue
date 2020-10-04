@@ -4,6 +4,7 @@
       <h2>Projects</h2>
 
         <div v-for="menu of menus" :key="menu.id">
+           
              <v-btn v-if="menu.title" :to="menu.dir">{{menu.title}}</v-btn>
           <!-- <NuxtLink :to="menu.path">{{ menu.slug }}</NuxtLink> -->
         </div>
@@ -15,8 +16,8 @@
   export default {
       // List the projects directory items
   async asyncData({ $content, params, error }) {
-    const menus = await $content({ deep: true }).fetch();
-    const projects = await $content('projects' || "index", {
+    // const menus = await $content({ deep: true }).fetch();
+    const menus = await $content('projects' || "index", {
         deep: true
     })
       .fetch()
@@ -26,7 +27,7 @@
       });
 
     return {
-      projects,
+    //   projects,
       menus
     };
   },
