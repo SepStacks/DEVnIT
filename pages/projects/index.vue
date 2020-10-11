@@ -1,13 +1,23 @@
 <template>
   <div>
 
-      <h2>Projects</h2>
+    <v-row justify="center" align="center">
 
-        <div v-for="menu of menus" :key="menu.id">
-           
+        <h2 class="text-center">Projects</h2>
+
+        <v-col cols="12">
+          <v-row justify="center">
+
+            <div v-for="menu of menus" :key="menu.id">
+
              <v-btn v-if="menu.title" :to="menu.dir">{{menu.title}}</v-btn>
           <!-- <NuxtLink :to="menu.path">{{ menu.slug }}</NuxtLink> -->
         </div>
+
+          </v-row>
+        </v-col>
+
+    </v-row>
 
   </div>
 </template>
