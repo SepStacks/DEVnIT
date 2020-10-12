@@ -10,7 +10,7 @@
 
             <div v-for="menu of menus" :key="menu.id">
 
-             <v-btn v-if="menu.title" :to="menu.dir">{{menu.title}}</v-btn>
+             <v-btn v-if="menu.title" :to="menu.path">{{menu.title}}</v-btn>
           <!-- <NuxtLink :to="menu.path">{{ menu.slug }}</NuxtLink> -->
         </div>
 
