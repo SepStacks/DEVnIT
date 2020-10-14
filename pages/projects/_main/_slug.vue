@@ -5,7 +5,7 @@
 
    <v-main>
     <v-container fluid>
-          {{nav}}
+      
         <nuxt-content :document="doc" />
     </v-container>
    </v-main>
@@ -23,6 +23,7 @@ export default {
 
     const nav = await $content(`projects/${main}`)
       .only(["title", "slug"])
+      .sortBy('createdAt', 'asc')
       .fetch()
 
       .catch(err => {
@@ -36,7 +37,9 @@ export default {
       doc,
       nav
     };
-  }
+  },
+
+
 };
 </script>
 
