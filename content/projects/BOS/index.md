@@ -18,6 +18,7 @@ After installation, you will have access to the vue binary in your command line.
 
 You can check you have the right version (3.x) with this command:
 
+hello to this
 
 
 
@@ -28,3 +29,5 @@ vue --version
 # BOS
 
 Installation instructions goers here...
+
+

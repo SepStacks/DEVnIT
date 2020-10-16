@@ -5,8 +5,9 @@
 
    <v-main>
     <v-container fluid>
-      
+
         <nuxt-content :document="doc" />
+        
     </v-container>
    </v-main>
   </div>

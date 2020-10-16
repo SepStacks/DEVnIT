@@ -1,14 +1,38 @@
 <template>
-  <div>
-      landing page
-      <v-btn to="projects">go to projects</v-btn>
-  </div>
+<div>
+    landing page
+    <v-btn to="projects">go to projects</v-btn>
+
+    <v-btn @click="post">Click here</v-btn>
+</div>
 </template>
 
 <script>
-  export default {
+export default {
 
-  }
+    methods: {
+        post() {
+            this.$axios.post('/_content/projects', {
+
+                    body: Object,
+                    title: "Introduction",
+                    description: "Learn how to use @nuxt/content.",
+                    dir: "/test",
+                    extension: ".md",
+                    path: "/index",
+                    slug: "index",
+                    toc: Array
+
+                })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    }
+}
 </script>
 
 <style lang="scss" scoped>
