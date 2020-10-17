@@ -6,6 +6,10 @@ export default {
     { path: '/server', handler: (__dirname + '/server/index.js') }
   ],
 
+  env: {
+    WS_URL: process.env.WS_URL || 'http://localhost:4000/'
+  },
+
   /*
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
@@ -36,6 +40,8 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/socket.io.js', ssr: false }
+
   ],
   /*
   ** Nuxt.js dev-modules

@@ -4,6 +4,9 @@
     <v-btn to="projects">go to projects</v-btn>
 
     <v-btn @click="post">Click here</v-btn>
+
+      <SocketNotification/>
+
 </div>
 </template>
 
@@ -17,7 +20,7 @@ export default {
                     body: Object,
                     title: "Introduction",
                     description: "Learn how to use @nuxt/content.",
-                    dir: "/test",
+                    dir: true,
                     extension: ".md",
                     path: "/index",
                     slug: "index",
