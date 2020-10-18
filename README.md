@@ -1,7 +1,10 @@
 # DEVnIT
 
-    Documentation solution for frontend developers. 
+    Documentation solution for frontend developers. A snippit from my full project
+    *This project is just a sample and does not contain the full solution*
     
+## DEMO
+![til](./assets/devnit.gif)
 
 ## Motivation
 
