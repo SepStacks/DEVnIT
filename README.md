@@ -1,6 +1,7 @@
-# technotes
+# DEVnIT
 
     Documentation solution for frontend developers. 
+    
 
 ## Motivation
 
@@ -12,8 +13,18 @@
    but it had some bugs so I was stuck abit and had to work on some other projects.
    
    When I saw nuxt came out with an awesome update called nuxt@content, I was very existed since I'm already using nuxt in my day to day job and this new feature has alot of        potenial so I set on a mission to create a solution for my previous issue.
-  
-  
+   
+## Features
+    •	Node Js server
+    •	socket IO connected to app.
+    •	Ability to create .md files with a UI.
+    
+
+## Installation
+
+   To get started simply clone repo and do an npm install
+
+
 
 ## Build Setup
 
