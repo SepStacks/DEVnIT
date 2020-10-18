@@ -20,21 +20,18 @@
 
             </div>
 
-            <div class="mt-5">
-                <v-btn @click="emitToServer" :disabled="!isFormValid">
-                    Submit
-                </v-btn>
+            <v-row dense class="mt-3">
+                <v-col cols="12">
+                    <v-btn class="mx-2" @click="emitToServer" :disabled="!isFormValid">
+                        Submit
+                    </v-btn>
 
-                <v-btn to="/projects" v-if="projects.length > 0">Go to projects</v-btn>
-            </div>
+                    <v-btn class="mx-2" to="/projects" v-if="projects.length > 0">Go to projects</v-btn>
 
-            <div class="mt-5">Socket Result from node.js:</div>
-            <v-sheet>
-                <v-card-text>
-                    <!-- just some details the backend is sending back -->
-                    {{response}}
-                </v-card-text>
-            </v-sheet>
+                </v-col>
+
+            </v-row>
+
         </v-form>
     </v-container>
 

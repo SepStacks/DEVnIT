@@ -1,31 +1,45 @@
 <template>
-<div>
+<v-container fill-height>
 
-    <v-row justify="center" align="center" v-if="menus.length > 0">
+    <v-row justify="center" align="center">
 
-        <h2 class="text-center">Projects</h2>
+        <div v-if="menus.length > 0">
 
-        <v-col cols="12">
-            <v-row justify="center">
+            <h2 class="text-center">Projects</h2>
 
-                <div v-for="menu of menus" :key="menu.id">
+            <v-col cols="12">
+                <v-row justify="center">
 
-                    <v-btn v-if="menu.title" :to="menu.path">{{menu.title}}</v-btn>
-                </div>
+                    <v-col cols="auto" v-for="menu of menus" :key="menu.id" class="text-center">
 
-            </v-row>
-        </v-col>
+                       <v-card>
+                            <v-btn class="pa-2"  block v-if="menu.title" :to="menu.path">{{menu.title}}</v-btn>
+                       </v-card>
 
+                    </v-col>
+
+                </v-row>
+            </v-col>
+        </div>
+
+        <!-- display if ~content/projects folder is empty -->
+        <div v-else id="none">
+
+            <div class="text-center display-2 font-weight-bold secondary--text">No projects available</div>
+            <div class="mt-2 title font-weight-light text-center info--text" style="z-index:15"> please add one</div>
+
+            <v-card-actions>
+                <v-spacer />
+                <v-col>
+                    <v-btn color="accent" class="text-center" to="/create_update">add a project</v-btn>
+                </v-col>
+                <v-spacer />
+
+            </v-card-actions>
+
+        </div>
     </v-row>
-    <!-- display if ~content/projects folder is empty -->
-    <v-row v-else>
-        <v-container>
-            <h2>No projects available, please add one</h2>
-            <v-btn to="/create_update">add a project</v-btn>
-        </v-container>
-    </v-row>
-
-</div>
+</v-container>
 </template>
 
 <script>

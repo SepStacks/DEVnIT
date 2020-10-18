@@ -3,24 +3,24 @@
     <v-app-bar app clipped-left>
 
         <v-toolbar-title class="ml-4">
-            <v-img src="/svg/altron.svg" max-width="50%" />
+            <div class="font-weight-bold">SepStacks</div>
+            <!-- <v-img src="/svg/altron.svg" max-width="50%" /> -->
         </v-toolbar-title>
         <v-spacer />
 
         <!-- links -->
         <v-card-actions>
-            <v-btn text>
+            <v-btn text to="/">
               home
             </v-btn>
-                <v-btn text>
-              Guide
-            </v-btn>
-                <v-btn text>
+
+                <v-btn text to="/projects">
               Projects
             </v-btn>
-                <v-btn text>
-              Gitlab
+            <v-btn text to="/create_update">
+              Create
             </v-btn>
+
         </v-card-actions>
 
     </v-app-bar>

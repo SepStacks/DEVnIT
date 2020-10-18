@@ -1,6 +1,8 @@
 <template>
 <div>
-    <SocketNotification :projects="projectTitle" />
+   <v-row justify="center" align="center">
+        <SocketNotification :projects="projectTitle" />
+   </v-row>
 </div>
 </template>
 
