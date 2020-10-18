@@ -1,5 +1,11 @@
 # technotes
 
+    Documentation solution for frontend developers. 
+
+## Motivation
+
+    The goal is to create a solution that enables a user to upload there documentation with ease all through the help of a friendly UI
+
 ## Build Setup
 
 ```bash
