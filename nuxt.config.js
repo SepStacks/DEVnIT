@@ -40,7 +40,9 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    { src: '~/plugins/socket.io.js', ssr: false }
+    { src: '~/plugins/socket.io.js', ssr: false },
+    '~/plugins/notifier.js'
+
 
   ],
   /*

@@ -1,0 +1,1 @@
+<data-component></data-component>

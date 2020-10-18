@@ -46,39 +46,38 @@ io.on('connection', (socket) => {
           fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, content.markdownData, (err) => {
 
               if (err) {
-                  console.error(err)
-                  return
+
+                  return err
               }
 
               // Log this message if the file was written to successfully
-              console.log('wrote to file successfully')
+              console.log('File successfully created')
           })
       })
 
-      //Check if project directory exist
 
-      if (fs.existsSync(pathToContent + content.title)) {
-
-          //Component function goes here
-
-      }
     }
 
 
     //Wip???
     if (content.type === 'component') {
+      //Check if project directory exist
 
-      //should be nested in an existing project
-      fs.writeFile(pathToContent + content.slug + content.extension, content.data, (err) => {
+      if (fs.existsSync(pathToContent + content.parent)) {
 
-        if (err) {
-          console.error(err)
-          return
-        }
+      //components should be nested in an existing project
+      //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
+        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, content.data, (err) => {
 
-        // Log this message if the file was written to successfully
-        console.log('wrote to file successfully')
-      })
+          if (err) {
+            return err
+          }
+
+          // Log this message if the file was written to successfully
+          console.log('component successfully created')
+        })
+      }
+
 
     }
 
