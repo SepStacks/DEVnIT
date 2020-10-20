@@ -10,7 +10,20 @@
 
             <div v-if="type === 'project'">
                 <v-text-field v-model="title" :rules="rules" label="title" required></v-text-field>
-                <v-text-field persistent-hint hint="component name for project should always be index" readonly v-model="slug" :value="slug ='index'" label="component name"></v-text-field>
+                <v-text-field  persistent-hint hint="component name for project should always be index" readonly v-model="slug" :value="slug ='index'" label="component name"></v-text-field>
+
+               <div class="mt-5 font-weight-bold"> Add installation instructions(optional)</div>
+
+                <!-- <v-text-field v-model="bodytitle" label="Body Title"></v-text-field>
+                <v-text-field v-model="bodyDescription" label="Body Description"></v-text-field>
+
+                <v-textarea
+                name="input-7-1"
+                label="Body Content"
+                v-model="bodyContent"
+                hint="Hint text">
+                </v-textarea> -->
+
             </div>
 
             <div v-if="type === 'component'">
@@ -44,6 +57,9 @@ export default {
     props: {
         projects: {
             type: Array,
+        },
+        markdownTemplate: {
+            required: false
         }
     },
 
@@ -62,7 +78,11 @@ export default {
             extention: '.md',
             type: "project",
             parent: '',
-            data: '<data-component></data-component>'
+            data: '<data-component></data-component>',
+
+            // bodyTitle: '',
+            // bodyDescription: '',
+            // bodyContent: ''
 
         }
     },
@@ -102,20 +122,40 @@ export default {
     methods: {
 
         emitToServer() {
+            //Have different paramaters for component and projects
 
-            const content = {
+            if (this.type === 'project') {
 
-                title: this.title,
-                slug: this.slug,
-                extention: this.extention,
-                type: this.type,
-                parent: this.parent,
-                data: this.data,
-                markdownData: `---\ntitle: ${this.title}\n---\n# Helloo from  ${this.title}`
+                const content = {
+
+                    title: this.title,
+                    slug: this.slug,
+                    extention: this.extention,
+                    type: this.type,
+                    parent: this.parent,
+                    markdownData: `---\ntitle: ${this.title}\n---\n <div v-html="">`,
+                    // bodyTitle: `# ${this.bodyTitle}`,
+                    // bodyDescription: this.bodyDescription,
+                    // bodyContent: this.bodyContent
+                }
+
+                this.$socket.client.emit("properties", content)
+
+            } else {
+
+                const content = {
+
+                    title: this.title,
+                    slug: this.slug,
+                    extention: this.extention,
+                    type: this.type,
+                    parent: this.parent,
+                    data: this.data,
+                }
+
+                this.$socket.client.emit("properties", content)
+
             }
-
-            this.$socket.client.emit("properties", content)
-            console.log(this.content)
 
             this.title = ''
             this.$refs.form.resetValidation()

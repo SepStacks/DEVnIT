@@ -1,5 +1,6 @@
 var fs = require("fs")
 const express = require('express')
+let { render } = require("mustache")
 // Just for fancy logging
 const consola = require('consola')
 
@@ -8,12 +9,14 @@ const app = express()
 const host = process.env.HOST || 'localhost'
 const port = process.env.PORT || 4000
 
-
-console.log("Hello from node")
-
 const server = app.listen(port, host)
 const io = require('socket.io').listen(server)
+
+
+
 app.set('port', port)
+
+
 
 
 io.on('connection', (socket) => {
@@ -38,21 +41,33 @@ io.on('connection', (socket) => {
           return console.error(err)
         }
 
-          console.log('Directory created successfully!')
+        console.log('Directory created successfully!')
+        const templatePath = path.join(__dirname, '../' + '/content/templates/')
+        //create the index file
+        // fs.readFile(templatePath + 'Project.md', (err, data) => {
+        //   if (err) {
+        //     console.log(err.message)
+        //   }
 
-          //create the index file
-          // Markdown data is within content.markdownData
+        //   const templateData = data.toString()
 
-          fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, content.markdownData, (err) => {
+        // })
 
-              if (err) {
 
-                  return err
-              }
+        let template = fs.readFileSync(templatePath + 'project.md').toString();
+        let output = render(template, content)
+        fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, output, (err) => {
 
-              // Log this message if the file was written to successfully
-              console.log('File successfully created')
-          })
+          if (err) {
+
+            return err
+          }
+
+          // Log this message if the file was written to successfully
+          console.log('File successfully created')
+        })
+
+
       })
 
 
@@ -65,8 +80,8 @@ io.on('connection', (socket) => {
 
       if (fs.existsSync(pathToContent + content.parent)) {
 
-      //components should be nested in an existing project
-      //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
+        //components should be nested in an existing project
+        //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
         fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, content.data, (err) => {
 
           if (err) {
@@ -87,8 +102,8 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    // Display connection message when pager is disconnected
-    console.log('pager disconnected')
+    // Display connection message when Node-Server  is disconnected
+    // console.log('Node-Server disconnected')
   })
 
 })
@@ -101,64 +116,6 @@ io.on('connect', (socket) => {
     console.log('Node-Server disconnected')
   })
 })
-
-
-
-// Get data from the frontend
-
-// axios.get('http://localhost:3000/_content/projects')
-//     .then(response => {
-//         console.log('Hello from backend')
-
-//     const pathToContent = path.join(__dirname, '../' + '/content/projects/')
-//         // place response into a custom object
-
-//         markdownData = "---\ntitle: stephanie\n---\n# Helloo from stephanie "
-
-//         const process = {
-//             dir: true,
-//             title: "stephanie",
-//             slug: "test",
-//             data: markdownData,
-//             extension: ".md"
-//         }
-
-//         // If file requires a directory
-
-//         if (process.dir === true) {
-
-//             //Control exactly the desired directory to create a folder
-
-//             fs.mkdir(pathToContent + process.title, (err) => {
-//                 if (err) {
-//                     return console.error(err)
-//                 }
-
-//                 console.log('Directory created successfully!')
-//             })
-//         }
-
-//         // Check if project is a directory. If Successful, generate an md file within said directory
-
-//         const check = process.dir === true ? process.title + "/" + process.slug + process.extension : process.slug + process.extension
-
-//         fs.writeFile(pathToContent + check  , process.data, (err) => {
-
-//             // If there is any error in writing to the file, return
-
-//             if (err) {
-//                 console.error(err)
-//                 return
-//             }
-
-//             // Log this message if the file was written to successfully
-//             console.log('wrote to file successfully')
-//         })
-
-//     })
-//     .catch(error => {
-//         console.log(error)
-//     })
 
 
 // Listen the server

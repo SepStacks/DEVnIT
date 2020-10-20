@@ -1,7 +1,7 @@
 <template>
 <div>
    <v-row justify="center" align="center">
-        <SocketNotification :projects="projectTitle" />
+        <MainForm :projects="projectTitle" :markdownTemplate="templates" />
    </v-row>
 </div>
 </template>
@@ -20,8 +20,12 @@ export default {
         .only(['title'])
         .fetch()
 
+        const templates = await $content('templates')
+        .fetch()
+
         return {
-            projects
+            projects,
+            templates
         };
     },
 
