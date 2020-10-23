@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
   socket.on('properties', (content) => {
 
     const pathToContent = path.join(__dirname, '../' + '/content/projects/')
-
+    const templatePath = path.join(__dirname, '../' + '/content/templates/')
     // If file requires a directory
 
     if (content.type === 'project') {
@@ -42,18 +42,9 @@ io.on('connection', (socket) => {
         }
 
         console.log('Directory created successfully!')
-        const templatePath = path.join(__dirname, '../' + '/content/templates/')
-        //create the index file
-        // fs.readFile(templatePath + 'Project.md', (err, data) => {
-        //   if (err) {
-        //     console.log(err.message)
-        //   }
-
-        //   const templateData = data.toString()
-
-        // })
 
 
+        //Get project.md template and inject project variables and generate an index file
         let template = fs.readFileSync(templatePath + 'project.md').toString();
         let output = render(template, content)
         fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, output, (err) => {
@@ -80,9 +71,11 @@ io.on('connection', (socket) => {
 
       if (fs.existsSync(pathToContent + content.parent)) {
 
+        let template = fs.readFileSync(templatePath + 'component.md').toString();
+        let output = render(template, content)
         //components should be nested in an existing project
         //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
-        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, content.data, (err) => {
+        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, (err) => {
 
           if (err) {
             return err

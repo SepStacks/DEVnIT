@@ -25,6 +25,5 @@ vue --version
 
 ## {{title}}
 
-<!-- # BOS
+Installation instructions goers here...
 
-Installation instructions goers here... -->

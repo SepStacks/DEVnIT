@@ -22,9 +22,11 @@
     "mirror": "^0.3.3",
     "mustache": "^4.0.1",
     "nuxt": "^2.14.5",
+    "prismjs": "^1.22.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.1",
     "typeface-montserrat": "0.0.75",
+    "vue-prism-component": "^1.2.0",
     "vue-socket.io-extended": "^4.0.5"
   },
   "devDependencies": {

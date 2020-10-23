@@ -1,22 +1,30 @@
 <template>
-<div>
-
-    <!--NOTES TO MYSELF -->
-    <!-- Content still needs to be written here -->
-    <!--Tip: Inject a header with component name (slug) and display it -->
-    <!-- perhaps something like <div v-html="someHTMLContentReeceivedByTheUI"></div> could work if used correctly -->
-
-    Hello Im from a component
-
-</div>
+  <div>
+    <CodeBlock
+      :sections="sections"
+      :html="html"
+      :css="css"
+      :js="js"
+      :height="'100%'"
+    />
+  </div>
 </template>
 
 <script>
+//values needs to be dynamically imported somehow based on the values gathered
+import { alertHTML, alertCSS, alertJS } from "../../assets/componentSourceCode/Alert.js";
 export default {
-
-}
+  data() {
+    return {
+      height: "100vh",
+      html: alertHTML,
+      css: alertCSS,
+      //js app element should always be definded or else vue code will not work.
+      js: alertJS,
+      sections: ["template", "style"]
+    };
+  }
+};
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

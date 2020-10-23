@@ -40,8 +40,9 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: "~/plugins/prism", ssr: false },
     { src: '~/plugins/socket.io.js', ssr: false },
-    '~/plugins/notifier.js'
+    '~/plugins/notifier.js',
 
 
   ],

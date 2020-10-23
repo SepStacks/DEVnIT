@@ -1,7 +1,5 @@
 ---
-title: "tame"
-
-
+title: "BOS"
 description: Learn how to use @nuxt/content.
 ---
 
@@ -9,7 +7,7 @@ description: Learn how to use @nuxt/content.
 
 Get started with Vuetify, the world’s most popular Vue.js framework for building feature rich, blazing fast applications.
 
-## Install Vue.js
+## Install Vue.js`
 
 ```
 npm install -g @vue/cli
@@ -25,8 +23,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## tame
+## BOS
 
-<!-- # BOS
+Installation instructions goers here...
 
-Installation instructions goers here... -->

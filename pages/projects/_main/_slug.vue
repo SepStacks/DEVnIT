@@ -4,10 +4,16 @@
     <SideNav :menus="nav"/>
 
    <v-main>
-    <v-container fluid>
+    <v-container max-width="500px">
 
-        <nuxt-content :document="doc" />
-        
+      <v-row justify="center">
+
+          <v-col cols="11" md="8"  lg="6">
+                 <nuxt-content :document="doc" />
+          </v-col>
+
+      </v-row>
+
     </v-container>
    </v-main>
   </div>
