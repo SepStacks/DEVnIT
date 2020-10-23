@@ -28,7 +28,8 @@
     <v-navigation-drawer permanent app clipped v-model="drawer">
 
         <v-list nav dense>
-            <div v-for="(header, index) in Object.keys(headers)" :key="index">
+            <!-- Reverse function to reverse component headers order -->
+            <div v-for="(header, index) in Object.keys(headers).reverse()" :key="index">
                 <div class="font-weight-bold">{{ header }}</div>
 
                 <v-list-item v-for="(slug, innerIndex) in headers[header]" :key="innerIndex" :to="slug">

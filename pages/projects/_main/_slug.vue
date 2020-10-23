@@ -9,7 +9,7 @@
       <v-row justify="center">
 
           <v-col cols="11" md="8"  lg="6">
-                 <nuxt-content :document="doc" />
+             <nuxt-content :document="doc" />
           </v-col>
 
       </v-row>
@@ -30,7 +30,8 @@ export default {
 
     const nav = await $content(`projects/${main}`)
       .only(["title", "slug"])
-      .sortBy('createdAt', 'asc')
+      //Set the order of the components thats underneath the headings
+      .sortBy('title', 'asc')
       .fetch()
 
       .catch(err => {
