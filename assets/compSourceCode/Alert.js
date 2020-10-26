@@ -1,4 +1,4 @@
-export const alertHTML = `
+export const html = `
   <v-alert elevation="10" color="white">
     <v-sheet
       color="#536E89"
@@ -28,14 +28,14 @@ export const alertHTML = `
 
 `;
 
-export const alertCSS = `
+export const css = `
   #snackbarOffset {
     top: -30px;
     position: relative;
   }
 `
 
-export const alertJS = `
+export const js = `
 const app = new Vue({
   el:'#app',
     vuetify: new Vuetify()

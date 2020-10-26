@@ -5,7 +5,7 @@
             <v-spacer />
             <v-card-actions>
                 <v-row class="mr-4">
-                    <Codepen ref="codepen" :title="'need to change'" :html="html" :css="css" :js="js" />
+                    <Codepen ref="codepen" :title="name" :html="html" :css="css" :js="js" />
                 </v-row>
                 <v-row>
                     <v-btn icon class="white--text" @click="expand = !expand">
@@ -147,7 +147,7 @@ export default {
   margin: 0;
   background: transparent;
 
-  
+
 }
 .v-markup code {
   position: relative;

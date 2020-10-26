@@ -3,7 +3,6 @@ const express = require('express')
 let { render } = require("mustache")
 // Just for fancy logging
 const consola = require('consola')
-
 const path = require('path')
 const app = express()
 const host = process.env.HOST || 'localhost'
@@ -12,12 +11,7 @@ const port = process.env.PORT || 4000
 const server = app.listen(port, host)
 const io = require('socket.io').listen(server)
 
-
-
 app.set('port', port)
-
-
-
 
 io.on('connection', (socket) => {
   console.log(socket.id)
@@ -27,15 +21,16 @@ io.on('connection', (socket) => {
   // content is the data that is being generated from the frontend
 
   socket.on('properties', (content) => {
-
+    //paths
     const pathToContent = path.join(__dirname, '../' + '/content/projects/')
-    const templatePath = path.join(__dirname, '../' + '/content/templates/')
-    // If file requires a directory
+    const templatePath = path.join(__dirname, '../' + '/assets/templates/')
+    const globalComponentPath = path.join(__dirname, '../' + '/components/global/')
+    let compSource = path.join(__dirname, '../' + '/assets/compSourceCode/')
 
+    // If file requires a directory
     if (content.type === 'project') {
 
       //Create a folder within content/projects
-
       fs.mkdir(pathToContent + content.title, (err) => {
         if (err) {
           return console.error(err)
@@ -43,10 +38,10 @@ io.on('connection', (socket) => {
 
         console.log('Directory created successfully!')
 
-
         //Get project.md template and inject project variables and generate an index file
-        let template = fs.readFileSync(templatePath + 'project.md').toString();
-        let output = render(template, content)
+        let projTemplate = fs.readFileSync(templatePath + 'project.md').toString();
+        //project template path + content from frontend
+        let output = render(projTemplate, content)
         fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, output, (err) => {
 
           if (err) {
@@ -65,16 +60,20 @@ io.on('connection', (socket) => {
     }
 
 
-    //Wip???
+    //Component Generation
     if (content.type === 'component') {
       //Check if project directory exist
 
       if (fs.existsSync(pathToContent + content.parent)) {
 
-        let template = fs.readFileSync(templatePath + 'component.md').toString();
-        let output = render(template, content)
+        // component.md template with variables for custom files
+        let compTemplate = fs.readFileSync(templatePath + 'component.md').toString();
+        let vueCompTemplate = fs.readFileSync(templatePath + 'vueCompTemplate.vue').toString();
+        let jsCompTemplate = fs.readFileSync(templatePath + 'JSCompRegister.js').toString();
+
+        //content is needed as it has access to the variable content the templates needs
+        let output = render(compTemplate, content)
         //components should be nested in an existing project
-        //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
         fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, (err) => {
 
           if (err) {
@@ -84,6 +83,27 @@ io.on('connection', (socket) => {
           // Log this message if the file was written to successfully
           console.log('component successfully created')
         })
+
+        // Create a vue component and inject values from frontend through the content variable
+        let vueOutput = render(vueCompTemplate, content)
+
+        let jsOutput = render(jsCompTemplate, content)
+
+        fs.writeFile(globalComponentPath + '/' + content.slug + '.vue', vueOutput, (err) => {
+
+          if (err) {
+            return err
+          }
+
+        })
+        fs.writeFile(compSource + '/' + content.slug + '.js', jsOutput, (err) => {
+
+          if (err) {
+            return err
+          }
+        })
+
+
       }
 
 
@@ -114,6 +134,6 @@ io.on('connect', (socket) => {
 // Listen the server
 
 consola.ready({
-  message: `QMS-Server listening on http://${host}:${port}`,
+  message: `Node-Server listening on http://${host}:${port}`,
   badge: true
 })

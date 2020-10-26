@@ -1,7 +1,7 @@
 <template>
 <div>
    <v-row justify="center" align="center">
-        <MainForm :projects="projectTitle" :markdownTemplate="templates" />
+        <MainForm :projects="projectTitle" />
    </v-row>
 </div>
 </template>
@@ -20,12 +20,8 @@ export default {
         .only(['title'])
         .fetch()
 
-        const templates = await $content('templates')
-        .fetch()
-
         return {
             projects,
-            templates
         };
     },
 
