@@ -177,7 +177,10 @@ export default {
 
       // Check if project exist
       if (this.type === 'project') {
-        return this.projects.includes(this.title.toUpperCase())
+
+        if(typeof title === 'string' ) {
+            return this.projects.includes(this.title.toUpperCase())
+        }
       }
       // check if component name exists based on the parent name
       const check = this.content.filter(data => data.parent === this.parent.toUpperCase() && data.slug === this.slug.toLowerCase())
@@ -229,6 +232,7 @@ export default {
         }
 
         this.$socket.client.emit("properties", content)
+        this.$refs.form.resetValidation()
 
       } else {
 
@@ -247,7 +251,7 @@ export default {
         this.$socket.client.emit("properties", content)
       }
 
-      this.title = ''
+      // this.title = ''
       this.$refs.form.resetValidation()
 
     },
