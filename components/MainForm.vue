@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <v-container>
       <v-form
         ref="form"
@@ -26,12 +25,14 @@
 
         <div v-if="type === 'project'">
           <v-text-field
+            class="text-capitalize"
             v-model="title"
-            :rules="rules"
+            :rules="[rules.required, rules.duplicate]"
             label="title"
             required
           ></v-text-field>
           <v-text-field
+            class="text-capitalize"
             persistent-hint
             hint="component name for project should always be index"
             readonly
@@ -65,6 +66,7 @@
           <v-text-field
             v-model="slug"
             label="component name"
+            :rules="[rules.required, rules.duplicate]"
           ></v-text-field>
 
           <v-container>
@@ -128,6 +130,9 @@ export default {
     projects: {
       type: Array,
     },
+    content: {
+      type: Array
+    }
     // markdownTemplate: {
     //     required: false
     // }
@@ -138,10 +143,12 @@ export default {
       isFormValid: false,
       response: '',
       isConnected: false,
-      rules: [
-        value => !!value || 'Required.',
-        value => !this.checkIfExist || 'Name already exists'
-      ],
+      rules:
+      {
+        required: value => !!value || 'Required.',
+        duplicate: value => !this.doesExist || 'Already exists'
+
+      },
 
       title: '',
       slug: '',
@@ -150,9 +157,9 @@ export default {
       parent: '',
       html: '',
       css: '',
-      js: `const app = new Vue({
+      js: `new Vue({
           el:'#app',
-            vuetify: new Vuetify()
+            vuetify: new Vuetify(),
           })`
 
 
@@ -166,10 +173,17 @@ export default {
   computed: {
     //check if project title exist
 
-    checkIfExist () {
-      return this.projects.includes(this.title)
+    doesExist () {
 
-    }
+      // Check if project exist
+      if (this.type === 'project') {
+        return this.projects.includes(this.title.toUpperCase())
+      }
+      // check if component name exists based on the parent name
+      const check = this.content.filter(data => data.parent === this.parent.toUpperCase() && data.slug === this.slug.toLowerCase())
+      return check.length === 1
+
+    },
 
   },
 
@@ -204,12 +218,11 @@ export default {
 
         const content = {
 
-          title: this.title,
-          slug: this.slug,
+          title: this.title.toUpperCase(),
+          slug: this.slug.toLowerCase(),
           extention: this.extention,
           type: this.type,
-          parent: this.parent,
-          markdownData: `---\ntitle: ${this.title}\n---\n <div v-html="">`,
+          parent: this.parent.toUpperCase(),
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
@@ -221,10 +234,10 @@ export default {
 
         const content = {
 
-          slug: this.slug,
+          slug: this.slug.toLowerCase(),
           extention: this.extention,
           type: this.type,
-          parent: this.parent,
+          parent: this.parent.toUpperCase(),
           html: this.html,
           css: this.css,
           js: this.js
@@ -232,11 +245,10 @@ export default {
         }
 
         this.$socket.client.emit("properties", content)
-        console.log(content)
       }
 
       this.title = ''
-      // this.$refs.form.resetValidation()
+      this.$refs.form.resetValidation()
 
     },
 

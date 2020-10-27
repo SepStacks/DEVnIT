@@ -63,7 +63,7 @@ export default {
           <link rel="stylesheet" href="${lineIcons}">
           <script src="${vuetifyJS}"><\/script>
           <script>
-            ${this.js}
+           const app = ${this.js}
           <\/script>
 
           <style>

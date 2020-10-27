@@ -1,7 +1,7 @@
 <template>
 <div>
    <v-row justify="center" align="center">
-        <MainForm :projects="projectTitle" />
+        <MainForm :projects="projectTitle" :content="contentArray"/>
    </v-row>
 </div>
 </template>
@@ -17,7 +17,7 @@ export default {
     }) {
         // const menus = await $content({ deep: true }).fetch();
         const projects = await $content('projects', { deep: true })
-        .only(['title'])
+        .only(['title', 'slug', 'parent'])
         .fetch()
 
         return {
@@ -32,6 +32,15 @@ export default {
                 return el != null
             })
             return title
+        },
+
+        contentArray() {
+              //Get the component name of all projects and remove any null values
+             const slug = this.projects.map(project => project ).filter(el => {
+                return el
+            })
+            return slug
+
         }
     }
 }

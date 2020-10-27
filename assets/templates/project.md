@@ -1,6 +1,6 @@
 ---
 title: "{{title}}"
-description: Learn how to use @nuxt/content.
+parent: "{{title}}"
 ---
 
 # Installation

@@ -1,3 +1,7 @@
+---
+parent: "{{parent}}"
+---
+
 # {{slug}}
 
 >This component was based on the {{slug}} component of [Vuetify](https://vuetifyjs.com/en/components/{{slug}}/ "Vuetify's {{slug}} component")

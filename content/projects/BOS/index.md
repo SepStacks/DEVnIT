@@ -1,6 +1,6 @@
 ---
-title: "test"
-description: Learn how to use @nuxt/content.
+title: "BOS"
+parent: "BOS"
 ---
 
 # Installation
@@ -23,7 +23,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## test
+## BOS
 
 Installation instructions goers here...
 
