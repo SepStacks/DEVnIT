@@ -8,27 +8,43 @@
       :name="name"
       :height="'100%'"
     />
+
   </div>
 
 </template>
 
 <script>
-//values needs to be dynamically imported somehow based on the values gathered
-import { html, css, js } from "../../assets/compSourceCode/Alert";
+
+// Import dynamic path
+import { html, css, js } from "../../assets/compSourceCode/test";
+
+
+
 export default {
+
   data() {
     return {
+    componentName : '',
       height: "100vh",
       html: html,
       css: css,
-      name: "{{slug}}",
       //js app element should always be definded or else vue code will not work.
       js: js,
+      name: "test",
+
       //attach a condition to only show certain elements if it has markup
-      sections: ["template", "style", "script"]
-    };
+      sections: ["template", "style", "script"]    };
   },
 
-};
+  
+
+
+}
+
+
+
+
+
+
 </script>
 

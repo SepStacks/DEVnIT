@@ -1,14 +1,20 @@
 <template>
-  <div>
+<v-app>
+    <div id="app">
+
     <!-- side-bar -->
     <SideNav :menus="nav"/>
 
    <v-main>
     <v-container max-width="500px">
-
       <v-row justify="center">
 
           <v-col cols="11" md="8"  lg="6">
+
+              <nuxt-link :to="`/create_update/${doc.parent}/${doc.slug}`">
+                    <v-btn>edit</v-btn>
+              </nuxt-link>
+
              <nuxt-content :document="doc" />
           </v-col>
 
@@ -17,6 +23,7 @@
     </v-container>
    </v-main>
   </div>
+</v-app>
 </template>
 
 <script>

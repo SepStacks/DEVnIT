@@ -3,7 +3,7 @@ import Prism from "vue-prism-component"
 
 import "prismjs"
 
-import "prismjs/themes/prism-synthwave84.css"
+// import "prismjs/themes/prism-synthwave84.css"
 
 import "prismjs/components/prism-scss.min"
 

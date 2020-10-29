@@ -1,6 +1,6 @@
 ---
-title: "{{title}}"
-type: "project"
+title: "DOCKIEDOC"
+parent: "DOCKIEDOC"
 ---
 
 # Installation
@@ -23,7 +23,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## {{title}}
+## DOCKIEDOC
 
 Installation instructions goers here...
 

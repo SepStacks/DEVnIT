@@ -1,5 +1,5 @@
 ---
-title: "{{title}}"
+title: "BOST"
 type: "project"
 ---
 
@@ -23,7 +23,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## {{title}}
+## BOST
 
 Installation instructions goers here...
 

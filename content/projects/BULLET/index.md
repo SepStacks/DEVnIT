@@ -1,6 +1,6 @@
 ---
-title: "{{title}}"
-type: "project"
+title: "BULLET"
+parent: "BULLET"
 ---
 
 # Installation
@@ -23,7 +23,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## {{title}}
+## BULLET
 
 Installation instructions goers here...
 
