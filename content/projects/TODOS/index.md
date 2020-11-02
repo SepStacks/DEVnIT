@@ -1,6 +1,7 @@
 ---
-title: "NEW"
-parent: "NEW"
+title: "TODOS"
+parent: "TODOS"
+type: "project"
 ---
 
 # Installation
@@ -23,7 +24,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## NEW
+## TODOS
 
 Installation instructions goers here...
 

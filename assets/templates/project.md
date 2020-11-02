@@ -1,5 +1,6 @@
 ---
 title: "{{title}}"
+parent: "{{title}}"
 type: "project"
 ---
 

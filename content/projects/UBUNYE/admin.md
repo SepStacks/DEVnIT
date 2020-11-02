@@ -1,6 +1,7 @@
 ---
-parent: "BOST"
+parent: "UBUNYE"
 type: "component"
+
 ---
 
 # admin

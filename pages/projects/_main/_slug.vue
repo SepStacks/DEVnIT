@@ -11,8 +11,11 @@
 
           <v-col cols="11" md="8"  lg="6">
 
-              <nuxt-link :to="`/create_update/${doc.parent}/${doc.slug}`">
-                    <v-btn>edit</v-btn>
+              <nuxt-link :to="`/create_update/${doc.parent}/${doc.slug}`" v-if="doc.type === 'component'">
+                    <v-btn >edit cmponent {{doc.slug}}</v-btn>
+              </nuxt-link>
+                 <nuxt-link :to="`/create_update/${doc.parent}`" v-else>
+                    <v-btn >edit Project</v-btn>
               </nuxt-link>
 
              <nuxt-content :document="doc" />

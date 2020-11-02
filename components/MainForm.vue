@@ -1,6 +1,10 @@
 <template>
   <div>
+    {{doc.type}}
+    {{doesExist}}
+
     <v-container>
+      <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
       <v-form
         ref="form"
         v-model="isFormValid"
@@ -29,7 +33,7 @@
           <v-text-field
             class="text-capitalize"
             v-model="doc.title"
-            :rules="[rules.required, rules.duplicate]"
+            :rules="[rules.required, rules.duplicate, rules.string]"
             label="title"
             required
           ></v-text-field>
@@ -38,6 +42,7 @@
             persistent-hint
             hint="component name for project should always be index"
             readonly
+            v-show="false"
             v-model="doc.slug"
             :value="doc.slug ='index'"
             label="component name"
@@ -58,8 +63,11 @@
         </div>
 
         <div v-if="doc.type === 'component'">
+          {{doc.parent}}
+
           <!-- This items value needs to be exported as a prop and get the project titles array -->
           <v-select
+            v-if="mode === 'create'"
             :items="projects"
             v-model="doc.parent"
             item-text="title"
@@ -68,7 +76,7 @@
           <v-text-field
             v-model="doc.slug"
             label="component name"
-            :rules="[rules.required, rules.duplicate]"
+            :rules="[rules.required, rules.duplicate, rules.string]"
           ></v-text-field>
 
           <v-container>
@@ -121,7 +129,6 @@
 
       </v-form>
     </v-container>
-
   </div>
 </template>
 
@@ -146,6 +153,12 @@ export default {
       default: true
 
     },
+    // Create or Edit mode
+    mode: {
+      type: String,
+      default: 'create'
+
+    }
     // markdownTemplate: {
     //     required: false
     // }
@@ -159,7 +172,8 @@ export default {
       rules:
       {
         required: value => !!value || 'Required.',
-        duplicate: value => !this.doesExist || 'Already exists'
+        duplicate: value => !this.doesExist || 'Already exists',
+        string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
 
       },
 
@@ -176,23 +190,28 @@ export default {
   },
 
   computed: {
-    //check if project title exist
 
-    // doesExist () {
+    doesExist () {
+      // Check if project exist
+      if (this.doc.type === 'project') {
+        // Without this line below switching betweeen component and project produces an error
+        if (typeof this.doc.title === 'string') {
+          return this.projects.includes(this.doc.title.toUpperCase())
+        }
 
-    //   // Check if project exist
-    //   if (this.type === 'project') {
+      } else {
+        if (typeof this.doc.slug === 'string') {
+        // check if component name exists based on the parent name
+        const check = this.content.filter(data => data.parent === this.doc.parent.toUpperCase() && data.slug === this.doc.slug.toLowerCase())
+        return check.length === 1
 
-    //     if(typeof title === 'string' ) {
-    //         return this.projects.includes(this.doc.title.toUpperCase())
-    //     }
-    //   }
-    //   // check if component name exists based on the parent name
-    //   const check = this.content.filter(data => data.parent === this.doc.parent.toUpperCase() && data.slug === this.doc.slug.toLowerCase())
-    //   return check.length === 1
+      }
+      }
 
-    // },
 
+
+
+    }
   },
 
   sockets: {
@@ -221,14 +240,15 @@ export default {
 
     emitToServer () {
       //Have different paramaters for component and projects
-
+      var modeType = this.mode
+      console.log(modeType)
       if (this.doc.type === 'project') {
 
         const content = {
 
           title: this.doc.title.toUpperCase(),
           slug: this.doc.slug.toLowerCase(),
-          extention: this.doc.extention,
+          extention: '.md',
           type: this.doc.type,
           parent: this.doc.parent.toUpperCase(),
           // bodyTitle: `# ${this.bodyTitle}`,
@@ -236,8 +256,14 @@ export default {
           // bodyContent: this.bodyContent
         }
 
-        this.$socket.client.emit("properties", content)
+
+        this.$router.push('/projects')
+        setTimeout(() => {
+          this.$socket.client.emit("properties", { content, modeType })
+        }, 500)
         this.$refs.form.resetValidation()
+        console.log(content)
+
 
       } else {
 

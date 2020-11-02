@@ -1,6 +1,7 @@
 ---
 title: "BOS"
 parent: "BOS"
+type: "project"
 ---
 
 # Installation

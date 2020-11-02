@@ -34,6 +34,7 @@ export default {
   ** Global CSS
   */
   css: [
+    '~/assets/css/main.css'
   ],
   /*
   ** Plugins to load before mounting the App
@@ -43,6 +44,8 @@ export default {
     { src: "~/plugins/prism", ssr: false },
     { src: '~/plugins/socket.io.js', ssr: false },
     '~/plugins/notifier.js',
+    // '~/plugins/markdown.js',
+
 
 
   ],
@@ -72,11 +75,16 @@ export default {
   ** See https://content.nuxtjs.org/configuration
   */
   content: {
-    // markdown: {
-    //   prism: {
-    //     theme: 'prism-themes/themes/prism-material-oceanic.css'
-    //   }
-    // }
+    markdown: {
+      remarkPlugins: [
+
+        'remark-autolink-headings',
+
+      ],
+      // prism: {
+      //   theme: 'prism-themes/themes/prism-material-oceanic.css'
+      // }
+    }
   },
     /*
   ** vuetify module configuration

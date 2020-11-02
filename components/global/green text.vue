@@ -16,7 +16,7 @@
 <script>
 
 // Import dynamic path
-import { html, css, js } from "../../assets/compSourceCode/todo";
+import { html, css, js } from "../../assets/compSourceCode/greentext";
 
 
 
@@ -30,13 +30,13 @@ export default {
       css: css,
       //js app element should always be definded or else vue code will not work.
       js: js,
-      name: "todo",
+      name: "green text",
 
       //attach a condition to only show certain elements if it has markup
       sections: ["template", "style", "script"]    };
   },
 
-  
+
 
 
 }

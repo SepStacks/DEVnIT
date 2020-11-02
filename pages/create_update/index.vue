@@ -1,6 +1,6 @@
 <template>
 <div>
-    
+
    <v-row justify="center" align="center">
         <MainForm :projects="projectTitle" :content="contentArray"  :doc="doc"/>
    </v-row>

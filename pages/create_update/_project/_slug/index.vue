@@ -1,15 +1,18 @@
 <template>
 <div>
-    {{$route.params}}
-    {{slugData.type}}
    <v-row justify="center" align="center">
 
-        <MainForm :projects="projectTitle" :content="contentArray" :doc="slugData" :showRadio="false"/>
+         <v-btn>Delete Component</v-btn>
+
+        <MainForm :projects="projectTitle" :content="contentArray" :doc="getDoc" :showRadio="false" :mode="'edit'"/>
+
    </v-row>
 </div>
 </template>
 
 <script>
+// import { html, css, js } from "`~/assets/compSourceCode/${slugData.slug}`";
+// const {html, css, js} = require(`~/assets/compSourceCode/${getDoc.slug}`)
 export default {
 
     // List the projects directory items
@@ -31,16 +34,43 @@ export default {
         return {
             projects,
             slugData
+
+
         };
     },
     data() {
         return {
 
+            message: 'hello world'
+
+            // slugData: {
+            // html: html,
+            // css: CSS,
+            // js: js
+
+            // }
+
+
         }
     },
 
     computed: {
+
         getDoc() {
+            const doc = {
+                   slug: this.slugData.slug,
+                        extention: '.md',
+                        type:  this.slugData.type,
+                        parent: this.slugData.parent,
+                        html: this.imports.html,
+                        css:this.imports.css,
+                        js:this.imports.js
+            }
+
+                return doc
+
+                console.log(doc)
+
             //FInd a way to turn this into an object similar to its create counterpart
 
             // return this.slugData.filter(data => {
@@ -64,12 +94,25 @@ export default {
             return slug
 
         },
+         imports() {
+             //dynamically import js file of component
+              const {html, css, js} = require(`~/assets/compSourceCode/${this.slugData.slug}`)
+              return {html, css, js}
+        },
 
         // getCurrent() {
 
         //     const check = this.content.filter(data => data.parent === this.doc.parent.toUpperCase() && data.slug === this.doc.slug.toLowerCase())
         //     return check.length === 1
         // }
+    },
+    methods: {
+
+    },
+    created() {
+        this.imports
+        console.log(this.imports)
+
     }
 }
 </script>

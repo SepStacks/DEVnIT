@@ -1,6 +1,7 @@
 ---
 parent: "{{parent}}"
 type: "component"
+
 ---
 
 # {{slug}}

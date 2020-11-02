@@ -34,13 +34,15 @@
                                 <div class="v-markup">
                                     <prism class="codeBlock" line-numbers :code="sectionVal" ref="prismVal" :language="language">
                                     </prism>
+                                                                        <CopyBtn/>
 
-                                    <div class="v-markup__copy " >
+
+                                    <!-- <div class="v-markup__copy " >
                                         <v-icon title="Copy code" @click="copyMarkup">la-copy</v-icon>
                                         <v-slide-x-transition>
                                             <span v-if="copied" class="v-markup__copied copiedText">Copied</span>
                                         </v-slide-x-transition>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </v-window-item>
