@@ -20,6 +20,7 @@
             name="Project"
             label="create new project"
             value="project"
+
           ></v-radio>
           <v-radio
             @change="reset"
@@ -72,6 +73,8 @@
             v-model="doc.parent"
             item-text="title"
             label="Select project"
+            :rules="[rules.required]"
+
           ></v-select>
           <v-text-field
             v-model="doc.slug"
