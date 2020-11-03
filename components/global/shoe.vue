@@ -1,21 +1,19 @@
 <template>
   <div>
-    <CodeBlock :file="name" :name="name"/>
+    <!-- attach to markdown with slug as its file and name properties -->
+    <CodeBlock :file="file" :name="file"/>
   </div>
 </template>
 
 <script>
 export default {
- 
-  data() {
-    return {
 
-      name: "example"
-
-  }
-
-
-  }}
+  props: {
+    file: {
+      type: String
+    }
+  },
+}
 
 
 

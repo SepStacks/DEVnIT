@@ -75,14 +75,7 @@
               >
                 <div>
                   <div class="v-markup">
-                    <prism
-                      class="codeBlock"
-                      line-numbers
-                      :code="sectionVal"
-                      ref="prismVal"
-                      :language="language"
-                    >
-                    </prism>
+                    <Markup   :code="pen[section]"/>
                     <CopyBtn />
 
                     <!-- <div class="v-markup__copy " >
@@ -115,6 +108,10 @@
 // import highlighting library (you can use any library you want just return html string)
 // import syntax highlighting styles
 export default {
+
+  components: {
+    Prism: () => import("vue-prism-component"),
+  },
   props: {
 
     height: {
@@ -132,22 +129,11 @@ export default {
 
   },
 
-  components: {
-    Prism: () => import("vue-prism-component"),
 
-    sections () {
-      return [
-        'template',
-        'script',
-        'style',
-      ].filter(section => this.pen[section])
-    },
-    // Previewer,
-  },
+
 
   data () {
     return {
-      file: 'example',
       copied: false,
       expand: false,
       selected: "template"
@@ -155,17 +141,24 @@ export default {
   },
 
   computed: {
-    sectionVal () {
-      if (this.selected === "template") return this.html
-      if (this.selected === "script") return this.js
-      if (this.selected === "style") return this.css
+          sections () {
+      return [
+        'template',
+        'script',
+        'style',
+      ].filter(section => this.pen[section])
     },
+    // sectionVal () {
+    //   if (this.selected === "template") return this.html
+    //   if (this.selected === "script") return this.js
+    //   if (this.selected === "style") return this.css
+    // },
 
-    language () {
-      if (this.selected === "template") return "html"
-      if (this.selected === "script") return "js"
-      if (this.selected === "style") return "css"
-    }
+    // language () {
+    //   if (this.selected === "template") return "html"
+    //   if (this.selected === "script") return "js"
+    //   if (this.selected === "style") return "css"
+    // }
   },
 
   methods: {
@@ -184,9 +177,7 @@ export default {
       }, 2000)
     }
   },
-  mounted () {
-    this.file = `example`
-  },
+
 
 };
 </script>

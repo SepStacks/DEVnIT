@@ -11,7 +11,7 @@
         name: 'example',
         data() {
             return {
-                message: 'hello from component',
+                message: 'working examples here',
             }
         }
 
