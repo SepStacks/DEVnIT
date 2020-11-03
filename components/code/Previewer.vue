@@ -1,96 +1,45 @@
 <template>
-<div>
-    <iframe :srcdoc="resultIFrameHtml" width="100%" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';" frameborder="0" scrolling="no" />
-</div>
+  <component
+    :is="component"
+    v-if="component"
+    v-bind="{
+      ...$attrs,
+      ...$props,
+    }"
+    v-on="$listeners"
+  />
 </template>
 
 <script>
-let vue = '/js/vue.min.js'
-let vuetifyCSS = '/css/vuetify.min.css'
-let lineIcons = '/css/line-awesome-font-awesome.min.css'
-let vuetifyJS = '/js/vuetify.min.js'
-let mainCSS = '/css/mainCSS.css'
-
-export default {
-
+  export default {
+    name: 'Previewer',
+    inheritAttrs: false,
     props: {
-
-        height: {
-            type: [Number, String]
-        },
-        html: {
-            type: String,
-            required: true
-        },
-        js: {
-            type: String,
-            required: true
-        },
-        css: {
-            type: String,
-            required: true
-        }
+      file: {
+        type: String,
+        required: true,
+      },
     },
-    data() {
-        return {
-            showResult: true
-        };
+    data: () => ({ component: undefined }),
+    created () {
+      this.load()
     },
-
-    computed: {
-
-        resultIFrameHtml() {
-
-            return `
-        <!DOCTYPE html>
-        <body>
-        <div id="app">
-         <v-app>
-            <v-main>
-             <v-container fill-height>
-             <v-row justify="center" align="center">
-                <v-col cols="12">
-                  ${this.html}
-                </v-col>
-             </v-row></v-container>
-            </v-main>
-          </v-app>
-        </div>
-
-          <script src="${vue}"><\/script>
-          <link href="${vuetifyCSS}" rel="stylesheet">
-          <link rel="stylesheet" href="${mainCSS}">
-          <link rel="stylesheet" href="${lineIcons}">
-          <script src="${vuetifyJS}"><\/script>
-          <script>
-           const app = ${this.js}
-          <\/script>
-
-          <style>
-            ${this.css}
-
-          <\/style>
-
-          <style>
-            html {
-               overflow-y: auto !important;
-               height: auto !important;
-            }
-
-            .theme--light.application {
-            background: #fff !important;
-            }
-
-            <\/style>
-        </body>
-      `;
-            // iframe.name = this.name
-            return iframe.outerHTML;
+    methods: {
+      async load () {
+        let component = {}
+        try {
+          component = await import(
+            /* webpackChunkName: "examples" */
+            /* webpackMode: "lazy-once" */
+            `../examples/${this.file}.vue`
+          )
+          this.$emit('loaded', component.default)
+        } catch (err) {
+          component = await import('../missing')
+          this.$emit('error', err)
         }
-    }
-};
+        this.component = component.default
+      },
+    },
+  }
 </script>
-
-<style >
-
-</style>

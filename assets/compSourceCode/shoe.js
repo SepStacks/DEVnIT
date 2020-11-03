@@ -1,9 +1,13 @@
-export const html = `<div class="green--text">Green text</div>
+export const html = `<div class="green--text">{{message}}</div>
 `
 export const css = `
 `
-export const js = `new Vue({
-                el:'#app',
-                  vuetify: new Vuetify(),
-                })
-`
+export const js = `<script>
+export default {
+  data() {
+    return {
+      message: "Hello World"
+    }
+  }
+}
+</script>`
