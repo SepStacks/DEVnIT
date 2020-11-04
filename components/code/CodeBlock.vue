@@ -2,7 +2,6 @@
   <div>
     <v-sheet
       class="mb-9 v-example"
-
       id="toolbarCard"
     >
 
@@ -23,7 +22,8 @@
       </div>
     </v-lazy>
 
-      <v-expand-transition>
+    <div  v-if="pen">
+            <v-expand-transition>
         <v-card
           tile
           v-if="expand"
@@ -74,6 +74,12 @@
         </v-card>
       </v-expand-transition>
 
+  <Codepen
+        ref="codepen"
+        :pen="pen"
+      />
+
+    </div>
       <v-sheet
         elevation="4"
         class="pa-4"
