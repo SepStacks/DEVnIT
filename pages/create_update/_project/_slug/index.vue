@@ -96,8 +96,8 @@ export default {
         },
          imports() {
              //dynamically import js file of component
-              const {html, css, js} = require(`~/assets/compSourceCode/${this.slugData.slug}`)
-              return {html, css, js}
+            //   const {html, css, js} = require(`~/assets/compSourceCode/${this.slugData.slug}`)
+            //   return {html, css, js}
         },
 
         // getCurrent() {

@@ -11,13 +11,9 @@
         name: 'example',
         data() {
             return {
-                message: 'working examples here',
+                message: 'working examples here'
             }
         }
 
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

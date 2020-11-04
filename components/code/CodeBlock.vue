@@ -1,38 +1,27 @@
 <template>
   <div>
-    <v-card
-      class="mb-5"
-      flat
+    <v-sheet
+      class="mb-9 v-example"
+
       id="toolbarCard"
     >
-      <v-toolbar
-        tile
-        dense
-        flat
-        color="accent"
-      >
-        <v-spacer />
-        <v-card-actions>
-          <v-row class="mr-4">
-            <Codepen
-              ref="codepen"
-              :title="name"
-              :html="html"
-              :css="css"
-              :js="js"
-            />
-          </v-row>
-          <v-row>
-            <v-btn
-              icon
-              class="white--text"
-              @click="expand = !expand"
-            >
-              <v-icon size="20">la la-code</v-icon>
-            </v-btn>
-          </v-row>
-        </v-card-actions>
-      </v-toolbar>
+
+          <v-lazy
+      min-height="52"
+      @mouseenter="importTemplate"
+    >
+      <div class="text-end pa-2">
+        <Tooltip
+          v-for="(tooltip, i) in tooltips"
+          :key="i"
+          :href="tooltip.href ? tooltip.href : undefined"
+          :icon="tooltip.icon"
+          :path="tooltip.path"
+          :target="tooltip.href ? '_blank' : undefined"
+          @click="tooltip.onClick"
+        />
+      </div>
+    </v-lazy>
 
       <v-expand-transition>
         <v-card
@@ -76,14 +65,7 @@
                 <div>
                   <div class="v-markup">
                     <Markup   :code="pen[section]"/>
-                    <CopyBtn />
 
-                    <!-- <div class="v-markup__copy " >
-                                        <v-icon title="Copy code" @click="copyMarkup">la-copy</v-icon>
-                                        <v-slide-x-transition>
-                                            <span v-if="copied" class="v-markup__copied copiedText">Copied</span>
-                                        </v-slide-x-transition>
-                                    </div> -->
                   </div>
                 </div>
               </v-window-item>
@@ -100,36 +82,32 @@
         <Previewer :file="file" />
 
       </v-sheet>
-    </v-card>
+    </v-sheet>
   </div>
 </template>
 
 <script>
 // import highlighting library (you can use any library you want just return html string)
 // import syntax highlighting styles
+
+// Mixins
+import Codepen from '~/mixins/codepen'
+
 export default {
 
   components: {
     Prism: () => import("vue-prism-component"),
   },
-  props: {
+      mixins: [Codepen],
 
-    height: {
-      type: [Number, String]
-    },
-    // sections: {
-    //     type: [Object, String, Array]
-    // },
+  props: {
     name: {
       type: String
     },
     file: {
       type: String
     },
-
   },
-
-
 
 
   data () {
@@ -141,24 +119,32 @@ export default {
   },
 
   computed: {
-          sections () {
+    sections () {
       return [
         'template',
         'script',
         'style',
       ].filter(section => this.pen[section])
     },
-    // sectionVal () {
-    //   if (this.selected === "template") return this.html
-    //   if (this.selected === "script") return this.js
-    //   if (this.selected === "style") return this.css
-    // },
-
-    // language () {
-    //   if (this.selected === "template") return "html"
-    //   if (this.selected === "script") return "js"
-    //   if (this.selected === "style") return "css"
-    // }
+  tooltips () {
+        return [
+          {
+            icon: 'la-home',
+            path: 'invert-example-colors',
+            onClick: () => (this.dark = !this.dark),
+          },
+          {
+            icon: 'la-codepen',
+            path: 'edit-in-codepen',
+            onClick: this.sendToCodepen,
+          },
+          {
+            icon: 'la-code',
+            path: 'view-source',
+            onClick: () => (this.expand = !this.expand),
+          },
+        ]
+      },
   },
 
   methods: {
@@ -182,95 +168,11 @@ export default {
 };
 </script>
 
-<style>
-.v-markup {
-  align-items: center;
-  box-shadow: none;
-  display: flex;
-  border-radius: 2px;
-  position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  margin-bottom: 16px;
-  color: #fff;
-}
-
-.v-markup pre,
-.v-markup code {
-  margin: 0;
-  background: transparent;
-}
-
-.v-markup code {
-  position: relative;
-  box-shadow: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  word-break: break-word;
-  flex-wrap: wrap;
-  align-items: center;
-  vertical-align: middle;
-  white-space: pre-wrap;
-}
-
-.v-markup code:before {
-  display: none;
-}
-
-.v-markup__copied {
-  position: absolute;
-  top: 12px;
-  right: 10px;
-}
-
-.v-markup__copy,
-.v-markup__edit {
-  position: absolute;
-  top: 15px;
-  cursor: pointer;
-  width: 25px;
-  height: 25px;
-  z-index: 1;
-}
-
-.v-markup__copy {
-  right: 0;
-}
-
-.v-markup__edit {
-  right: 36px;
-}
-
-.v-markup__edit > a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.v-markup:hover .v-markup__copy .v-icon,
-.v-markup:hover .v-markup__edit .v-icon {
-  opacity: 1;
-}
-
-.v-markup:hover .v-markup__copy:after,
-.v-markup:hover .v-markup__edit:after {
-  opacity: 0;
-}
-
-.v-markup .copiedText {
-  margin-top: 20px !important;
-}
-
-.v-markup .v-markup__copy .v-icon,
-.v-markup .v-markup__edit .v-icon {
-  color: inherit;
-  position: absolute;
-  right: 0;
-  transition: opacity 0.2s ease-in;
-  font-size: 1.5rem;
-  opacity: 0;
-  top: 0;
-  width: 50px;
-  height: 50px;
-  z-index: 4;
-}
+<style lang="sass">
+  .v-example
+    code[class*="language-"],
+    pre[class*="language-"]
+      text-shadow: none
+    pre.language-markup::after
+      content: 'vue'
 </style>

@@ -32,7 +32,8 @@
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2",
-    "nodemon": "^2.0.5"
+    "nodemon": "^2.0.5",
+    "raw-loader": "^4.0.2"
   },
   "config": {
     "nuxt": {

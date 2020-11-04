@@ -34,7 +34,8 @@ export default {
   ** Global CSS
   */
   css: [
-    '~/assets/css/main.css'
+    '~/assets/css/main.css',
+
   ],
   /*
   ** Plugins to load before mounting the App
@@ -100,5 +101,18 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    /*
+  ** You can extend webpack config here
+  */
+    extend (config, ctx) {
+
+      config.module.rules.push({
+        enforce: 'pre',
+        test: /\.txt$/,
+        loader: 'raw-loader',
+        exclude: /(node_modules)/
+      })
+
+    }
   }
 }

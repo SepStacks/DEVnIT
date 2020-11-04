@@ -1,12 +1,12 @@
 <template>
-  <code  class="my-0"
+  <Code  class="my-0"
     v-bind="$attrs">
     <prism
       ref="code"
       :code="code"
       :inline="inline"
       :language="language"
-    />>
+    />
   </code>
 </template>
 
