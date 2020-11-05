@@ -2,14 +2,13 @@
 <!-- code will be nested here -->
 <v-sheet
     color="transparent"
-
     class="app-code overflow-hidden"
     dir="ltr"
     outlined
   >
     <slot />
 
-    <CopyBtn
+    <CodeCopyBtn
       :target="target"
       class="mr-n2 mt-n2"
     />

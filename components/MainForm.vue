@@ -264,8 +264,6 @@ export default {
         setTimeout(() => {
           this.$socket.client.emit("properties", { content, modeType })
         }, 500)
-        this.$refs.form.resetValidation()
-        console.log(content)
 
 
       } else {
@@ -282,7 +280,11 @@ export default {
 
         }
 
-        this.$socket.client.emit("properties", content)
+
+        // this.$router.push(`/projects/${content.slug}`)
+        setTimeout(() => {
+          this.$socket.client.emit("properties", { content, modeType })
+        }, 500)
       }
 
       // this.title = ''

@@ -85,7 +85,7 @@
   el: '#app',
   vuetify: new Vuetify(),
   ${component}
-})` 
+})`
       },
       style () {
         return {

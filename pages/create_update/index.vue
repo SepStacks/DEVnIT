@@ -32,20 +32,17 @@ export default {
             title: '',
             slug: '',
             extention: '.md',
-            type: "project",
+            type: 'project',
             parent: '',
             html: '',
             css: '',
-            js: `new Vue({
-                el:'#app',
-                  vuetify: new Vuetify(),
-                })`
+            js: ''
       }
         }
     },
 
     computed: {
-        projectTitle() {
+        projectTitle() { 
             //Get the tiles of all projects and remove any null values
             const title = this.projects.map(project => project.title).filter(el => {
                 return el != null

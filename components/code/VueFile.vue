@@ -12,7 +12,7 @@
 
 <script>
   export default {
-    name: 'Previewer',
+    name: 'VueFile',
     inheritAttrs: false,
     props: {
       file: {

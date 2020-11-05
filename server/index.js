@@ -17,21 +17,18 @@ io.on('connection', (socket) => {
   console.log(socket.id)
   console.log("Hooray!")
 
+
   // the name properties references the emit that takes place on the frotnend
   // content is the data that is being generated from the frontend
 
   socket.on('properties', ({content, modeType}) => {
-    console.log('check connected', socket.connected);
-    console.log('check modeType', modeType);
-    console.log('check content', content);
-
 
 
     //paths
     const pathToContent = path.join(__dirname, '../' + '/content/projects/')
     const templatePath = path.join(__dirname, '../' + '/assets/templates/')
-    const globalComponentPath = path.join(__dirname, '../' + '/components/global/')
-    let compSource = path.join(__dirname, '../' + '/assets/compSourceCode/')
+    const globalComponentPath = path.join(__dirname, '../' + '/components/examples/')
+
 
     // check if you are in Create modeType eg: if(content.modeType === 'create') {}
     // If file requires a directory
@@ -43,7 +40,11 @@ io.on('connection', (socket) => {
         //Create a folder within content/projects
         fs.mkdir(pathToContent + content.title, (err) => {
           if (err) {
-            return console.error(err)
+            if (err.code === 'EEXIST') {
+              console.error('myfile already exists')
+              return
+            }
+            throw err
           }
 
           console.log('Directory created successfully!')
@@ -123,23 +124,22 @@ io.on('connection', (socket) => {
 
     //Component Generation
 
-
     if (content.type === 'component') {
       if (modeType === 'create') {
 
         //Check if project directory exist
 
-        if (fs.existsSync(pathToContent + content.parent)) {
 
           // component.md template with variables for custom files
           let compTemplate = fs.readFileSync(templatePath + 'component.md').toString()
-          let vueCompTemplate = fs.readFileSync(templatePath + 'vueCompTemplate.vue').toString()
-          let jsCompTemplate = fs.readFileSync(templatePath + 'JSCompRegister.js').toString()
+          let vueCompTemplate = fs.readFileSync(templatePath + 'vueCompTemplate.js').toString()
+          // let jsCompTemplate = fs.readFileSync(templatePath + 'JSCompRegister.js').toString()
 
           //content is needed as it has access to the variable content the templates needs
           let output = render(compTemplate, content)
+
           //components should be nested in an existing project
-          fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, (err) => {
+        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, { recursive: true }, (err) => {
 
             if (err) {
               return err
@@ -149,27 +149,42 @@ io.on('connection', (socket) => {
             console.log('component successfully created')
           })
 
-          // Create a vue component and inject values from frontend through the content variable
-          let vueOutput = render(vueCompTemplate, content)
+        const examplePath = globalComponentPath + content.parent + '/' + content.slug
+              // Creates /parent/slug/apple, regardless of whether `/parent` and /parent/slug exist.
 
-          let jsOutput = render(jsCompTemplate, content)
-
-          fs.writeFile(globalComponentPath + '/' + content.slug + '.vue', vueOutput, (err) => {
-
-            if (err) {
-              return err
+        fs.mkdir(examplePath, { recursive: true }, (err) => {
+          if (err) {
+            if (err.code === 'EEXIST') {
+              console.error('myfile already exists')
+              return
             }
+            throw err
+          }
+                //Create folder with slug name
 
-          })
-          fs.writeFile(compSource + '/' + content.slug + '.js', jsOutput, (err) => {
+                // Create a vue component and inject values from frontend through the content variable
+                let vueOutput = render(vueCompTemplate, content)
 
-            if (err) {
-              return err
-            }
-          })
+                fs.writeFile(examplePath + '/' + content.slug + '-usage' + '.vue', vueOutput, (err) => {
+
+                  if (err) {
+                    return err
+                  }
+
+                })
 
 
-        }
+
+              })
+
+
+
+
+
+
+
+
+
 
 
       }

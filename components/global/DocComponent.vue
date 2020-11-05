@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- attach to markdown with slug as its file and name properties -->
-    <CodeBlock :file="file" :name="file"/>
+    <CodeContainer :file="file" :name="file"/>
   </div>
 </template>
 

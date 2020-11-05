@@ -1,5 +1,6 @@
 // Globals
-import { IN_BROWSER } from '@/mixins/globals'
+//Used by CopyBtn component
+import { IN_BROWSER } from './globals'
 
 export function copyElementContent (el) {
     if (!IN_BROWSER) return

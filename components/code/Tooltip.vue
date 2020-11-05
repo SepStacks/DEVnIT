@@ -1,5 +1,5 @@
 <template>
-  <span class="v-app-tooltip-btn d-inline-block">
+  <span class="v-app-tooltip-btn d-inline-block ">
     <v-tooltip
       bottom
       content-class="v-app-tooltip-btn__content"
@@ -7,7 +7,7 @@
     >
       <template #activator="{ on }">
         <v-btn
-          :aria-label="path"
+          dark
           icon
           v-bind="$attrs"
           v-on="{
@@ -26,7 +26,7 @@
           />
         </v-btn>
       </template>
-
+      <span>{{path}}</span>
     </v-tooltip>
   </span>
 </template>
@@ -38,6 +38,7 @@
     props: {
       icon: String,
       path: String,
+
     },
   }
 </script>

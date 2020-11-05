@@ -22,8 +22,8 @@
 import Codepen from '~/mixins/codepen'
 
   // Utilities
-  import { wait } from '@/mixins/helpers'
-  import { IN_BROWSER } from '@/mixins/globals'
+  import { wait } from '~/plugins/utils/helpers'
+  import { IN_BROWSER } from '~/plugins/utils/globals'
   export default {
     name: 'AppCopyBtn',
     props: {
