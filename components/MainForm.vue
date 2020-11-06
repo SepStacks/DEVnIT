@@ -280,7 +280,7 @@ export default {
 
         }
 
-
+        console.log('success')
         // this.$router.push(`/projects/${content.slug}`)
         setTimeout(() => {
           this.$socket.client.emit("properties", { content, modeType })

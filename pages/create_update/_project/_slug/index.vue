@@ -62,14 +62,14 @@ export default {
                         extention: '.md',
                         type:  this.slugData.type,
                         parent: this.slugData.parent,
-                        html: this.imports.html,
-                        css:this.imports.css,
-                        js:this.imports.js
+                        html: this.slugData.html,
+                        css:this.slugData.css,
+                        js:this.slugData.js
             }
 
                 return doc
 
-                console.log(doc)
+                console.log(this.slugData)
 
             //FInd a way to turn this into an object similar to its create counterpart
 

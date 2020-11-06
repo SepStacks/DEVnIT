@@ -18,10 +18,11 @@ io.on('connection', (socket) => {
   console.log("Hooray!")
 
 
+
   // the name properties references the emit that takes place on the frotnend
   // content is the data that is being generated from the frontend
 
-  socket.on('properties', ({content, modeType}) => {
+  socket.on('properties', ({ content, modeType }) => {
 
 
     //paths
@@ -115,19 +116,14 @@ io.on('connection', (socket) => {
         }
 
       }
-
-
-
-
     }
 
+      //Component Generation
 
-    //Component Generation
+      if (content.type === 'component') {
+        if (modeType === 'create') {
 
-    if (content.type === 'component') {
-      if (modeType === 'create') {
-
-        //Check if project directory exist
+          //Check if project directory exist
 
 
           // component.md template with variables for custom files
@@ -139,7 +135,7 @@ io.on('connection', (socket) => {
           let output = render(compTemplate, content)
 
           //components should be nested in an existing project
-        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, { recursive: true }, (err) => {
+          fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, output, { recursive: true }, (err) => {
 
             if (err) {
               return err
@@ -149,79 +145,74 @@ io.on('connection', (socket) => {
             console.log('component successfully created')
           })
 
-        const examplePath = globalComponentPath + content.parent + '/' + content.slug
-              // Creates /parent/slug/apple, regardless of whether `/parent` and /parent/slug exist.
+          const examplePath = globalComponentPath + content.parent + '/' + content.slug
+          // Creates /parent/slug/apple, regardless of whether `/parent` and /parent/slug exist.
 
-        fs.mkdir(examplePath, { recursive: true }, (err) => {
-          if (err) {
-            if (err.code === 'EEXIST') {
-              console.error('myfile already exists')
-              return
+          fs.mkdir(examplePath, { recursive: true }, (err) => {
+            if (err) {
+              if (err.code === 'EEXIST') {
+                console.error('myfile already exists')
+                return
+              }
+              throw err
             }
-            throw err
-          }
-                //Create folder with slug name
+            //Create folder with slug name
 
-                // Create a vue component and inject values from frontend through the content variable
-                let vueOutput = render(vueCompTemplate, content)
+            // Create a vue component and inject values from frontend through the content variable
+            let vueOutput = render(vueCompTemplate, content)
 
-                fs.writeFile(examplePath + '/' + content.slug + '-usage' + '.vue', vueOutput, (err) => {
+            fs.writeFile(examplePath + '/' + content.slug + '-usage' + '.vue', vueOutput, (err) => {
 
-                  if (err) {
-                    return err
-                  }
+              if (err) {
+                return err
+              }
 
-                })
+            })
 
 
 
-              })
+          })
+
+        }
+
+        if (modeType === 'edit') {
+          const oldPath = pathToContent + content.slug
+          const newPath = pathToContent + content.slug
+
+          fs.rename(oldPath, newPath, function (err) {
+            if (err) console.log('ERROR: ' + err)
+          })
 
 
-
-
-
-
-
-
-
-
-
+        }
       }
 
-      if (modeType === 'edit') {
-
-        console.log("Edit function excecuted")
 
 
-      }
-    }
+
+      // Emit message to frontend
+      socket.emit('output', content)
 
 
 
 
-    // Emit message to frontend
-    socket.emit('output', content)
+    socket.on('disconnect', () => {
+      // Display connection message when Node-Server  is disconnected
+      // console.log('Node-Server disconnected')
+    })
 
   })
 
-  socket.on('disconnect', () => {
-    // Display connection message when Node-Server  is disconnected
-    // console.log('Node-Server disconnected')
+  io.on('connect', (socket) => {
+    console.log('socket is connected')
+
+    socket.on('disconnect', () => {
+
+      console.log('Node-Server disconnected')
+    })
   })
 
 })
-
-io.on('connect', (socket) => {
-  console.log('socket is connected')
-
-  socket.on('disconnect', () => {
-
-    console.log('Node-Server disconnected')
-  })
-})
-
-
 // Listen the server
 
 consola.ready({
