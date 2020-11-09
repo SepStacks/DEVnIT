@@ -180,11 +180,6 @@ export default {
 
       },
 
-
-
-
-
-
       // bodyTitle: '',
       // bodyDescription: '',
       // bodyContent: ''

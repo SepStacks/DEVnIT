@@ -136,11 +136,6 @@ export default {
     tooltips () {
       return [
         {
-          icon: 'la-home',
-          path: 'invert-example-colors',
-          onClick: () => (this.dark = !this.dark),
-        },
-        {
           icon: 'la-codepen',
           path: 'edit-in-codepen',
           onClick: this.sendToCodepen,
