@@ -1,18 +1,22 @@
 <template>
-  <div>
+  <div >
     <v-row
       justify="center"
       align="center"
     >
-      {{getDoc}}
+{{pen}}
       <v-btn>Delete Component</v-btn>
-      <MainForm
+    <v-lazy>
+        <MainForm
         :projects="projectTitle"
         :content="contentArray"
         :doc="getDoc"
         :showRadio="false"
         :mode="'edit'"
+
+
       />
+    </v-lazy>
 
     </v-row>
   </div>
@@ -20,6 +24,12 @@
 
 <script>
 export default {
+    // data () {
+    // return {
+
+    // }
+
+
 
   // List the projects directory items
   async asyncData ({
@@ -41,31 +51,31 @@ export default {
 
     return {
       projects,
-      slugData
+      slugData,
+       pen: undefined,
+      test: 'testings'
 
     }
   },
 
-  data () {
-    return {
-      pen: undefined
-    }
-
-  },
 
   computed: {
+
     //Import vue file as string and nest it into text field
 
     getDoc () {
+
       const doc = {
         slug: this.slugData.slug,
         extention: '.md',
         type: this.slugData.type,
         parent: this.slugData.parent,
-        // html: vue.template,
-        // css: this.pen.style,
-        // js: this.pen.script
+        html: this.pen ? this.pen.template : '',
+        css: this.pen ? this.pen.style : '' ,
+        js: this.pen ? this.pen.script : ''
+
       }
+      console.log(doc)
 
       return doc
 
@@ -107,7 +117,7 @@ export default {
       try {
         const template = await import(
           // raw-loader is a loader for webpack that allows importing files as a String.
-          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.slug}-usage.vue`
+          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-usage.vue`
 
         )
 
@@ -141,11 +151,12 @@ export default {
 
   },
   created () {
-    this.imports
-    console.log(this.imports)
+    this.imports,
     this.importTemplate()
 
-  }
+
+  },
+
 }
 </script>
 

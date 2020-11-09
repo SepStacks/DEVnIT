@@ -194,16 +194,13 @@ io.on("connection", socket => {
     socket.emit("output", content);
 
     socket.on("disconnect", () => {
+    // Remove all listeners when socket-connection disconnects
+    socket.removeAllListeners();
+
     });
   });
 
-  io.on("connect", socket => {
-    console.log("socket is connected");
 
-    socket.on("disconnect", () => {
-      console.log("Node-Server disconnected");
-    });
-  });
 });
 // Listen the server
 
