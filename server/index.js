@@ -181,12 +181,47 @@ io.on("connection", socket => {
       }
 
       if (modeType === "edit") {
-        const oldPath = pathToContent + content.slug;
+        const oldPath = content.path
+        console.log("oldpath: ", oldPath)
         const newPath = pathToContent + content.slug;
 
-        fs.rename(oldPath, newPath, function(err) {
-          if (err) console.log("ERROR: " + err);
-        });
+        if (oldPath !== newPath) {
+          // rename the directory
+          try {
+            fs.renameSync(oldPath, newPath)
+            //create new index file from template
+
+            //Get component.md template and inject project variables and generate an index file
+            let compTemplate = fs
+              .readFileSync(templatePath + "component.md")
+              .toString()
+            //project template path + content from frontend
+            let output = render(compTemplate, content)
+            fs.writeFile(
+              pathToContent +
+              content.title +
+              "/" +
+              content.slug +
+              content.extention,
+              output,
+              err => {
+                if (err) {
+                  return err
+                }
+
+                // Log this message if the file was written to successfully
+                console.log("File renamed successfully!")
+              }
+            )
+          } catch (err) {
+            console.log(err)
+          }
+        } else {
+          //If any other condition
+
+        }
+
+
       }
     }
 
