@@ -1,5 +1,8 @@
 <template>
   <div>
+    {{doc.type}}
+    {{doesExist}}
+
     <v-container>
       <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
       <v-form
@@ -61,6 +64,7 @@
         </div>
 
         <div v-if="doc.type === 'component'">
+          {{doc.parent}}
 
           <!-- This items value needs to be exported as a prop and get the project titles array -->
           <v-select
@@ -258,13 +262,10 @@ export default {
 
 
       } else {
-        // if this works then the value should not be changed but readonly
-        const path = this.doc.slug.toLowerCase()
 
         const content = {
 
           slug: this.doc.slug.toLowerCase(),
-          oldPath: path,
           extention: this.doc.extention,
           type: this.doc.type,
           parent: this.doc.parent.toUpperCase(),
@@ -273,7 +274,6 @@ export default {
           js: this.doc.js
 
         }
-        console.log("content ",content)
 
         console.log('success')
         // this.$router.push(`/projects/${content.slug}`)
