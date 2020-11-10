@@ -4,7 +4,6 @@
       justify="center"
       align="center"
     >
-{{pen}}
       <v-btn>Delete Component</v-btn>
     <v-lazy>
         <MainForm
