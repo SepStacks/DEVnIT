@@ -53,6 +53,8 @@ export default {
     { src: "~/plugins/prism", ssr: false },
     { src: '~/plugins/socket.io.js', ssr: false },
     '~/plugins/notifier.js',
+    '~/plugins/lodash.js',
+
     // '~/plugins/markdown.js',
 
 

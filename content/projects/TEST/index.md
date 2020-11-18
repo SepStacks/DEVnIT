@@ -1,6 +1,6 @@
 ---
-title: "KMS"
-parent: "KMS"
+title: "TEST"
+parent: "TEST"
 type: "project"
 ---
 
@@ -24,7 +24,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## KMS
+## TEST
 
 Installation instructions goers here...
 

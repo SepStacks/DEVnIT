@@ -35,7 +35,7 @@
           )
           this.$emit('loaded', component.default)
         } catch (err) {
-          component = await import('../missing')
+          component = await import('../Missing')
           this.$emit('error', err)
         }
         this.component = component.default

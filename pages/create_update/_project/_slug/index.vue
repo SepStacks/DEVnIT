@@ -4,7 +4,6 @@
       justify="center"
       align="center"
     >
-      <v-btn>Delete Component</v-btn>
     <v-lazy>
         <MainForm
         :projects="projectTitle"
@@ -17,18 +16,13 @@
       />
     </v-lazy>
 
+
     </v-row>
   </div>
 </template>
 
 <script>
 export default {
-    // data () {
-    // return {
-
-    // }
-
-
 
   // List the projects directory items
   async asyncData ({
@@ -52,7 +46,8 @@ export default {
       projects,
       slugData,
        pen: undefined,
-      test: 'testings'
+      test: 'testings',
+
 
     }
   },
@@ -98,17 +93,7 @@ export default {
       return slug
 
     },
-    imports () {
-      //dynamically import js file of component
-      //   const {html, css, js} = require(`~/assets/compSourceCode/${this.slugData.slug}`)
-      //   return {html, css, js}
-    },
 
-    // getCurrent() {
-
-    //     const check = this.content.filter(data => data.parent === this.doc.parent.toUpperCase() && data.slug === this.doc.slug.toLowerCase())
-    //     return check.length === 1
-    // }
   },
   methods: {
     //Import vue file as string

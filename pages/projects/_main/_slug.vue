@@ -11,12 +11,18 @@
 
           <v-col cols="11" md="8"  lg="6">
 
-              <nuxt-link :to="`/create_update/${doc.parent}/${doc.slug}`" v-if="doc.type === 'component'">
-                    <v-btn >edit cmponent {{doc.slug}}</v-btn>
+             <div v-if="doc.type === 'component'">
+                <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}`" >
+                    <v-btn >edit component {{doc.slug}}</v-btn>
               </nuxt-link>
+
+              <Dialog :slug="doc.slug"/>
+             </div>
+
                  <nuxt-link :to="`/create_update/${doc.parent}`" v-else>
                     <v-btn >edit Project</v-btn>
               </nuxt-link>
+
 
              <nuxt-content :document="doc" />
           </v-col>
@@ -56,6 +62,12 @@ export default {
       nav
     };
   },
+  computed: {
+    projectParent() {
+      //get parent name of project from its dir and remove project path and inject into nuxt-link
+      return  this.doc.dir.replace("/projects/", '')
+    }
+  }
 
 
 };

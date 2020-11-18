@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-container>
+
       <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
+
       <v-form
         ref="form"
         v-model="isFormValid"
@@ -62,9 +64,24 @@
 
         <div v-if="doc.type === 'component'">
 
-          <!-- This items value needs to be exported as a prop and get the project titles array -->
+           <v-container
+    class="px-0"
+    fluid
+  >
+    <v-checkbox
+      v-model="check"
+      :label="`create new component from this template`"
+    ></v-checkbox>
+  </v-container>
+          <!-- <v-radio
+            @change="reset"
+            name="Component"
+            label="create new component"
+            value="component"
+          ></v-radio> -->
           <v-select
-            v-if="mode === 'create'"
+            v-if="makeTemplate"
+           @input="isFormValid = true"
             :items="projects"
             v-model="doc.parent"
             item-text="title"
@@ -73,6 +90,7 @@
 
           ></v-select>
           <v-text-field
+          v-if="makeTemplate"
             v-model="doc.slug"
             label="component name"
             :rules="[rules.required, rules.duplicate, rules.string]"
@@ -84,6 +102,8 @@
               background-color="light-blue"
               color="black"
               label="HTML"
+              @input="isFormValid = true"
+
             ></v-textarea>
 
             <v-textarea
@@ -91,6 +111,8 @@
               background-color="grey lighten-2"
               color="cyan"
               label="CSS"
+              @input="isFormValid = true"
+
             ></v-textarea>
 
             <v-textarea
@@ -98,6 +120,8 @@
               background-color="amber lighten-4"
               color="orange orange-darken-4"
               label="JS"
+              @input="isFormValid = true"
+
             ></v-textarea>
           </v-container>
 
@@ -125,13 +149,13 @@
           </v-col>
 
         </v-row>
-
       </v-form>
     </v-container>
   </div>
 </template>
 
 <script>
+
 export default {
 
   props: {
@@ -157,6 +181,11 @@ export default {
       type: String,
       default: 'create'
 
+    },
+
+    template: {
+      type: Boolean,
+      default: false
     }
     // markdownTemplate: {
     //     required: false
@@ -165,9 +194,13 @@ export default {
 
   data () {
     return {
-      isFormValid: false,
+      isFormValid: true,
       response: '',
       isConnected: false,
+      oldPath: '',
+      oldComp: '',
+      check: false,
+
       rules:
       {
         required: value => !!value || 'Required.',
@@ -175,6 +208,7 @@ export default {
         string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
 
       },
+
 
       // bodyTitle: '',
       // bodyDescription: '',
@@ -184,6 +218,13 @@ export default {
   },
 
   computed: {
+
+    makeTemplate() {
+     return this.check === true || this.mode === 'create' ? true : false
+
+
+    },
+
 
     doesExist () {
       // Check if project exist
@@ -232,53 +273,59 @@ export default {
 
   methods: {
 
+
     emitToServer () {
       //Have different paramaters for component and projects
       var modeType = this.mode
-      console.log(modeType)
       if (this.doc.type === 'project') {
+        var self = this
 
+        // values for project
         const content = {
 
-          title: this.doc.title.toUpperCase(),
-          slug: this.doc.slug.toLowerCase(),
+          title: s00elf.doc.title.toUpperCase(),
+          slug: self.doc.slug.toLowerCase(),
           extention: '.md',
-          type: this.doc.type,
-          parent: this.doc.parent.toUpperCase(),
+          type: self.doc.type,
+          parent: self.doc.parent.toUpperCase(),
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
         }
 
+ this.$socket.client.emit("properties", { content, modeType })
 
-        this.$router.push('/projects')
         setTimeout(() => {
-          this.$socket.client.emit("properties", { content, modeType })
+          // add some loader while component is being generated
+
+   this.$router.push('/projects')
         }, 500)
 
 
       } else {
-        // if this works then the value should not be changed but readonly
-        const path = this.doc.slug.toLowerCase()
-
+        var self = this
+        // Values for component
         const content = {
 
-          slug: this.doc.slug.toLowerCase(),
-          oldPath: path,
-          extention: this.doc.extention,
-          type: this.doc.type,
-          parent: this.doc.parent.toUpperCase(),
-          html: this.doc.html,
-          css: this.doc.css,
-          js: this.doc.js
+          slug: self.doc.slug.toLowerCase(),
+          oldPath: self.oldPath,
+          oldProject: self.oldComp,
+          template: self.doc.template,
+          extention: self.doc.extention,
+          type: self.doc.type,
+          parent: self.doc.parent.toUpperCase(),
+          html: self.doc.html,
+          css: self.doc.css,
+          js: self.doc.js
 
         }
         console.log("content ",content)
 
         console.log('success')
-        // this.$router.push(`/projects/${content.slug}`)
+         this.$socket.client.emit("properties", { content, modeType })
         setTimeout(() => {
-          this.$socket.client.emit("properties", { content, modeType })
+                this.$router.push(`/projects/`)
+
         }, 500)
       }
 
@@ -290,6 +337,20 @@ export default {
     reset () {
       this.$refs.form.reset()
     },
+
+
+
+  },
+  mounted() {
+    //Keep old value of path
+      var slug = this.doc.slug.toLowerCase()
+      var path = _.cloneDeep(slug)
+      this.oldPath  = path
+
+       var parent = this.doc.parent.toLowerCase()
+      var comp = _.cloneDeep(parent)
+      this.oldComp  = comp
+
 
   }
 
