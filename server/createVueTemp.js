@@ -1,49 +1,45 @@
 var fs = require("fs")
 let { render } = require("mustache")
 
-const createVueTemp = (dir, templatePath, content) => {
+const createVueTemp =  (dir, templatePath, content) => {
 
-    let vueCompTemplate = fs
-        .readFileSync(templatePath + "vueCompTemplate.js")
-        .toString()
-
-    return new Promise((resolve, reject) => {
+    let vueCompTemplate = fs.readFileSync(templatePath + "vueCompTemplate.js").toString()
 
 
+        //generate tmp file
+        try {
+            fs.mkdir(dir)
 
-            //generate tmp file
-        fs.mkdir(dir, { recursive: true }, err => {
-            if (err) {
-                if (err.code === "EEXIST") {
-                    console.error("myfile already exists")
-                    return
-                }
-                throw err
-            }
+        } catch {
+
+            console.log( `${dir} already exists`)
+
+        }
 
             //If content.html is empty generate the default markup
 
                 // Create a vue component and inject values from frontend through the content variable
-                let vueOutput = render(vueCompTemplate, content)
+        let vueOutput = render(vueCompTemplate, content)
 
-                fs.writeFile(
-                    dir + "vueDemo.vue",
-                    vueOutput,
-                    err => {
-                        if (err) {
-                            return err
-                        }
-                    }
-                )
-                console.log(resolve)
+    try {
 
+         fs.unlink(dir + "vueDemo.vue")
+
+    } catch (error) {
+
+        console.log(error)
+
+        }
+
+                fs.writeFile(dir + "vueDemo.vue", vueOutput, err => {console.log(err)})
 
                 console.log("Directory created successfully!")
-            })
 
 
-    })
+
+
 }
+
 
 exports.createVueTemp = createVueTemp
 

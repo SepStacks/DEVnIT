@@ -218,8 +218,6 @@ io.on("connection", socket => {
     const tmpDir = path.join(__dirname, "../" + '/components/examples/tmp/')
 
     genVueTemp.createVueTemp(tmpDir, templatePath, content)
-
-
     // Emit message to frontend
     if (content.html === '') {
       socket.emit('ifEmptyTemplate', 'Template is empty')

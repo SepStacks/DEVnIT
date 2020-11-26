@@ -79,7 +79,7 @@
       <!-- get placeholder component fist -->
                         <v-row align="center" justify="center">
 
-                           <v-col v-if="isEmptyTemplate">
+                           <v-col v-if="doc.html === ''">
                               <!-- show when empty -->
                               <div>Add vue markup to generate previewer</div>
 
@@ -455,7 +455,6 @@ export default {
     },
     //code Mirror methods
       onCmReady(cm) {
-      this.writeTemp()
       console.log('the editor is readied!', cm)
     },
     onCmFocus(cm) {
