@@ -81,7 +81,7 @@
 
                            <v-col v-if="doc.html === ''">
                               <!-- show when empty -->
-                              <div>Add vue markup to generate previewer</div>
+                              <div >Add vue markup to generate previewer</div>
 
                            </v-col>
                             <v-col v-else  cols="12">
@@ -429,7 +429,6 @@ export default {
 
     writeTemp() {
         //load on update
-        let componentReload = true
         let self = this
 
       //Create get/create .vue file. write the template markups based on ui input and update it
@@ -456,6 +455,7 @@ export default {
     //code Mirror methods
       onCmReady(cm) {
       console.log('the editor is readied!', cm)
+      this.emptyOutVueTempFile()
     },
     onCmFocus(cm) {
       console.log('the editor is focus!', cm)
@@ -468,7 +468,18 @@ export default {
       this.doc.html = newCode
      if(newCode) {
          this.writeTemp()
+     } else if( newCode === '') {
+
+             this.emptyOutVueTempFile()
+
      }
+    },
+
+    emptyOutVueTempFile() {
+
+    this.$socket.client.emit("emptyOutVueFile")
+
+
     }
 
 
@@ -491,6 +502,7 @@ export default {
   },
 
   created () {
+
 
   }
 

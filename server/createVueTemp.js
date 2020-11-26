@@ -26,17 +26,15 @@ const createVueTemp =  (dir, templatePath, content) => {
          fs.unlink(dir + "vueDemo.vue")
 
     } catch (error) {
+        console.log('error from fsumlink')
 
         console.log(error)
 
         }
 
-                fs.writeFile(dir + "vueDemo.vue", vueOutput, err => {console.log(err)})
+            fs.writeFile(dir + "vueDemo.vue", vueOutput, err => {console.log(err)})
 
-                console.log("Directory created successfully!")
-
-
-
+            console.log("Directory created successfully!")
 
 }
 

@@ -213,9 +213,9 @@ io.on("connection", socket => {
   })
 
   //Write to vueFile
+  const tmpDir = path.join(__dirname, "../" + '/components/examples/tmp/')
 
   socket.on('writeToVue', ({ content }) => {
-    const tmpDir = path.join(__dirname, "../" + '/components/examples/tmp/')
 
     genVueTemp.createVueTemp(tmpDir, templatePath, content)
     // Emit message to frontend
@@ -223,6 +223,20 @@ io.on("connection", socket => {
       socket.emit('ifEmptyTemplate', 'Template is empty')
 
     }
+
+  })
+
+  //finished with file
+
+  socket.on('emptyOutVueFile', () => {
+      fs.truncate(tmpDir + "vueDemo.vue", () => { console.log('File has been cleared') });
+
+
+
+
+
+
+
 
   })
 
