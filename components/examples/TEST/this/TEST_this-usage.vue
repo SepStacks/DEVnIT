@@ -4,7 +4,7 @@
     max-width="300"
     tile
   >
-    <v-list disabled>
+    <v-list dense>
       <v-subheader>REPORTS</v-subheader>
       <v-list-item-group
         v-model="selectedItem"
@@ -26,18 +26,7 @@
   </v-card>
 </template>
 
-<script>
-  export default {
-    data: () => ({
-      selectedItem: 1,
-      items: [
-        { text: 'Real-Time', icon: 'mdi-clock' },
-        { text: 'Audience', icon: 'mdi-account' },
-        { text: 'Conversions', icon: 'mdi-flag' },
-      ],
-    }),
-  }
-</script>
+
 
 
 

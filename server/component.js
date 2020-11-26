@@ -1,5 +1,6 @@
 var fs = require("fs");
 let { render } = require("mustache");
+const consola = require("consola")
 
 const component = (content, templatePath, globalComponentPath, pathToContent ) => {
     //Check if project directory exist
@@ -27,11 +28,12 @@ const component = (content, templatePath, globalComponentPath, pathToContent ) =
         { recursive: true },
         err => {
             if (err) {
+                consola.error(new Error('Failed to create component'))
                 return err
             }
 
             // Log this message if the file was written to successfully
-            console.log("component successfully created")
+            consola.success("component successfully created")
         }
     )
 

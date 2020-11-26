@@ -11,8 +11,10 @@ const port = process.env.PORT || 4000
 
 const server = app.listen(port, host)
 const io = require("socket.io").listen(server)
-
+const removeDir = require('./remove')
 const generate = require('./component')
+const genVueTemp = require('./createVueTemp')
+
 
 app.set("port", port)
 
@@ -23,16 +25,12 @@ io.on("connection", socket => {
   //paths
   const pathToContent = path.join(__dirname, "../" + "/content/projects/")
   const templatePath = path.join(__dirname, "../" + "/assets/templates/")
-  const globalComponentPath = path.join(
-    __dirname,
-    "../" + "/components/examples/"
-  )
+  const globalComponentPath = path.join(__dirname,"../" + "/components/examples/")
     // create project folder
 
     fs.promises.access(pathToContent)
       .then(() => {
         // It exists
-        console.log('Content for projects is available')
 
       })
       .catch(() => {
@@ -149,51 +147,15 @@ io.on("connection", socket => {
       if (modeType === "create") {
         generate.component(content, templatePath, globalComponentPath, pathToContent)
 
+
+
       }
     }
     if (modeType === "edit") {
       console.log('CONTENT', content)
-      const componentParentPath = globalComponentPath + content.oldproject
-      const newComponent = globalComponentPath + content.oldproject
-      //Compare old parent with new parent
-      if (componentParent !== newComponent) {
-        fs.rmdir(componentParentPath, (err) => {
-          if (err) {
-            throw err
-          }
-          console.log('successfuly removed __dir')
-        }
-
-
-
-        )
-      }
-      //check if component name changed
-      const oldSlug = path.join(__dirname, "../" + `/content/projects/${content.parent}/${content.oldPath}`)
-      const newSlug = path.join(__dirname, "../" + `/content/projects/${content.parent}/${content.slug}`)
-
-      if (oldSlug !== newSlug) {
-
-
-        //Remove old file
-          fs.rmdir(componentParentPath, (err) => {
-            if (err) {
-              throw err
-            }
-            console.log('successfuly removed __dir')
-          })
-
-
-
-    }
-
-      console.log('componentParentPath', componentParentPath)
 
     // Proceed to generate new version of component
      generate.component(content, templatePath, globalComponentPath, pathToContent)
-
-      console.log('CONTENT', content)
-
 
     }
     // Emit message to frontend
@@ -207,6 +169,64 @@ io.on("connection", socket => {
     })
   })
 
+  socket.on("deleteProperty", ({ content }) => {
+    if (content.type === "project") {
+      const dirProject = path.join(__dirname, "../" + `/components/examples/${content.parent}`)
+      const dirProjectSlug = path.join(__dirname, "../" + `/content/projects/${content.parent}`)
+
+      // Delete Function for project
+
+      // Delete project dir and its components
+      removeDir.ifExist(dirProject, true)
+
+      // Delete project content and its pages
+      removeDir.ifExist(dirProjectSlug, true)
+
+
+    } else {
+      // Delete Function for component0
+
+      // directory path
+      //use old parent variable incase project name has been changed
+      const dirComponent = path.join(__dirname, "../" + `/components/examples/${content.parent}/${content.slug}`)
+      const dirSlug = path.join(__dirname, "../" + `/content/${content.path}`)
+
+      // add seperately a function that would also remove an eddited project component
+
+      // delete directory recursively
+      removeDir.ifExist(dirComponent, true)
+      // fs.rmdir(dirComponent, { recursive: true }, (err) => {
+      //   if (err) {
+      //     throw err
+      //   }
+
+      //   console.log(`${dirComponent} is deleted!`)
+      // });
+
+     /* If you want to check file before delete whether it exist or not. So, use
+     fs.stat or fs.statSync(Synchronous) instead of fs.exists. Because according to
+      the latest node.js documentation, fs.exists now deprecated.*/
+
+      removeDir.ifExist(dirSlug, false)
+
+    }
+  })
+
+  //Write to vueFile
+
+  socket.on('writeToVue', ({ content }) => {
+    const tmpDir = path.join(__dirname, "../" + '/components/examples/tmp/')
+
+    genVueTemp.createVueTemp(tmpDir, templatePath, content)
+
+
+    // Emit message to frontend
+    if (content.html === '') {
+      socket.emit('ifEmptyTemplate', 'Template is empty')
+
+    }
+
+  })
 
 })
 // Listen the server

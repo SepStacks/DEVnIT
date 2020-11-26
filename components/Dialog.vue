@@ -2,7 +2,7 @@
 <template>
   <div class="text-center">
     <v-dialog
-      v-model="dialog"
+      v-model="show"
       width="500"
     >
       <template v-slot:activator="{ on, attrs }">
@@ -22,25 +22,26 @@
         </v-card-title>
 
         <v-card-text>
-  Are you sure you want to delete the {{slug}} component?
+        Are you sure you want to delete the {{doc.slug}} component?
   </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            text
-            @click="dialog = false"
-          >
+
+      <v-btn
+        text
+          v-on="{...$listeners}"
+        >
+
             yes
           </v-btn>
 
            <v-btn
             color="primary"
             text
-            @click="dialog = false"
+            @click.stop="show=false"
           >
             cancel
           </v-btn>
@@ -56,12 +57,21 @@
 <script>
   export default {
       props: {
-          slug
+     value: Boolean,
+     doc: Object
+  },
+    // This allow me to open and close the modal without any issues
+    computed: {
+    show: {
+      get () {
+        return this.value
       },
-    data () {
-      return {
-        dialog: false,
+      set (value) {
+         this.$emit('input', value)
       }
-    },
+    }
+  },
+
+
   }
 </script>

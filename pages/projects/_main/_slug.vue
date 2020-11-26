@@ -16,15 +16,29 @@
                     <v-btn >edit component {{doc.slug}}</v-btn>
               </nuxt-link>
 
-              <Dialog :slug="doc.slug"/>
+              <Dialog @click="deleteSlug"  @loading="loading" :doc="doc" v-model="dialog"/>
              </div>
 
-                 <nuxt-link :to="`/create_update/${doc.parent}`" v-else>
+              <div v-else>
+                   <nuxt-link :to="`/create_update/${doc.parent}`" >
                     <v-btn >edit Project</v-btn>
-              </nuxt-link>
 
+              </nuxt-link>
+              <Dialog @click="deleteProject"  @loading="loading" :doc="doc" v-model="dialog"/>
+
+
+              </div>
 
              <nuxt-content :document="doc" />
+            <v-row>
+             <v-col cols="12">
+
+               <div>
+                    Last updated: {{doc.updatedAt}}
+               </div>
+             </v-col>
+            </v-row>
+
           </v-col>
 
       </v-row>
@@ -59,13 +73,58 @@ export default {
 
     return {
       doc,
-      nav
+      nav,
+      dialog: false,
+      loading: false,
+
     };
   },
+
   computed: {
     projectParent() {
       //get parent name of project from its dir and remove project path and inject into nuxt-link
       return  this.doc.dir.replace("/projects/", '')
+    }
+  },
+  methods: {
+    deleteProject() {
+        //add loading here within settimeout function
+      this.loading = true
+      const content = this.doc
+
+      console.log(content)
+      //return to selected project route
+  this.$router.push('/projects')
+
+  this.$socket.client.emit("deleteProperty", {content})
+      setTimeout(() => {
+        this.loading = false
+
+
+
+      }, 500);
+
+      console.log('Yay, Ive been called!')
+
+    },
+    deleteSlug() {
+      //add loading here within settimeout function
+      this.loading = true
+      const content = this.doc
+
+      console.log(content)
+      //return to selected project route
+  this.$router.push(`/projects`)
+
+  this.$socket.client.emit("deleteProperty", {content})
+      setTimeout(() => {
+        this.loading = false
+
+
+
+      }, 500);
+
+      console.log('Yay, Ive been called!')
     }
   }
 

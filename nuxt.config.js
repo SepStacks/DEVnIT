@@ -43,6 +43,13 @@ export default {
   */
   css: [
     '~/assets/css/main.css',
+    // lib css
+    'codemirror/lib/codemirror.css',
+    // merge css
+    'codemirror/addon/merge/merge.css',
+    // theme css
+    'codemirror/theme/base16-dark.css'
+
 
   ],
   /*
@@ -54,6 +61,8 @@ export default {
     { src: '~/plugins/socket.io.js', ssr: false },
     '~/plugins/notifier.js',
     '~/plugins/lodash.js',
+    { src: '~/plugins/nuxt-codemirror-plugin.js', ssr: false }
+
 
     // '~/plugins/markdown.js',
 

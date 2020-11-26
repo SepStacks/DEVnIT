@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-container>
-
       <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
 
       <v-form
@@ -19,7 +18,6 @@
             name="Project"
             label="create new project"
             value="project"
-
           ></v-radio>
           <v-radio
             @change="reset"
@@ -33,7 +31,7 @@
           <v-text-field
             class="text-capitalize"
             v-model="doc.title"
-            :rules="[rules.required, rules.duplicate, rules.string]"
+            :rules="[rules.required, rules.string, doesExist,]"
             label="title"
             required
           ></v-text-field>
@@ -64,55 +62,85 @@
 
         <div v-if="doc.type === 'component'">
 
-           <v-container
-    class="px-0"
-    fluid
-  >
-    <v-checkbox
-      v-model="check"
-      :label="`create new component from this template`"
-    ></v-checkbox>
-  </v-container>
-          <!-- <v-radio
-            @change="reset"
-            name="Component"
-            label="create new component"
-            value="component"
-          ></v-radio> -->
+          <v-container
+            class="px-0"
+            fluid
+          >
+            <v-checkbox
+              v-if="mode !== 'create'"
+              v-model="check"
+              :label="`create new component from this template`"
+            ></v-checkbox>
+          </v-container>
+
+
+      <v-card elevation="4"  height="100%" class="py-5">
+      <!-- search in temp directory and place in name of temp component -->
+      <!-- get placeholder component fist -->
+                        <v-row align="center" justify="center">
+
+                           <v-col v-if="isEmptyTemplate">
+                              <!-- show when empty -->
+                              <div>Add vue markup to generate previewer</div>
+
+                           </v-col>
+                            <v-col v-else  cols="12">
+                              <LazyCodeVueFile :file="'tmp/vueDemo'"   ref="component" id="renderedComponent"/>
+
+                            </v-col>
+
+                        </v-row>
+      </v-card>
           <v-select
             v-if="makeTemplate"
-           @input="isFormValid = true"
+            @input="isFormValid = true"
             :items="projects"
             v-model="doc.parent"
             item-text="title"
             label="Select project"
             :rules="[rules.required]"
-
           ></v-select>
           <v-text-field
-          v-if="makeTemplate"
+            v-if="makeTemplate"
             v-model="doc.slug"
             label="component name"
-            :rules="[rules.required, rules.duplicate, rules.string]"
+            :rules="[rules.required, rules.string, doesExist]"
           ></v-text-field>
 
           <v-container>
+
+            <section class="container"  v-for="code in vueCode" :key="code.title">
+              <div>{{code.title}}</div>
+    <client-only placeholder="Codemirror Loading...">
+      <codemirror :value="code.language"
+                  :options="cmOption"
+                  @ready="onCmReady"
+                  @focus="onCmFocus"
+                  @input="onCmCodeChange">
+      </codemirror>
+
+    </client-only>
+            </section>
+
+
             <v-textarea
               v-model="doc.html"
               background-color="light-blue"
               color="black"
               label="HTML"
-              @input="isFormValid = true"
-
+              :rules="[rules.required]"
+              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
             ></v-textarea>
+
+
+
 
             <v-textarea
               v-model="doc.css"
               background-color="grey lighten-2"
               color="cyan"
               label="CSS"
-              @input="isFormValid = true"
-
+              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
             ></v-textarea>
 
             <v-textarea
@@ -120,8 +148,7 @@
               background-color="amber lighten-4"
               color="orange orange-darken-4"
               label="JS"
-              @input="isFormValid = true"
-
+              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
             ></v-textarea>
           </v-container>
 
@@ -133,18 +160,18 @@
         >
           <v-col cols="12">
             <v-btn
+              :loading="loader"
               class="mx-2"
               @click.prevent="emitToServer"
-              :disabled="!isFormValid"
+              :disabled="mode === 'Edit Page' ? isFormValid = false : !isFormValid"
             >
               Submit
             </v-btn>
 
             <v-btn
               class="mx-2"
-              to="/projects"
-              v-if="projects.length > 0"
-            >Go to projects</v-btn>
+              @click="[$router.go(-1), emptyFile()]"
+            >cancel</v-btn>
 
           </v-col>
 
@@ -155,6 +182,7 @@
 </template>
 
 <script>
+  // import 'some-codemirror-resource'
 
 export default {
 
@@ -194,20 +222,39 @@ export default {
 
   data () {
     return {
+      //Array of the code that will be applied to codemirror
+      vueCode: [{title: 'HTML',language:this.doc.html},{title: 'CSS', language: this.doc.css},{title: 'JS',language : this.doc.js} ],
+      tempLoader : false,
+      isEmptyTemplate: false,
+      loader: false,
       isFormValid: true,
       response: '',
       isConnected: false,
       oldPath: '',
       oldComp: '',
       check: false,
-
       rules:
       {
         required: value => !!value || 'Required.',
-        duplicate: value => !this.doesExist || 'Already exists',
         string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
-
       },
+       cmOption: {
+          tabSize: 4,
+          styleActiveLine: true,
+          lineNumbers: true,
+          line: true,
+          foldGutter: true,
+          styleSelectedText: true,
+          mode: 'text/javascript',
+          keyMap: "sublime",
+          matchBrackets: true,
+          showCursorWhenSelecting: true,
+          theme: "monokai",
+          extraKeys: { "Ctrl": "autocomplete" },
+          hintOptions:{
+            completeSingle: false
+          }
+       }
 
 
       // bodyTitle: '',
@@ -219,34 +266,12 @@ export default {
 
   computed: {
 
-    makeTemplate() {
-     return this.check === true || this.mode === 'create' ? true : false
+    makeTemplate () {
 
+     return this.check === true || this.mode === 'create' ? true : false
 
     },
 
-
-    doesExist () {
-      // Check if project exist
-      if (this.doc.type === 'project') {
-        // Without this line below switching betweeen component and project produces an error
-        if (typeof this.doc.title === 'string') {
-          return this.projects.includes(this.doc.title.toUpperCase())
-        }
-
-      } else {
-        if (typeof this.doc.slug === 'string') {
-        // check if component name exists based on the parent name
-        const check = this.content.filter(data => data.parent === this.doc.parent.toUpperCase() && data.slug === this.doc.slug.toLowerCase())
-        return check.length === 1
-
-      }
-      }
-
-
-
-
-    }
   },
 
   sockets: {
@@ -268,10 +293,66 @@ export default {
       })
 
     },
+    ifEmptyTemplate(msg) {
+      //empty contrnt data
+      if (msg = 'Template is empty') {
+          this.isEmptyTemplate = true
+      }
+
+      console.log(msg)
+
+    }
 
   },
 
   methods: {
+    emptyFile() {
+     if(this.doc.type === 'component') {
+        this.doc.html = '',
+      this.doc.css = '',
+      this.doc.js = ''
+     }
+    },
+
+    doesExist () {
+      // Check if project exist
+      if (this.doc.type === 'project') {
+        const string = this.doc.title + ""
+        // Without this line below switching betweeen component and project produces an error
+          if (this.projects.includes(string.toUpperCase())) {
+            return `${this.doc.parent} already exist`
+          }
+
+
+          return true
+
+
+
+
+      } else {
+
+        if (typeof this.doc.slug === 'string') {
+                  const parent = this.doc.parent + ""
+                  const slug = this.doc.slug + ""
+
+          const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
+
+          // check if component name exists based on the parent name
+          // return check.length === 1
+          if (check.length === 1) {
+            return `${slug} already exist`
+          } else {
+            return true
+          }
+        }
+
+
+
+
+
+      }
+
+    },
 
 
     emitToServer () {
@@ -279,58 +360,65 @@ export default {
       var modeType = this.mode
       if (this.doc.type === 'project') {
         var self = this
+        this.loader = true
 
         // values for project
         const content = {
 
-          title: s00elf.doc.title.toUpperCase(),
-          slug: self.doc.slug.toLowerCase(),
+          title: self.doc.title.toString().toUpperCase(),
+          slug: self.doc.slug.toString().toLowerCase(),
           extention: '.md',
           type: self.doc.type,
-          parent: self.doc.parent.toUpperCase(),
+          parent: self.doc.parent.toString().toUpperCase(),
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
         }
 
- this.$socket.client.emit("properties", { content, modeType })
+        this.$socket.client.emit("properties", { content, modeType })
 
         setTimeout(() => {
           // add some loader while component is being generated
+          this.tempLoader = false
 
-   this.$router.push('/projects')
+          this.$router.push(`/projects/`)
         }, 500)
 
 
       } else {
         var self = this
+        this.tempLoader = true
+
         // Values for component
         const content = {
 
-          slug: self.doc.slug.toLowerCase(),
+          slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
           template: self.doc.template,
           extention: self.doc.extention,
           type: self.doc.type,
-          parent: self.doc.parent.toUpperCase(),
+          parent: self.doc.parent.toString().toUpperCase(),
           html: self.doc.html,
           css: self.doc.css,
           js: self.doc.js
 
         }
-        console.log("content ",content)
+        console.log("content ", content)
 
         console.log('success')
-         this.$socket.client.emit("properties", { content, modeType })
+        this.$router.push(`/projects/`)
+
         setTimeout(() => {
-                this.$router.push(`/projects/`)
+          this.$socket.client.emit("properties", { content, modeType })
+          this.tempLoader = false
 
         }, 500)
       }
 
       // this.title = ''
-      this.$refs.form.resetValidation()
+      this.$refs.form.validate()
+
 
     },
 
@@ -339,20 +427,76 @@ export default {
     },
 
 
+    writeTemp() {
+        //load on update
+        let componentReload = true
+        let self = this
+
+      //Create get/create .vue file. write the template markups based on ui input and update it
+      //after a few seconds
+      const content = {
+
+          // type: self.doc.type,
+          html: self.doc.html,
+          css: self.doc.css,
+          js: self.doc.js
+
+        }
+
+
+        //add mode property to keep state of the edit component
+
+          this.$socket.client.emit("writeToVue", {content})
+
+
+
+
+
+    },
+    //code Mirror methods
+      onCmReady(cm) {
+      this.writeTemp()
+      console.log('the editor is readied!', cm)
+    },
+    onCmFocus(cm) {
+      console.log('the editor is focus!', cm)
+    },
+    onCmCodeChange(newCode) {
+
+      this.isFormValid
+
+      console.log('this is new code', newCode)
+      this.doc.html = newCode
+     if(newCode) {
+         this.writeTemp()
+     }
+    }
+
+
 
   },
-  mounted() {
+  mounted () {
+
     //Keep old value of path
-      var slug = this.doc.slug.toLowerCase()
-      var path = _.cloneDeep(slug)
-      this.oldPath  = path
+    var slug = this.doc.slug
+    var path = _.cloneDeep(slug)
+    this.oldPath = path
 
-       var parent = this.doc.parent.toLowerCase()
-      var comp = _.cloneDeep(parent)
-      this.oldComp  = comp
+    var parent = this.doc.parent
+    var comp = _.cloneDeep(parent)
+    this.oldComp = comp
 
+
+
+
+  },
+
+  created () {
 
   }
 
+
+
 }
 </script>
+
