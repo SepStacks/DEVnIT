@@ -1,9 +1,7 @@
 <template>
 <div>
 
-   <v-row justify="center" align="center">
         <MainForm :projects="projectTitle" :content="contentArray"  :doc="doc"/>
-   </v-row>
 </div>
 </template>
 
@@ -42,7 +40,7 @@ export default {
     },
 
     computed: {
-        projectTitle() { 
+        projectTitle() {
             //Get the tiles of all projects and remove any null values
             const title = this.projects.map(project => project.title).filter(el => {
                 return el != null
@@ -62,6 +60,3 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
-</style>

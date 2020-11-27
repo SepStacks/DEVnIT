@@ -1,5 +1,6 @@
 <template>
-  <component
+  <div>
+    <component
     :is="component"
     v-if="component"
     v-bind="{
@@ -8,6 +9,16 @@
     }"
     v-on="$listeners"
   />
+
+  <div v-else>
+    <!-- use loader if component hasn't generated yet -->
+
+    <div>loading component, please wait</div>
+
+    <Loader/>
+
+  </div>
+  </div>
 </template>
 
 <script>

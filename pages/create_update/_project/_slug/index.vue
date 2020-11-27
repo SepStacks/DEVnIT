@@ -1,10 +1,6 @@
 <template>
   <div >
-    <v-row
-      justify="center"
-      align="center"
-    >
-    <v-lazy>
+
         <MainForm
         :projects="projectTitle"
         :content="contentArray"
@@ -14,10 +10,8 @@
 
 
       />
-    </v-lazy>
 
 
-    </v-row>
   </div>
 </template>
 

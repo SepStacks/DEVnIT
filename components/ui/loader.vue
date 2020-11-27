@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div
-      class="scaling-squares-spinner"
-      :style="spinnerStyle"
-    >
+    <div class="scaling-squares-spinner" >
       <div class="square"></div>
       <div class="square"></div>
       <div class="square"></div>
@@ -11,12 +8,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-
-}
-</script>
 
 <style scoped>
 .scaling-squares-spinner,

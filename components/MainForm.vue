@@ -31,7 +31,7 @@
           <v-text-field
             class="text-capitalize"
             v-model="doc.title"
-            :rules="[rules.required, rules.string, doesExist,]"
+            :rules="[rules.required, rules.string, doesExist]"
             label="title"
             required
           ></v-text-field>
@@ -73,56 +73,126 @@
             ></v-checkbox>
           </v-container>
 
-
-      <v-card elevation="4"  height="100%" class="py-5">
-      <!-- search in temp directory and place in name of temp component -->
-      <!-- get placeholder component fist -->
-                        <v-row align="center" justify="center">
-
-                           <v-col v-if="doc.html === ''">
-                              <!-- show when empty -->
-                              <div >Add vue markup to generate previewer</div>
-
-                           </v-col>
-                            <v-col v-else  cols="12">
-                              <LazyCodeVueFile :file="'tmp/vueDemo'"   ref="component" id="renderedComponent"/>
-
-                            </v-col>
-
-                        </v-row>
-      </v-card>
-          <v-select
-            v-if="makeTemplate"
-            @input="isFormValid = true"
-            :items="projects"
-            v-model="doc.parent"
-            item-text="title"
-            label="Select project"
-            :rules="[rules.required]"
-          ></v-select>
-          <v-text-field
-            v-if="makeTemplate"
-            v-model="doc.slug"
-            label="component name"
-            :rules="[rules.required, rules.string, doesExist]"
-          ></v-text-field>
-
           <v-container>
 
-            <section class="container"  v-for="code in vueCode" :key="code.title">
-              <div>{{code.title}}</div>
-    <client-only placeholder="Codemirror Loading...">
-      <codemirror :value="code.language"
-                  :options="cmOption"
-                  @ready="onCmReady"
-                  @focus="onCmFocus"
-                  @input="onCmCodeChange">
-      </codemirror>
+            <v-sheet outlined>
+              <v-row
+                justify="center"
+                class="container"
+              >
+                <v-col
+                  v-if="makeTemplate"
 
-    </client-only>
-            </section>
+                  cols="12"
+                  md="4"
+                >
 
+                  <v-select
+                    @input="isFormValid = true"
+                    :items="projects"
+                    v-model="doc.parent"
+                    item-text="title"
+                    label="Select project"
+                    :rules="[rules.required]"
+                  ></v-select>
+                  <v-text-field
+                    v-model="doc.slug"
+                    label="component name"
+                    :rules="[rules.required, rules.string, doesExist]"
+                  ></v-text-field>
 
+                </v-col>
+
+                <v-col
+
+                >
+                  <v-card
+                    height="300"
+                    elevation="4"
+                    class="py-5"
+                  >
+                    <!-- search in temp directory and place in name of temp component -->
+                    <!-- get placeholder component fist -->
+
+                    <v-row
+                      align="center"
+                      justify="center"
+                    >
+
+                      <v-col v-if="doc.html === ''">
+                        <!-- show when empty -->
+                        <div>Add vue markup to generate previewer</div>
+
+                      </v-col>
+                      <v-col v-else>
+                        <LazyCodeVueFile
+                          :file="'tmp/vueDemo'"
+                          ref="component"
+                          id="renderedComponent"
+                        />
+
+                      </v-col>
+
+                    </v-row>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-sheet>
+
+            <!-- codemirror -->
+
+            <v-row class="container">
+
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <client-only placeholder="Codemirror Loading...">
+                  <div>HTML</div>
+                  <codemirror
+                    v-model.lazy="doc.html"
+                    :options="cmOption"
+                    @ready="onCmReady"
+                    @focus="onCmFocus"
+                    @input="onCmCodeChange"
+                  >
+                  </codemirror>
+                </client-only>
+              </v-col>
+
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <client-only>
+                  <div>CSS</div>
+                  <codemirror
+                    v-model.lazy="doc.css"
+                    :options="cmOption"
+                    @focus="onCmFocus"
+                  >
+                  </codemirror>
+                </client-only>
+              </v-col>
+
+              <v-col
+                cols="12"
+                md="4"
+              >
+                <client-only>
+
+                  <div>JS</div>
+                  <codemirror
+                    v-model.lazy="doc.js"
+                    :options="cmOption"
+                    @focus="onCmFocus"
+                  >
+                  </codemirror>
+                </client-only>
+              </v-col>
+            </v-row>
+
+            <!--
             <v-textarea
               v-model="doc.html"
               background-color="light-blue"
@@ -149,7 +219,8 @@
               color="orange orange-darken-4"
               label="JS"
               @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
-            ></v-textarea>
+            ></v-textarea> -->
+
           </v-container>
 
         </div>
@@ -182,7 +253,7 @@
 </template>
 
 <script>
-  // import 'some-codemirror-resource'
+// import 'some-codemirror-resource'
 
 export default {
 
@@ -223,8 +294,7 @@ export default {
   data () {
     return {
       //Array of the code that will be applied to codemirror
-      vueCode: [{title: 'HTML',language:this.doc.html},{title: 'CSS', language: this.doc.css},{title: 'JS',language : this.doc.js} ],
-      tempLoader : false,
+      tempLoader: false,
       isEmptyTemplate: false,
       loader: false,
       isFormValid: true,
@@ -238,23 +308,23 @@ export default {
         required: value => !!value || 'Required.',
         string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
       },
-       cmOption: {
-          tabSize: 4,
-          styleActiveLine: true,
-          lineNumbers: true,
-          line: true,
-          foldGutter: true,
-          styleSelectedText: true,
-          mode: 'text/javascript',
-          keyMap: "sublime",
-          matchBrackets: true,
-          showCursorWhenSelecting: true,
-          theme: "monokai",
-          extraKeys: { "Ctrl": "autocomplete" },
-          hintOptions:{
-            completeSingle: false
-          }
-       }
+      cmOption: {
+        tabSize: 4,
+        styleActiveLine: true,
+        lineNumbers: true,
+        line: true,
+        foldGutter: true,
+        styleSelectedText: true,
+        mode: 'text/javascript',
+        keyMap: "sublime",
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: 'base16-dark',
+        extraKeys: { 'Ctrl': 'autocomplete' },
+        hintOptions: {
+          completeSingle: true
+        }
+      }
 
 
       // bodyTitle: '',
@@ -268,7 +338,7 @@ export default {
 
     makeTemplate () {
 
-     return this.check === true || this.mode === 'create' ? true : false
+      return this.check === true || this.mode === 'create' ? true : false
 
     },
 
@@ -293,10 +363,10 @@ export default {
       })
 
     },
-    ifEmptyTemplate(msg) {
+    ifEmptyTemplate (msg) {
       //empty contrnt data
       if (msg = 'Template is empty') {
-          this.isEmptyTemplate = true
+        this.isEmptyTemplate = true
       }
 
       console.log(msg)
@@ -306,12 +376,12 @@ export default {
   },
 
   methods: {
-    emptyFile() {
-     if(this.doc.type === 'component') {
+    emptyFile () {
+      if (this.doc.type === 'component') {
         this.doc.html = '',
-      this.doc.css = '',
-      this.doc.js = ''
-     }
+          this.doc.css = '',
+          this.doc.js = ''
+      }
     },
 
     doesExist () {
@@ -319,12 +389,12 @@ export default {
       if (this.doc.type === 'project') {
         const string = this.doc.title + ""
         // Without this line below switching betweeen component and project produces an error
-          if (this.projects.includes(string.toUpperCase())) {
-            return `${this.doc.parent} already exist`
-          }
+        if (this.projects.includes(string.toUpperCase())) {
+          return `${this.doc.parent} already exist`
+        }
 
 
-          return true
+        return true
 
 
 
@@ -332,8 +402,8 @@ export default {
       } else {
 
         if (typeof this.doc.slug === 'string') {
-                  const parent = this.doc.parent + ""
-                  const slug = this.doc.slug + ""
+          const parent = this.doc.parent + ""
+          const slug = this.doc.slug + ""
 
           const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
 
@@ -419,70 +489,65 @@ export default {
       // this.title = ''
       this.$refs.form.validate()
 
-
     },
 
     reset () {
       this.$refs.form.reset()
     },
 
-
-    writeTemp() {
-        //load on update
-        let self = this
+    writeTemp () {
+      //load on update
+      let self = this
 
       //Create get/create .vue file. write the template markups based on ui input and update it
       //after a few seconds
       const content = {
 
-          // type: self.doc.type,
-          html: self.doc.html,
-          css: self.doc.css,
-          js: self.doc.js
+        // type: self.doc.type,
+        html: self.doc.html,
+        css: self.doc.css,
+        js: self.doc.js
 
-        }
+      }
 
+      //add mode property to keep state of the edit component
 
-        //add mode property to keep state of the edit component
-
-          this.$socket.client.emit("writeToVue", {content})
-
-
-
-
+      this.$socket.client.emit("writeToVue", { content })
 
     },
     //code Mirror methods
-      onCmReady(cm) {
+    onCmReady (cm) {
       console.log('the editor is readied!', cm)
       this.emptyOutVueTempFile()
     },
-    onCmFocus(cm) {
+    onCmFocus (cm) {
       console.log('the editor is focus!', cm)
     },
-    onCmCodeChange(newCode) {
+    onCmCodeChange (newCode) {
 
       this.isFormValid
 
       console.log('this is new code', newCode)
       this.doc.html = newCode
-     if(newCode) {
-         this.writeTemp()
-     } else if( newCode === '') {
+      if (newCode) {
+        setTimeout(() => {
+          this.writeTemp()
+        }, 300)
+      } else if (newCode === '') {
 
-             this.emptyOutVueTempFile()
+        this.emptyOutVueTempFile()
+        setTimeout(() => {
+          this.writeTemp()
+        }, 300)
 
-     }
+      }
     },
 
-    emptyOutVueTempFile() {
+    emptyOutVueTempFile () {
 
-    this.$socket.client.emit("emptyOutVueFile")
-
+      this.$socket.client.emit("emptyOutVueFile")
 
     }
-
-
 
   },
   mounted () {
@@ -496,16 +561,7 @@ export default {
     var comp = _.cloneDeep(parent)
     this.oldComp = comp
 
-
-
-
   },
-
-  created () {
-
-
-  }
-
 
 
 }
