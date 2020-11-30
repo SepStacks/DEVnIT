@@ -2,6 +2,8 @@
 title: "{{title}}"
 parent: "{{title}}"
 type: "project"
+category: "Getting Started"
+
 ---
 
 # Installation

@@ -1,75 +1,96 @@
 <template>
-<v-app>
+  <v-app>
     <div id="app">
 
-    <!-- side-bar -->
-    <SideNav :menus="nav"/>
+      <!-- side-bar -->
+      <SideNav :menus="nav" />
 
-   <v-main>
-    <v-container max-width="500px">
-      <v-row justify="center">
 
-          <v-col cols="11" md="8"  lg="6">
 
-             <div v-if="doc.type === 'component'">
-                <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}`" >
-                    <v-btn >edit component {{doc.slug}}</v-btn>
-              </nuxt-link>
 
-              <Dialog @click="deleteSlug"  @loading="loading" :doc="doc" v-model="dialog"/>
-             </div>
+      <v-main>
+        <v-container max-width="500px">
+          <v-row justify="center">
+
+            <v-col
+              cols="11"
+              md="8"
+              lg="6"
+            >
+
+              <div v-if="doc.type === 'component'">
+                <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}`">
+                  <v-btn>edit component {{doc.slug}}</v-btn>
+                </nuxt-link>
+
+                <Dialog
+                  @click="deleteSlug"
+                  @loading="loading"
+                  :doc="doc"
+                  v-model="dialog"
+                />
+              </div>
 
               <div v-else>
-                   <nuxt-link :to="`/create_update/${doc.parent}`" >
-                    <v-btn >edit Project</v-btn>
+                <nuxt-link :to="`/create_update/${doc.parent}`">
+                  <v-btn>edit Project</v-btn>
 
-              </nuxt-link>
-              <Dialog @click="deleteProject"  @loading="loading" :doc="doc" v-model="dialog"/>
-
+                </nuxt-link>
+                <Dialog
+                  @click="deleteProject"
+                  @loading="loading"
+                  :doc="doc"
+                  v-model="dialog"
+                />
 
               </div>
 
-             <nuxt-content :document="doc" />
-            <v-row>
-             <v-col cols="12">
+              <nuxt-content :document="doc" ref="nuxtContent"/>
+              <v-row>
+                <v-col cols="12">
 
-               <div>
+                  <div>
                     Last updated: {{doc.updatedAt}}
-               </div>
-             </v-col>
-            </v-row>
+                  </div>
+                </v-col>
+              </v-row>
 
-          </v-col>
+            </v-col>
 
-      </v-row>
+          </v-row>
 
-    </v-container>
-   </v-main>
-  </div>
-</v-app>
+        </v-container>
+      </v-main>
+      <!-- table of content -->
+      <Toc :doc="doc"/>
+    </div>
+  </v-app>
 </template>
 
 <script>
 export default {
   // layout: "navigation",
 
-  async asyncData({ $content, params }) {
-    const slug = params.slug;
-    const main = params.main;
-    const doc = await $content(`projects/${main}/${slug}`).fetch();
+  async asyncData ({
+    $content,
+    params
+  }) {
+    const slug = params.slug
+    const main = params.main
+    const doc = await $content(`projects/${main}/${slug}`).fetch()
 
     const nav = await $content(`projects/${main}`)
-      .only(["title", "slug"])
+      .only(["title", "slug", 'category'])
       //Set the order of the components thats underneath the headings
-      .sortBy('title', 'asc')
+      .sortBy('title')
       .fetch()
 
       .catch(err => {
         error({
           statusCode: 404,
           message: "pages not found"
-        });
-      });
+        })
+      })
 
     return {
       doc,
@@ -77,56 +98,61 @@ export default {
       dialog: false,
       loading: false,
 
-    };
+
+    }
   },
 
+
   computed: {
-    projectParent() {
+    nuxtContent() {
+      return  this.$refs.nuxtContent
+    },
+    projectParent () {
       //get parent name of project from its dir and remove project path and inject into nuxt-link
-      return  this.doc.dir.replace("/projects/", '')
+      return this.doc.dir.replace("/projects/", '')
     }
   },
   methods: {
-    deleteProject() {
-        //add loading here within settimeout function
-      this.loading = true
-      const content = this.doc
-
-      console.log(content)
-      //return to selected project route
-  this.$router.push('/projects')
-
-  this.$socket.client.emit("deleteProperty", {content})
-      setTimeout(() => {
-        this.loading = false
-
-
-
-      }, 500);
-
-      console.log('Yay, Ive been called!')
-
-    },
-    deleteSlug() {
+    deleteProject () {
       //add loading here within settimeout function
       this.loading = true
       const content = this.doc
 
       console.log(content)
       //return to selected project route
-  this.$router.push(`/projects`)
+      this.$router.push('/projects')
 
-  this.$socket.client.emit("deleteProperty", {content})
+      this.$socket.client.emit("deleteProperty", {
+        content
+      })
       setTimeout(() => {
         this.loading = false
 
+      }, 500)
 
+      console.log('Yay, Ive been called!')
 
-      }, 500);
+    },
+    deleteSlug () {
+      //add loading here within settimeout function
+      this.loading = true
+      const content = this.doc
+
+      console.log(content)
+      //return to selected project route
+      this.$router.push(`/projects`)
+
+      this.$socket.client.emit("deleteProperty", {
+        content
+      })
+      setTimeout(() => {
+        this.loading = false
+
+      }, 500)
 
       console.log('Yay, Ive been called!')
     }
-  }
+  },
 
 
 };

@@ -16,7 +16,7 @@ export default {
     }) {
         // const menus = await $content({ deep: true }).fetch();
         const projects = await $content('projects', { deep: true })
-        .only(['title', 'slug', 'parent'])
+        .only(['title', 'slug', 'parent', 'category'])
         .fetch()
 
         return {

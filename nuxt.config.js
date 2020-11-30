@@ -18,6 +18,8 @@ export default {
     WS_URL: process.env.WS_URL || 'http://localhost:4000/'
   },
 
+  target: 'static',
+
   /*
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
