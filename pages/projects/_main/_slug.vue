@@ -68,7 +68,13 @@
 </template>
 
 <script>
+  import SideNav from '~/components/navigation/SideNav'
+    import Toc from '~/components/navigation/Toc'
+    import Dialog from '~/components/Dialog'
+
+
 export default {
+  components: { SideNav, Toc, Dialog},
   // layout: "navigation",
 
   async asyncData ({

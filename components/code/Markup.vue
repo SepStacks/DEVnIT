@@ -14,10 +14,11 @@
 
 // Components
 import Prism from 'vue-prism-component'
+import Code from '~/components/code/Code'
 
 export default {
   name: 'Markup',
-  components: { Prism },
+  components: { Prism,Code },
   props: {
     code: String,
     inline: Boolean,

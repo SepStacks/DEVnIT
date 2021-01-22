@@ -6,19 +6,15 @@
 </template>
 
 <script>
-export default {
+ import CodeContainer  from '~/components/code/CodeContainer'
 
+export default {
+  components: { CodeContainer},
   props: {
     file: {
       type: String
     }
   },
 }
-
-
-
-
-
-
 </script>
 

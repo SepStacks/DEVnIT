@@ -99,11 +99,18 @@
 
 // Mixins
 import Codepen from '~/mixins/codepen'
+import CodeVueFile from '~/components/code/VueFile'
+import CodeMarkup from '~/components/code/Markup'
+import CodeTooltip from '~/components/code/Tooltip'
+
 
 export default {
 
   components: {
     Prism: () => import("vue-prism-component"),
+    CodeVueFile,
+    CodeMarkup,
+    CodeTooltip
   },
   mixins: [Codepen],
 

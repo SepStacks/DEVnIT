@@ -98,7 +98,7 @@
                   <v-text-field
                     v-model="doc.slug"
                     label="component name"
-                    :rules="[rules.required, rules.string, doesExist]"
+                    :rules="[rules.required, rules.string]"
                   ></v-text-field>
 
                 </v-col>
@@ -125,7 +125,7 @@
 
                       </v-col>
                       <v-col v-else>
-                        <LazyCodeVueFile
+                          <CodeVueFile
                           :file="'tmp/vueDemo'"
                           ref="component"
                           id="renderedComponent"
@@ -254,8 +254,11 @@
 
 <script>
 // import 'some-codemirror-resource'
-
+import CodeVueFile from '~/components/code/VueFile'
+import Snackbar from '~/components/Snackbar'
 export default {
+  name: 'MainForm',
+  components: {CodeVueFile, Snackbar},
 
   props: {
     projects: {
@@ -341,6 +344,45 @@ export default {
       return this.check === true || this.mode === 'create' ? true : false
 
     },
+     doesExist () {
+      // Check if project exist
+      if (this.doc.type === 'project') {
+        const string = this.doc.title + ""
+        // Without this line below switching betweeen component and project produces an error
+        if (this.projects.includes(string.toUpperCase())) {
+          return `${this.doc.parent} already exist`
+        }
+
+
+        return true
+
+
+
+
+      } else {
+
+        if (typeof this.doc.slug === 'string') {
+          const parent = this.doc.parent + ""
+          const slug = this.doc.slug + ""
+
+          const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
+
+          // check if component name exists based on the parent name
+          // return check.length === 1
+          if (check.length === 1) {
+            return `${slug} already exist`
+          } else {
+            return true
+          }
+        }
+
+
+
+
+
+      }
+
+    },
 
   },
 
@@ -384,45 +426,7 @@ export default {
       }
     },
 
-    doesExist () {
-      // Check if project exist
-      if (this.doc.type === 'project') {
-        const string = this.doc.title + ""
-        // Without this line below switching betweeen component and project produces an error
-        if (this.projects.includes(string.toUpperCase())) {
-          return `${this.doc.parent} already exist`
-        }
 
-
-        return true
-
-
-
-
-      } else {
-
-        if (typeof this.doc.slug === 'string') {
-          const parent = this.doc.parent + ""
-          const slug = this.doc.slug + ""
-
-          const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
-
-          // check if component name exists based on the parent name
-          // return check.length === 1
-          if (check.length === 1) {
-            return `${slug} already exist`
-          } else {
-            return true
-          }
-        }
-
-
-
-
-
-      }
-
-    },
 
 
     emitToServer () {

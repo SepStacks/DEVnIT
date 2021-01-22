@@ -13,7 +13,9 @@
 <script>
 // import { html, css, js } from "`~/assets/compSourceCode/${slugData.slug}`";
 // const {html, css, js} = require(`~/assets/compSourceCode/${getDoc.slug}`)
+import MainForm  from '~/components/MainForm'
 export default {
+  components: {MainForm},
 
     // List the projects directory items
     async asyncData({

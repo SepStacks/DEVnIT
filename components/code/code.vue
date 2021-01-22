@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import CodeCopyBtn from '~/components/code/CopyBtn'
 export default {
+  components: {CodeCopyBtn},
 
     methods: {
       target () {

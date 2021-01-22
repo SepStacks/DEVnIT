@@ -7,7 +7,12 @@
 </template>
 
 <script>
+import Snackbar from '~/components/Snackbar'
+
   export default {
+  components: {Snackbar},
+
+
  sockets: {
 
     // Fired when the socket connects.

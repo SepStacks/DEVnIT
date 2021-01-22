@@ -22,7 +22,9 @@
 </template>
 
 <script>
-  export default {
+import Loader from '~/components/ui/Loader'
+export default {
+  components: {Loader},
     name: 'VueFile',
     inheritAttrs: false,
     props: {

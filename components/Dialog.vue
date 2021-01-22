@@ -23,7 +23,7 @@
 
         <v-card-text>
         Are you sure you want to delete the {{doc.slug}} component?
-  </v-card-text>
+        </v-card-text>
 
         <v-divider></v-divider>
 
