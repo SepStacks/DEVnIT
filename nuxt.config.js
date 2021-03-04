@@ -1,7 +1,16 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
-  components: true,
+  // components: {
+  //   dirs: [
+  //     '~/components',
+  //     {
+  //       path: '~/components/code/',
+  //       prefix: 'Code'
+  //     }
+  //   ]
+  // },
+    components: false,
   serverMiddleware: [
     { path: '/server', handler: (__dirname + '/server/index.js') }
   ],
@@ -9,6 +18,8 @@ export default {
   env: {
     WS_URL: process.env.WS_URL || 'http://localhost:4000/'
   },
+
+  target: 'static',
 
   /*
   ** Nuxt rendering mode
@@ -34,6 +45,15 @@ export default {
   ** Global CSS
   */
   css: [
+    '~/assets/css/main.css',
+    // lib css
+    'codemirror/lib/codemirror.css',
+    // merge css
+    'codemirror/addon/merge/merge.css',
+    // theme css
+    'codemirror/theme/base16-dark.css'
+
+
   ],
   /*
   ** Plugins to load before mounting the App
@@ -45,6 +65,12 @@ export default {
     { src: "~/plugins/prism", ssr: false },
     { src: '~/plugins/socket.io.js', ssr: false },
     '~/plugins/notifier.js',
+    '~/plugins/lodash.js',
+    { src: '~/plugins/nuxt-codemirror-plugin.js', ssr: false }
+
+
+    // '~/plugins/markdown.js',
+
 
 
   ],
@@ -73,8 +99,19 @@ export default {
   ** Content module configuration
   ** See https://content.nuxtjs.org/configuration
   */
-  content: {},
-  /*
+  content: {
+    markdown: {
+      remarkPlugins: [
+
+        'remark-autolink-headings',
+
+      ],
+      // prism: {
+      //   theme: 'prism-themes/themes/prism-material-oceanic.css'
+      // }
+    }
+  },
+    /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
   */
@@ -88,5 +125,18 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    /*
+  ** You can extend webpack config here
+  */
+    extend (config, ctx) {
+
+      config.module.rules.push({
+        enforce: 'pre',
+        test: /\.txt$/,
+        loader: 'raw-loader',
+        exclude: /(node_modules)/
+      })
+
+    }
   }
 }

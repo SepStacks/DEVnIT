@@ -1,82 +1,130 @@
 <template>
-  <div>
-    <form action="https://codepen.io/pen/define" method="POST" target="_blank">
-      <input type="hidden" name="data" :value="value" />
-
-      <!-- <input type="hidden" name="data"
-      value='{"title": "New Pen!", "html": "<div>Hello, World!</div>"}'>-->
-
-      <v-btn icon type="submit" class="white--text">
-        <v-icon size="20">la-codepen</v-icon>
-      </v-btn>
-    </form>
-  </div>
+  <form
+    ref="form"
+    action="https://codepen.io/pen/define/"
+    method="POST"
+    target="_blank"
+  >
+    <input
+      type="hidden"
+      name="data"
+      :value="value"
+    >
+  </form>
 </template>
 
 <script>
-// const title = 'Vuetify Example Pen'
-
-const cssResources = [
-  "https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome.min.css",
-  "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons",
-  "https://cdn.jsdelivr.net/npm/vuetify@2.3.15/dist/vuetify.min.css"
-];
-
-const jsResources = [
-  "https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js",
-  "https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js",
-  "https://cdn.jsdelivr.net/npm/vuetify@2.3.15/dist/vuetify.min.js"
-];
-export default {
-  name: "Codepen",
-
-  props: {
-    title: {
-      type: String,
-      required: false
+  // Utilities
+  // import { get } from 'vuex-pathify'
+  export default {
+    name: 'Codepen',
+    props: {
+      pen: {
+        type: Object,
+        default: () => ({}),
+      },
+      title: {
+        type: String,
+        default: 'Vuetify Example Pen',
+      },
     },
-    html: {
-      type: String,
-      required: true
+    data: vm => ({
+    }),
+    computed: {
+      additionalResources () {
+        const resources = this.pen.codepenResources || '{}'
+        return Object.assign(
+          { css: [], js: [] },
+          JSON.parse(
+            resources.replace(/(<codepen-resources.*?>|<\/codepen-resources>$)/g, ''),
+          ),
+        )
+      },
+      additionalScript () {
+        const additional = this.pen.codepenAdditional || ''
+        return additional
+          .replace(/(<codepen-additional.*?>|<\/codepen-additional>$)/g, '')
+          .replace(/\n {2}/g, '\n')
+          .trim() + (additional ? '\n\n' : '')
+      },
+      cssResources () {
+        return [
+          'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900',
+          'https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',
+          'https://fonts.googleapis.com/css?family=Material+Icons',
+          `https://cdn.jsdelivr.net/npm/vuetify@2.3.16/dist/vuetify.min.css`,
+        ]
+      },
+      editors () {
+        const html = this.template && 0b100
+        const css = this.style.content && 0b010
+        const js = this.script && 0b001
+        return (html | css | js).toString(2)
+      },
+      jsResources () {
+        return [
+          'https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js',
+          'https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js',
+          `https://cdn.jsdelivr.net/npm/vuetify@2.3.16/dist/vuetify.min.js`,
+        ]
+      },
+      script () {
+        const imports = /(import*) ([^'\n]*) from ([^\n]*)/g
+        let component = /export default {([\s\S]*)}/g.exec(this.pen.script || '')
+        component = ((component && component[1]) || '')
+          .replace(/\n {2}/g, '\n')
+          .trim()
+        let script = /<script>([\s\S]*)export default {/g.exec(this.pen.script || '')
+        script = ((script && script[1]) || '')
+          .replace(imports, '')
+          .replace(/\n {2}/g, '\n')
+          .trim()
+        script += script ? '\n\n' : ''
+        return this.additionalScript + script +
+          `new Vue({
+  el: '#app',
+  vuetify: new Vuetify(),
+  ${component}
+})`
+      },
+      style () {
+        return {
+          content: (this.pen.style || '').replace(/(<style.*?>|<\/style>)/g, '').replace(/\n {2}/g, '\n').trim(),
+          language: /<style.*lang=["'](.*)["'].*>/.exec(this.pen.style || ''),
+        }
+      },
+      template () {
+        const template = this.pen.template || ''
+        return template
+          .replace(/(<template>|<\/template>$)/g, '')
+          .replace(/\n/g, '\n  ')
+          .trim()
+      },
+      value () {
+        const data = {
+          title: this.title,
+          html:
+            `<div id="app">
+  <v-app id="inspire">
+    ${this.template}
+  </v-app>
+</div>`,
+          css: this.style.content,
+          css_pre_processor: this.style.language ? this.style.language[1] : 'none',
+          css_external: [...this.additionalResources.css, ...this.cssResources].join(';'),
+          js: this.script,
+          js_pre_processor: 'babel',
+          js_external: [...this.additionalResources.js, ...this.jsResources].join(';'),
+          editors: this.editors,
+        }
+        return JSON.stringify(data)
+      },
+      // version: get('app/version'),
     },
-    js: {
-      type: String,
-      required: true
+    methods: {
+      submit () {
+        this.$el.submit()
+      },
     },
-    css: {
-      type: String,
-      required: true
-    }
-  },
-
-  computed: {
-    value() {
-      const data = {
-        title: this.title,
-
-        html: ` <div id="app">
-      <v-app>
-      <v-main>
-        <v-container>
-            ${this.html}
-        </v-container>
-      </v-main>
-    </v-app></div>`,
-        css: this.css,
-        css_external: [...cssResources].join(";"),
-        js: this.js,
-        js_external: [...jsResources].join(";")
-      };
-      return JSON.stringify(data);
-    }
-  },
-  methods: {
-    submit() {
-      this.$el.submit();
-    }
   }
-};
 </script>
-
-<style scoped>
-</style>

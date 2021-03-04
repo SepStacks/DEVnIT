@@ -1,6 +1,9 @@
 ---
-title: "{{title}}"
-description: Learn how to use @nuxt/content.
+title: "TTEST"
+parent: "TTEST"
+type: "project"
+category: "Getting Started"
+
 ---
 
 # Installation
@@ -23,7 +26,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## {{title}}
+## TTEST
 
 Installation instructions goers here...
 

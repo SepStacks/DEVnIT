@@ -10,12 +10,10 @@
 
             <v-col>
                 <div class="primary--text" v-html="message" />
-
             </v-col>
-            <div class="mr-5">
                 <v-btn icon color="info" @click="show = false">
                     <v-icon>
-                        la-close
+                       la-close
                     </v-icon>
                 </v-btn>
             </div>
