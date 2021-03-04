@@ -31,7 +31,8 @@
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2",
-    "nodemon": "^2.0.5"
+    "nodemon": "^2.0.5",
+    "vue-live-preview": "^0.4.1"
   },
   "config": {
     "nuxt": {
