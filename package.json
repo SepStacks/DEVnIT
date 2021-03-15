@@ -30,7 +30,14 @@
     "typeface-montserrat": "0.0.75",
     "vue-codemirror": "^4.0.6",
     "vue-prism-component": "^1.2.0",
-    "vue-socket.io-extended": "^4.0.5"
+    "vue-socket.io-extended": "^4.0.5",
+    "vue-template-compiler": "^2.5.16",
+    "deepmerge": "^2.1.0",
+    "is-absolute-url": "^2.1.0",
+    "parse-package-name": "^0.1.0",
+    "query-string": "^6.0.0",
+    "throttle-debounce": "^1.0.1",
+    "unfetch": "^3.0.0"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2",

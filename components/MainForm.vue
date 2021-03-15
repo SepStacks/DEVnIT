@@ -82,7 +82,6 @@
               >
                 <v-col
                   v-if="makeTemplate"
-
                   cols="12"
                   md="4"
                 >
@@ -103,9 +102,7 @@
 
                 </v-col>
 
-                <v-col
-
-                >
+                <v-col>
                   <v-card
                     height="300"
                     elevation="4"
@@ -119,20 +116,23 @@
                       justify="center"
                     >
 
-                      <v-col v-if="doc.html === ''">
-                        <!-- show when empty -->
+                      <!-- <v-col v-if="doc.html === ''">
                         <div>Add vue markup to generate previewer</div>
 
                       </v-col>
                       <v-col v-else>
-                          <CodeVueFile
-                          :file="'tmp/vueDemo'"
-                          ref="component"
-                          id="renderedComponent"
+                        <Previewer
+                          :value="preview"
+                          class="panel"
                         />
 
-                      </v-col>
 
+
+                      </v-col> -->
+ <Previewer
+                          :value="preview"
+                          class="panel"
+                        />
                     </v-row>
                   </v-card>
                 </v-col>
@@ -155,6 +155,7 @@
                     @ready="onCmReady"
                     @focus="onCmFocus"
                     @input="onCmCodeChange"
+
                   >
                   </codemirror>
                 </client-only>
@@ -170,6 +171,7 @@
                     v-model.lazy="doc.css"
                     :options="cmOption"
                     @focus="onCmFocus"
+
                   >
                   </codemirror>
                 </client-only>
@@ -186,11 +188,16 @@
                     v-model.lazy="doc.js"
                     :options="cmOption"
                     @focus="onCmFocus"
+
+
                   >
                   </codemirror>
                 </client-only>
               </v-col>
             </v-row>
+            <v-btn @click="compile">
+              Run
+            </v-btn>
 
             <!--
             <v-textarea
@@ -254,11 +261,25 @@
 
 <script>
 // import 'some-codemirror-resource'
-import CodeVueFile from '~/components/code/VueFile'
+import Previewer from '~/components/ui/Previewer'
 import Snackbar from '~/components/Snackbar'
+
+import { parseComponent } from 'vue-template-compiler/browser';
+import { parse as queryParse } from 'query-string';
+import getImports from '@/utils/get-imports';
+import getPkgs from '@/utils/get-pkgs';
+import isAbsouteUrl from 'is-absolute-url';
+// import { upload } from '@/utils/store';
+import * as params from '@/utils/params';
+
+const CDN_MAP = {
+  unpkg: '//unpkg.com/',
+  jsdelivr: '//cdn.jsdelivr.net/npm/'
+};
+
 export default {
   name: 'MainForm',
-  components: {CodeVueFile, Snackbar},
+  components: { Previewer, Snackbar },
 
   props: {
     projects: {
@@ -296,6 +317,8 @@ export default {
 
   data () {
     return {
+      preview: '',
+      code: '',
       //Array of the code that will be applied to codemirror
       tempLoader: false,
       isEmptyTemplate: false,
@@ -344,7 +367,7 @@ export default {
       return this.check === true || this.mode === 'create' ? true : false
 
     },
-     doesExist () {
+    doesExist () {
       // Check if project exist
       if (this.doc.type === 'project') {
         const string = this.doc.title + ""
@@ -375,10 +398,6 @@ export default {
             return true
           }
         }
-
-
-
-
 
       }
 
@@ -425,7 +444,93 @@ export default {
           this.doc.js = ''
       }
     },
+    async compile() {
+      const code = this.doc.html + '/n' +  this.doc.css + '/n' + this.doc.js
 
+      if (!code) {
+        return;
+      }
+      const imports = [];
+      const { template, script, styles, customBlocks } = parseComponent(code);
+      let config;
+
+      if ((config = customBlocks.find(n => n.type === 'config'))) {
+        params.clear();
+        params.parse(config.content);
+      }
+
+      let compiled;
+      const pkgs = [];
+      let scriptContent = 'exports = { default: {} }';
+
+      if (script) {
+        try {
+          compiled = window.Babel.transform(script.content, {
+            presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
+            plugins: [[getImports, { imports }]]
+          }).code;
+        } catch (e) {
+          this.preview = `<pre style="color: red">${e.message}</pre>`;
+          return;
+        }
+        scriptContent = await getPkgs(compiled, imports, pkgs);
+      }
+
+      const heads = this.genHeads();
+      const scripts = [];
+
+      pkgs.forEach(pkg => {
+        scripts.push(
+          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${
+            pkg.name
+          }><\/script>`
+        );
+      });
+
+      styles.forEach(style => {
+        heads.push(`<style>${style.content}</style>`);
+      });
+
+      scripts.push(`
+      <script>
+        var exports = {};
+        ${scriptContent}
+        var component = exports.default;
+        component.template = component.template || ${JSON.stringify(
+          template.content
+        )}
+
+        new Vue(component).$mount('#app')
+      <\/script>`);
+
+      this.preview = {
+        head: heads.join('\n'),
+        body: '<div id="app"></div>' + scripts.join('\n')
+      };
+    },
+    genHeads() {
+      let heads = [];
+
+      params.queryParse(location.search);
+
+      const { pkgs, css, cdn, vue } = params.get();
+      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg;
+
+      return [].concat(
+        []
+          .concat(vue ? 'vue@' + vue : 'vue', pkgs)
+          .map(
+            pkg =>
+              `<script src=${isAbsouteUrl(pkg) ? '' : prefix}${pkg}><\/script>`
+          ),
+        css.map(
+          item =>
+            `<link rel=stylesheet href=${
+              isAbsouteUrl(item) ? '' : prefix
+            }${item}>`
+        )
+      );
+    },
 
 
 
@@ -529,22 +634,22 @@ export default {
     },
     onCmCodeChange (newCode) {
 
-      this.isFormValid
+      // this.isFormValid
 
-      console.log('this is new code', newCode)
-      this.doc.html = newCode
-      if (newCode) {
-        setTimeout(() => {
-          this.writeTemp()
-        }, 300)
-      } else if (newCode === '') {
+      // console.log('this is new code', newCode)
+      // this.doc.html = newCode
+      // if (newCode) {
+      //   setTimeout(() => {
+      //     this.writeTemp()
+      //   }, 300)
+      // } else if (newCode === '') {
 
-        this.emptyOutVueTempFile()
-        setTimeout(() => {
-          this.writeTemp()
-        }, 300)
+      //   this.emptyOutVueTempFile()
+      //   setTimeout(() => {
+      //     this.writeTemp()
+      //   }, 300)
 
-      }
+      // }
     },
 
     emptyOutVueTempFile () {
