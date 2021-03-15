@@ -1,16 +1,16 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
-  // components: {
-  //   dirs: [
-  //     '~/components',
-  //     {
-  //       path: '~/components/code/',
-  //       prefix: 'Code'
-  //     }
-  //   ]
-  // },
-    components: false,
+  components: {
+    dirs: [
+      '~/components',
+      {
+        path: '~/components/code/',
+        prefix: 'Code'
+      }
+    ]
+  },
+    // components: false,
   serverMiddleware: [
     { path: '/server', handler: (__dirname + '/server/index.js') }
   ],
