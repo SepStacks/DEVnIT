@@ -75,7 +75,7 @@
           </v-card>
         </v-expand-transition>
 
-        <Codepen
+        <CodeCodepen
           ref="codepen"
           :pen="pen"
         />

@@ -471,9 +471,9 @@ export default {
       let scriptContent = 'exports = { default: {} }'
 
       if (script) {
-        console.log(babel)
+        console.log(script.content)
         try {
-          compiled = babel.transform(script.content, {
+          compiled = window.Babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
             plugins: [[getImports, { imports }]]
           }).code
