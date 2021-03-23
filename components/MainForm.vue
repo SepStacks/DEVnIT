@@ -265,14 +265,14 @@ import Snackbar from '~/components/Snackbar'
 
 import { parseComponent } from 'vue-template-compiler/browser'
 import { parse as queryParse } from 'query-string'
-import getImports from '@/utils/get-imports'
+// import getImports from '@/utils/get-imports'
 import getPkgs from '@/utils/get-pkgs'
 import isAbsouteUrl from 'is-absolute-url'
 // import { upload } from '@/utils/store';
 import * as params from '@/utils/params'
 
 // const babel = require('babel-core')
-
+import * as Babel from 'babel-standalone';
 // var babel = require("@babel/core");
 // import { transform } from "@babel/core";
 // import * as babel from "@babel/core";
@@ -457,7 +457,7 @@ export default {
       if (!code) {
         return
       }
-      const imports = []
+      // const imports = []
       const { template, script, styles, customBlocks } = parseComponent(code)
       let config
 
@@ -471,17 +471,17 @@ export default {
       let scriptContent = 'exports = { default: {} }'
 
       if (script) {
-        console.log(script.content)
+        console.log(Babel)
         try {
-          compiled = window.Babel.transform(script.content, {
+          compiled = Babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
-            plugins: [[getImports, { imports }]]
+            // plugins: [[getImports]]
           }).code
         } catch (e) {
           this.preview = `<pre style="color: red">${e.message}</pre>`
           return
         }
-        scriptContent = await getPkgs(compiled, imports, pkgs)
+        scriptContent = await getPkgs(compiled, pkgs)
       }
 
       const heads = this.genHeads()
