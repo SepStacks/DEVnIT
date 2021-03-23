@@ -38,6 +38,3 @@ import Snackbar from '~/components/Snackbar'
   }
 </script>
 
-<style lang="scss" scoped>
-
-</style>

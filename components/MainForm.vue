@@ -129,10 +129,10 @@
 
 
                       </v-col> -->
- <Previewer
-                          :value="preview"
-                          class="panel"
-                        />
+                      <Previewer
+                        :value="preview"
+                        class="panel"
+                      />
                     </v-row>
                   </v-card>
                 </v-col>
@@ -155,7 +155,6 @@
                     @ready="onCmReady"
                     @focus="onCmFocus"
                     @input="onCmCodeChange"
-
                   >
                   </codemirror>
                 </client-only>
@@ -171,7 +170,6 @@
                     v-model.lazy="doc.css"
                     :options="cmOption"
                     @focus="onCmFocus"
-
                   >
                   </codemirror>
                 </client-only>
@@ -188,14 +186,15 @@
                     v-model.lazy="doc.js"
                     :options="cmOption"
                     @focus="onCmFocus"
-
-
                   >
                   </codemirror>
                 </client-only>
               </v-col>
             </v-row>
-            <v-btn @click="compile">
+            <v-btn
+              @click="compile"
+              class="compile"
+            >
               Run
             </v-btn>
 
@@ -264,20 +263,29 @@
 import Previewer from '~/components/ui/Previewer'
 import Snackbar from '~/components/Snackbar'
 
-import { parseComponent } from 'vue-template-compiler/browser';
-import { parse as queryParse } from 'query-string';
-import getImports from '@/utils/get-imports';
-import getPkgs from '@/utils/get-pkgs';
-import isAbsouteUrl from 'is-absolute-url';
+import { parseComponent } from 'vue-template-compiler/browser'
+import { parse as queryParse } from 'query-string'
+import getImports from '@/utils/get-imports'
+import getPkgs from '@/utils/get-pkgs'
+import isAbsouteUrl from 'is-absolute-url'
 // import { upload } from '@/utils/store';
-import * as params from '@/utils/params';
+import * as params from '@/utils/params'
+
+// const babel = require('babel-core')
+
+// var babel = require("@babel/core");
+// import { transform } from "@babel/core";
+// import * as babel from "@babel/core";
+
 
 const CDN_MAP = {
   unpkg: '//unpkg.com/',
   jsdelivr: '//cdn.jsdelivr.net/npm/'
-};
+}
+
 
 export default {
+
   name: 'MainForm',
   components: { Previewer, Snackbar },
 
@@ -444,52 +452,51 @@ export default {
           this.doc.js = ''
       }
     },
-    async compile() {
-      const code = this.doc.html + '/n' +  this.doc.css + '/n' + this.doc.js
-
+    async compile () {
+      const code = this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css
       if (!code) {
-        return;
+        return
       }
-      const imports = [];
-      const { template, script, styles, customBlocks } = parseComponent(code);
-      let config;
+      const imports = []
+      const { template, script, styles, customBlocks } = parseComponent(code)
+      let config
 
       if ((config = customBlocks.find(n => n.type === 'config'))) {
-        params.clear();
-        params.parse(config.content);
+        params.clear()
+        params.parse(config.content)
       }
 
-      let compiled;
-      const pkgs = [];
-      let scriptContent = 'exports = { default: {} }';
+      let compiled
+      const pkgs = []
+      let scriptContent = 'exports = { default: {} }'
 
       if (script) {
+        console.log(babel)
         try {
-          compiled = window.Babel.transform(script.content, {
+          compiled = babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
             plugins: [[getImports, { imports }]]
-          }).code;
+          }).code
         } catch (e) {
-          this.preview = `<pre style="color: red">${e.message}</pre>`;
-          return;
+          this.preview = `<pre style="color: red">${e.message}</pre>`
+          return
         }
-        scriptContent = await getPkgs(compiled, imports, pkgs);
+        scriptContent = await getPkgs(compiled, imports, pkgs)
       }
 
-      const heads = this.genHeads();
-      const scripts = [];
+      const heads = this.genHeads()
+      const scripts = []
 
       pkgs.forEach(pkg => {
         scripts.push(
-          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${
-            pkg.name
+          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${pkg.name
           }><\/script>`
-        );
-      });
+        )
+      })
 
       styles.forEach(style => {
-        heads.push(`<style>${style.content}</style>`);
-      });
+        heads.push(`<style>${style.content}</style>`)
+      })
 
       scripts.push(`
       <script>
@@ -497,39 +504,41 @@ export default {
         ${scriptContent}
         var component = exports.default;
         component.template = component.template || ${JSON.stringify(
-          template.content
-        )}
+        template.content
+      )}
 
         new Vue(component).$mount('#app')
-      <\/script>`);
+      <\/script>`)
 
       this.preview = {
         head: heads.join('\n'),
         body: '<div id="app"></div>' + scripts.join('\n')
-      };
+      }
     },
-    genHeads() {
-      let heads = [];
+    genHeads () {
+      let heads = []
 
-      params.queryParse(location.search);
+      params.queryParse(location.search)
 
-      const { pkgs, css, cdn, vue } = params.get();
-      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg;
+      const { pkgs, css, cdn, vue, vuetify } = params.get()
+      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg
 
       return [].concat(
         []
           .concat(vue ? 'vue@' + vue : 'vue', pkgs)
+          .concat(vuetify ? 'vuetify@' + vuetify : 'vuetify', pkgs)
+
           .map(
             pkg =>
               `<script src=${isAbsouteUrl(pkg) ? '' : prefix}${pkg}><\/script>`
           ),
         css.map(
           item =>
-            `<link rel=stylesheet href=${
-              isAbsouteUrl(item) ? '' : prefix
-            }${item}>`
+            console.log('css', item)
+              `<link rel=stylesheet href=${isAbsouteUrl(item) ? '' : prefix
+              }${item}>`
         )
-      );
+      )
     },
 
 
@@ -675,4 +684,11 @@ export default {
 
 }
 </script>
+
+
+<style scoped>
+.compile {
+  white-space: pre;
+}
+</style>
 

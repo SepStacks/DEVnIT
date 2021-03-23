@@ -34,5 +34,14 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style scoped>
+       html {
+               overflow-y: auto !important;
+               height: auto !important;
+            }
+
+            .theme--light.application {
+            background: #fff !important;
+            }
 </style>
+

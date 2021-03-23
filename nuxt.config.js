@@ -45,6 +45,7 @@ export default {
   ** Global CSS
   */
   css: [
+
     '~/assets/css/main.css',
     // lib css
     'codemirror/lib/codemirror.css',
@@ -79,6 +80,10 @@ export default {
   */
   buildModules: [
     '@nuxtjs/vuetify',
+    /*vite is causing some errors as some modules are not supported
+    will check again within a future release.
+    */
+    // 'nuxt-vite'
   ],
   /*
   ** Nuxt.js modules

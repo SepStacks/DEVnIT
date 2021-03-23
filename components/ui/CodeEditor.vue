@@ -1,7 +1,7 @@
 <template>
     <div>
         <pre id="editor">
-            <code class="language-javascript" id="editor-code"></code>
+            <Code class="language-javascript" id="editor-code"></code>
             <textarea id="editor-content"></textarea>
         </pre>
     </div>
