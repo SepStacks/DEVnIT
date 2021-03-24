@@ -563,7 +563,6 @@ export default {
           js: self.doc.js
 
         }
-        console.log("content ", content)
 
         console.log('success')
         this.$router.push(`/projects/`)
@@ -587,9 +586,9 @@ export default {
     //code Mirror methods
     onCmReady (cm) {
       console.log('the editor is readied!', cm)
-      if (this.doc.html !== '') {
-        this.compile()
-      }
+      // if (this.doc.html !== '') {
+      //   this.compile()
+      // }
     },
     onCmFocus (cm) {
       console.log('the editor is focus!', cm)
@@ -607,13 +606,20 @@ export default {
 
   },
   mounted () {
+    console.log(this.doc)
+    if(this.doc.type === 'component' && this.doc.slug !== '') {
+      setTimeout(() => {
+        this.compile()
 
-   if (this.doc.slug !== '') {
-        setTimeout(() => {
-          this.compile()
+      }, 500)
 
-        }, 500)
-      }
+  }
+    // if (this.doc.slug !== '') {
+    //   setTimeout(() => {
+    //     this.compile()
+
+    //   }, 500)
+    // }
     //Keep old value of path
     var slug = this.doc.slug
     var path = _.cloneDeep(slug)
@@ -623,11 +629,11 @@ export default {
     var comp = _.cloneDeep(parent)
     this.oldComp = comp
 
-  },
-  created () {
+},
+created() {
 
 
-  }
+}
 
 
 }
