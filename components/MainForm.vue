@@ -129,7 +129,7 @@
 
 
                       </v-col> -->
-                      <Previewer
+                      <UiPreviewer
                         :value="preview"
                         class="panel"
                       />
@@ -198,35 +198,6 @@
               Run
             </v-btn>
 
-            <!--
-            <v-textarea
-              v-model="doc.html"
-              background-color="light-blue"
-              color="black"
-              label="HTML"
-              :rules="[rules.required]"
-              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
-            ></v-textarea>
-
-
-
-
-            <v-textarea
-              v-model="doc.css"
-              background-color="grey lighten-2"
-              color="cyan"
-              label="CSS"
-              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
-            ></v-textarea>
-
-            <v-textarea
-              v-model="doc.js"
-              background-color="amber lighten-4"
-              color="orange orange-darken-4"
-              label="JS"
-              @input="[isFormValid = true ? isFormValid : false, writeTemp()]"
-            ></v-textarea> -->
-
           </v-container>
 
         </div>
@@ -260,7 +231,7 @@
 
 <script>
 // import 'some-codemirror-resource'
-import Previewer from '~/components/ui/Previewer'
+// import Previewer from '~/components/ui/Previewer'
 import Snackbar from '~/components/Snackbar'
 
 import { parseComponent } from 'vue-template-compiler/browser'
@@ -272,7 +243,7 @@ import isAbsouteUrl from 'is-absolute-url'
 import * as params from '@/utils/params'
 
 // const babel = require('babel-core')
-import * as Babel from 'babel-standalone';
+import * as Babel from 'babel-standalone'
 // var babel = require("@babel/core");
 // import { transform } from "@babel/core";
 // import * as babel from "@babel/core";
@@ -287,7 +258,10 @@ const CDN_MAP = {
 export default {
 
   name: 'MainForm',
-  components: { Previewer, Snackbar },
+  components: {
+    //  Previewer,
+    Snackbar
+  },
 
   props: {
     projects: {
@@ -325,6 +299,7 @@ export default {
 
   data () {
     return {
+      showSample: false,
       preview: '',
       code: '',
       //Array of the code that will be applied to codemirror
@@ -343,20 +318,18 @@ export default {
         string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
       },
       cmOption: {
-        tabSize: 4,
-        styleActiveLine: true,
-        lineNumbers: true,
-        line: true,
-        foldGutter: true,
-        styleSelectedText: true,
-        mode: 'text/javascript',
-        keyMap: "sublime",
-        matchBrackets: true,
-        showCursorWhenSelecting: true,
+        mode: 'vue',
         theme: 'base16-dark',
-        extraKeys: { 'Ctrl': 'autocomplete' },
-        hintOptions: {
-          completeSingle: true
+        value: `<template></template>`,
+        lineNumbers: true,
+        tabSize: 2,
+        autofocus: true,
+        line: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        extraKeys: {
+          Tab: 'emmetExpandAbbreviation',
+          Enter: 'emmetInsertLineBreak'
         }
       }
 
@@ -419,6 +392,13 @@ export default {
     connect () {
       this.isConnected = true
       console.log('NODE-SERVER is connected')
+      // if (this.doc.slug !== '') {
+      //   setTimeout(() => {
+      //     this.compile()
+
+      //   }, 500)
+      // }
+      // console.log(this.doc)
 
     },
     disconnect () {
@@ -432,15 +412,6 @@ export default {
       })
 
     },
-    ifEmptyTemplate (msg) {
-      //empty contrnt data
-      if (msg = 'Template is empty') {
-        this.isEmptyTemplate = true
-      }
-
-      console.log(msg)
-
-    }
 
   },
 
@@ -613,52 +584,19 @@ export default {
       this.$refs.form.reset()
     },
 
-    writeTemp () {
-      //load on update
-      let self = this
-
-      //Create get/create .vue file. write the template markups based on ui input and update it
-      //after a few seconds
-      const content = {
-
-        // type: self.doc.type,
-        html: self.doc.html,
-        css: self.doc.css,
-        js: self.doc.js
-
-      }
-
-      //add mode property to keep state of the edit component
-
-      this.$socket.client.emit("writeToVue", { content })
-
-    },
     //code Mirror methods
     onCmReady (cm) {
       console.log('the editor is readied!', cm)
-      this.emptyOutVueTempFile()
+      if (this.doc.html !== '') {
+        this.compile()
+      }
     },
     onCmFocus (cm) {
       console.log('the editor is focus!', cm)
+
     },
     onCmCodeChange (newCode) {
 
-      // this.isFormValid
-
-      // console.log('this is new code', newCode)
-      // this.doc.html = newCode
-      // if (newCode) {
-      //   setTimeout(() => {
-      //     this.writeTemp()
-      //   }, 300)
-      // } else if (newCode === '') {
-
-      //   this.emptyOutVueTempFile()
-      //   setTimeout(() => {
-      //     this.writeTemp()
-      //   }, 300)
-
-      // }
     },
 
     emptyOutVueTempFile () {
@@ -670,6 +608,12 @@ export default {
   },
   mounted () {
 
+   if (this.doc.slug !== '') {
+        setTimeout(() => {
+          this.compile()
+
+        }, 500)
+      }
     //Keep old value of path
     var slug = this.doc.slug
     var path = _.cloneDeep(slug)
@@ -680,6 +624,10 @@ export default {
     this.oldComp = comp
 
   },
+  created () {
+
+
+  }
 
 
 }
