@@ -487,14 +487,18 @@ export default {
       }
     },
     genHeads () {
-      let heads = []
+      let heads = [
+        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons', 'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/font-awesome-line-awesome/css/all.min.css']
+
 
       params.queryParse(location.search)
 
       const { pkgs, css, cdn, vue, vuetify } = params.get()
       const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg
 
+
       return [].concat(
+
         []
           .concat(vue ? 'vue@' + vue : 'vue', pkgs)
           .concat(vuetify ? 'vuetify@' + vuetify : 'vuetify', pkgs)
@@ -503,13 +507,17 @@ export default {
             pkg =>
               `<script src=${isAbsouteUrl(pkg) ? '' : prefix}${pkg}><\/script>`
           ),
-        css.map(
-          item =>
-            console.log('css', item)
+        css
+          .concat(heads)
+          .map(
+            item =>
               `<link rel=stylesheet href=${isAbsouteUrl(item) ? '' : prefix
               }${item}>`
-        )
+          ),
+
       )
+
+
     },
 
 
@@ -607,13 +615,13 @@ export default {
   },
   mounted () {
     console.log(this.doc)
-    if(this.doc.type === 'component' && this.doc.slug !== '') {
+    if (this.doc.type === 'component' && this.doc.slug !== '') {
       setTimeout(() => {
         this.compile()
 
       }, 500)
 
-  }
+    }
     // if (this.doc.slug !== '') {
     //   setTimeout(() => {
     //     this.compile()
@@ -629,11 +637,11 @@ export default {
     var comp = _.cloneDeep(parent)
     this.oldComp = comp
 
-},
-created() {
+  },
+  created () {
 
 
-}
+  }
 
 
 }
