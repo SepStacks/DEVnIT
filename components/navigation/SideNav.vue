@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-app-bar
-      app
-      clipped-left
-    >
-
+    <v-app-bar app clipped-left>
       <v-toolbar-title class="ml-4">
         <div class="font-weight-bold">SepStacks</div>
         <!-- <v-img src="/svg/altron.svg" max-width="50%" /> -->
@@ -13,69 +9,34 @@
 
       <!-- links -->
       <v-card-actions>
-        <v-btn
-          text
-          to="/"
-        >
-          home
-        </v-btn>
+        <v-btn text to="/"> home </v-btn>
 
-        <v-btn
-          text
-          to="/projects"
-        >
-          Projects
-        </v-btn>
-        <v-btn
-          text
-          to="/create_update"
-        >
-          Create
-        </v-btn>
-
+        <v-btn text to="/projects"> Projects </v-btn>
+        <v-btn text to="/create_update"> Create </v-btn>
       </v-card-actions>
-
     </v-app-bar>
 
-    <v-navigation-drawer
-      permanent
-      app
-      clipped
-      v-model="drawer"
-    >
-
+    <v-navigation-drawer permanent app clipped v-model="drawer">
       <div
-        class="region"
-        v-for="category in categories.reverse()"
-        :key="category"
-      >
-        <v-subheader>{{category}}</v-subheader>
-        <v-list>
+      class="mt-5" v-for="(category, index) in categories" :key="index">
+        <p class="mb-2 grey--text font-weight-bold" v-if="category">
+          {{ category }}
+        </p>
 
-          <v-list-item
-            v-for="(doc, i) in subheader(category)"
-            :key="i"
-            link
-          >
-
+        <ul>
+          <li v-for="(doc, i) in subheader(category)" :key="i" link>
             <v-list-item-content>
-
               <NuxtLink :to="doc.path">
-
-                <v-list-item-title
-                  class="active-link mt-3"
-                  color="green"
-                > {{ doc.slug === "index" ? "Installation" : doc.slug }}</v-list-item-title>
-
+                <v-list-item-title class="active-link mt-3" color="green">
+                  {{
+                    doc.slug === 'index' ? 'Installation' : doc.slug
+                  }}</v-list-item-title
+                >
               </NuxtLink>
-
             </v-list-item-content>
-
-          </v-list-item>
-        </v-list>
-
+          </li>
+        </ul>
       </div>
-
     </v-navigation-drawer>
   </div>
 </template>
@@ -84,28 +45,31 @@
 export default {
   props: {
     menus: {
-      type: Array
-    }
+      type: Array,
+    },
   },
-  data () {
+  data() {
     return {
       drawer: null,
-
-    }
+    };
   },
   methods: {
-    subheader (category) {
-      return this.menus.filter(o => o.category === category)
+    isCategoryActive(documents) {
+      return documents.filter(
+        (document) => document.path === this.$route.fullPath
+      );
     },
-    displayJson (o) {
-      return JSON.stringify(o, null, 2)
-    }
+    subheader(category) {
+      return this.menus.filter((o) => o.category === category);
+    },
+    displayJson(o) {
+      return JSON.stringify(o, null, 2);
+    },
   },
   computed: {
-    categories () {
-      return [...new Set(this.menus.map(o => o.category))]
+    categories() {
+      return [...new Set(this.menus.map((o) => o.category))];
     },
-
-  }
+  },
 };
 </script>

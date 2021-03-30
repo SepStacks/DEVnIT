@@ -1,13 +1,9 @@
 <template>
   <div>
     <v-container>
-      <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
+      <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
 
-      <v-form
-        ref="form"
-        v-model="isFormValid"
-      >
-
+      <v-form ref="form" v-model="isFormValid">
         <v-radio-group
           v-show="showRadio"
           v-model="doc.type"
@@ -42,11 +38,13 @@
             readonly
             v-show="false"
             v-model="doc.slug"
-            :value="doc.slug ='index'"
+            :value="(doc.slug = 'index')"
             label="component name"
           ></v-text-field>
 
-          <div class="mt-5 font-weight-bold"> Add installation instructions(optional)</div>
+          <div class="mt-5 font-weight-bold">
+            Add installation instructions(optional)
+          </div>
 
           <!-- <v-text-field v-model="doc.bodytitle" label="Body Title"></v-text-field>
                 <v-text-field v-model="doc.bodyDescription" label="Body Description"></v-text-field>
@@ -57,15 +55,10 @@
                 v-model="doc.bodyContent"
                 hint="Hint text">
                 </v-textarea> -->
-
         </div>
 
         <div v-if="doc.type === 'component'">
-
-          <v-container
-            class="px-0"
-            fluid
-          >
+          <v-container class="px-0" fluid>
             <v-checkbox
               v-if="mode !== 'create'"
               v-model="check"
@@ -74,18 +67,9 @@
           </v-container>
 
           <v-container>
-
             <v-sheet outlined>
-              <v-row
-                justify="center"
-                class="container"
-              >
-                <v-col
-                  v-if="makeTemplate"
-                  cols="12"
-                  md="4"
-                >
-
+              <v-row justify="center" class="container">
+                <v-col v-if="makeTemplate" cols="12" md="4">
                   <v-select
                     @input="isFormValid = true"
                     :items="projects"
@@ -99,40 +83,20 @@
                     label="component name"
                     :rules="[rules.required, rules.string]"
                   ></v-text-field>
-
                 </v-col>
 
                 <v-col>
-                  <v-card
-                    height="300"
-                    elevation="4"
-                    class="py-5"
-                  >
+                  <v-card height="300" elevation="4" class="py-5">
                     <!-- search in temp directory and place in name of temp component -->
                     <!-- get placeholder component fist -->
 
-                    <v-row
-                      align="center"
-                      justify="center"
-                    >
-
-                      <!-- <v-col v-if="doc.html === ''">
+                    <v-row align="center" justify="center">
+                      <v-col v-if="!preview">
                         <div>Add vue markup to generate previewer</div>
-
                       </v-col>
                       <v-col v-else>
-                        <Previewer
-                          :value="preview"
-                          class="panel"
-                        />
-
-
-
-                      </v-col> -->
-                      <UiPreviewer
-                        :value="preview"
-                        class="panel"
-                      />
+                        <UiPreviewer :value="preview" class="panel" />
+                      </v-col>
                     </v-row>
                   </v-card>
                 </v-col>
@@ -142,11 +106,7 @@
             <!-- codemirror -->
 
             <v-row class="container">
-
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
                   <codemirror
@@ -160,10 +120,7 @@
                 </client-only>
               </v-col>
 
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <client-only>
                   <div>CSS</div>
                   <codemirror
@@ -175,12 +132,8 @@
                 </client-only>
               </v-col>
 
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <client-only>
-
                   <div>JS</div>
                   <codemirror
                     v-model.lazy="doc.js"
@@ -192,37 +145,31 @@
               </v-col>
             </v-row>
             <v-btn
+              :disabled="!doc.html"
               @click="compile"
               class="compile"
+              :loading="loadCompile"
             >
               Run
             </v-btn>
-
           </v-container>
-
         </div>
 
-        <v-row
-          dense
-          class="mt-3"
-        >
+        <v-row dense class="mt-3">
           <v-col cols="12">
             <v-btn
               :loading="loader"
               class="mx-2"
               @click.prevent="emitToServer"
-              :disabled="mode === 'Edit Page' ? isFormValid = false : !isFormValid"
+              :disabled="
+                mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+              "
             >
               Submit
             </v-btn>
 
-            <v-btn
-              class="mx-2"
-              @click="[$router.go(-1), emptyFile()]"
-            >cancel</v-btn>
-
+            <v-btn class="mx-2" @click="$router.go(-1)">cancel</v-btn>
           </v-col>
-
         </v-row>
       </v-form>
     </v-container>
@@ -232,35 +179,32 @@
 <script>
 // import 'some-codemirror-resource'
 // import Previewer from '~/components/ui/Previewer'
-import Snackbar from '~/components/Snackbar'
+import Snackbar from '~/components/Snackbar';
 
-import { parseComponent } from 'vue-template-compiler/browser'
-import { parse as queryParse } from 'query-string'
+import { parseComponent } from 'vue-template-compiler/browser';
+import { parse as queryParse } from 'query-string';
 // import getImports from '@/utils/get-imports'
-import getPkgs from '@/utils/get-pkgs'
-import isAbsouteUrl from 'is-absolute-url'
+import getPkgs from '@/utils/get-pkgs';
+import isAbsouteUrl from 'is-absolute-url';
 // import { upload } from '@/utils/store';
-import * as params from '@/utils/params'
+import * as params from '@/utils/params';
 
 // const babel = require('babel-core')
-import * as Babel from 'babel-standalone'
+import * as Babel from 'babel-standalone';
 // var babel = require("@babel/core");
 // import { transform } from "@babel/core";
 // import * as babel from "@babel/core";
 
-
 const CDN_MAP = {
   unpkg: '//unpkg.com/',
-  jsdelivr: '//cdn.jsdelivr.net/npm/'
-}
-
+  jsdelivr: '//cdn.jsdelivr.net/npm/',
+};
 
 export default {
-
   name: 'MainForm',
   components: {
     //  Previewer,
-    Snackbar
+    Snackbar,
   },
 
   props: {
@@ -268,40 +212,39 @@ export default {
       type: Array,
     },
     content: {
-      type: Array
+      type: Array,
     },
     //document object with all the content
     doc: {
-      type: Object
+      type: Object,
     },
     /* choose to show radio group (should be hidden on edit pages as we do not
       want the values to mix/overlap with other components)*/
     showRadio: {
       type: Boolean,
-      default: true
-
+      default: true,
     },
     // Create or Edit mode
     mode: {
       type: String,
-      default: 'create'
-
+      default: 'create',
     },
 
     template: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
     // markdownTemplate: {
     //     required: false
     // }
   },
 
-  data () {
+  data() {
     return {
       showSample: false,
       preview: '',
       code: '',
+      loadCompile: false,
       //Array of the code that will be applied to codemirror
       tempLoader: false,
       isEmptyTemplate: false,
@@ -312,10 +255,10 @@ export default {
       oldPath: '',
       oldComp: '',
       check: false,
-      rules:
-      {
-        required: value => !!value || 'Required.',
-        string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
+      rules: {
+        required: (value) => !!value || 'Required.',
+        string: (value) =>
+          /^[A-Za-z]+$/.test(value) || 'Only strings are allowed',
       },
       cmOption: {
         mode: 'vue',
@@ -329,69 +272,58 @@ export default {
         matchBrackets: true,
         extraKeys: {
           Tab: 'emmetExpandAbbreviation',
-          Enter: 'emmetInsertLineBreak'
-        }
-      }
-
+          Enter: 'emmetInsertLineBreak',
+        },
+      },
 
       // bodyTitle: '',
       // bodyDescription: '',
       // bodyContent: ''
-
-    }
+    };
   },
 
   computed: {
-
-    makeTemplate () {
-
-      return this.check === true || this.mode === 'create' ? true : false
-
+    makeTemplate() {
+      return this.check === true || this.mode === 'create' ? true : false;
     },
-    doesExist () {
+    doesExist() {
       // Check if project exist
       if (this.doc.type === 'project') {
-        const string = this.doc.title + ""
+        const string = this.doc.title + '';
         // Without this line below switching betweeen component and project produces an error
         if (this.projects.includes(string.toUpperCase())) {
-          return `${this.doc.parent} already exist`
+          return `${this.doc.parent} already exist`;
         }
 
-
-        return true
-
-
-
-
+        return true;
       } else {
-
         if (typeof this.doc.slug === 'string') {
-          const parent = this.doc.parent + ""
-          const slug = this.doc.slug + ""
+          const parent = this.doc.parent + '';
+          const slug = this.doc.slug + '';
 
-          const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
+          const check = this.content.filter(
+            (data) =>
+              data.parent === parent.toUpperCase() &&
+              data.slug === slug.toLowerCase()
+          );
 
           // check if component name exists based on the parent name
           // return check.length === 1
           if (check.length === 1) {
-            return `${slug} already exist`
+            return `${slug} already exist`;
           } else {
-            return true
+            return true;
           }
         }
-
       }
-
     },
-
   },
 
   sockets: {
-
     // Fired when the socket connects.
-    connect () {
-      this.isConnected = true
-      console.log('NODE-SERVER is connected')
+    connect() {
+      this.isConnected = true;
+      console.log('NODE-SERVER is connected');
       // if (this.doc.slug !== '') {
       //   setTimeout(() => {
       //     this.compile()
@@ -399,75 +331,71 @@ export default {
       //   }, 500)
       // }
       // console.log(this.doc)
-
     },
-    disconnect () {
-      this.isConnected = false
+    disconnect() {
+      this.isConnected = false;
     },
-    output (data) {
+    output(data) {
       // This method was fired by the node-server. eg: io.emit("output", content)'
       return this.$notifier.showMessage({
         content: 'new ' + `<strong>${data.type}</strong>` + ' has been created',
-        color: "success",
-      })
-
+        color: 'success',
+      });
     },
-
   },
 
   methods: {
-    emptyFile () {
+    emptyFile() {
       if (this.doc.type === 'component') {
-        this.doc.html = '',
-          this.doc.css = '',
-          this.doc.js = ''
+        (this.doc.html = ''), (this.doc.css = ''), (this.doc.js = '');
       }
     },
-    async compile () {
-      const code = this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css
+    async compile() {
+      this.loadCompile = true;
+      const code =
+        this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
       if (!code) {
-        return
+        return;
       }
       // const imports = []
-      const { template, script, styles, customBlocks } = parseComponent(code)
-      let config
+      const { template, script, styles, customBlocks } = parseComponent(code);
+      let config;
 
-      if ((config = customBlocks.find(n => n.type === 'config'))) {
-        params.clear()
-        params.parse(config.content)
+      if ((config = customBlocks.find((n) => n.type === 'config'))) {
+        params.clear();
+        params.parse(config.content);
       }
 
-      let compiled
-      const pkgs = []
-      let scriptContent = 'exports = { default: {} }'
+      let compiled;
+      const pkgs = [];
+      let scriptContent = 'exports = { default: {} }';
 
       if (script) {
-        console.log(Babel)
+        console.log(Babel);
         try {
           compiled = Babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
             // plugins: [[getImports]]
-          }).code
+          }).code;
         } catch (e) {
-          this.preview = `<pre style="color: red">${e.message}</pre>`
-          return
+          this.preview = `<pre style="color: red">${e.message}</pre>`;
+          return;
         }
-        scriptContent = await getPkgs(compiled, pkgs)
+        scriptContent = await getPkgs(compiled, pkgs);
       }
 
-      const heads = this.genHeads()
-      const scripts = []
+      const heads = this.genHeads();
+      const scripts = [];
 
-      pkgs.forEach(pkg => {
+      pkgs.forEach((pkg) => {
         scripts.push(
-          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${pkg.name
-          }><\/script>`
-        )
-      })
+          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${pkg.name}><\/script>`
+        );
+      });
 
-      styles.forEach(style => {
-        heads.push(`<style>${style.content}</style>`)
-      })
+      styles.forEach((style) => {
+        heads.push(`<style>${style.content}</style>`);
+      });
 
       scripts.push(`
       <script>
@@ -475,63 +403,63 @@ export default {
         ${scriptContent}
         var component = exports.default;
         component.template = component.template || ${JSON.stringify(
-        template.content
-      )}
+          template.content
+        )}
+
+        Vue.use(Vuetify)
 
         new Vue(component).$mount('#app')
-      <\/script>`)
+      <\/script>`);
 
       this.preview = {
         head: heads.join('\n'),
-        body: '<div id="app"></div>' + scripts.join('\n')
+        body: '<div id="app"><v-app></v-app></div>' + scripts.join('\n'),
+      };
+      if (this.preview) {
+        this.loadCompile = false;
       }
     },
-    genHeads () {
+    genHeads() {
       let heads = [
-        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons', 'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/font-awesome-line-awesome/css/all.min.css']
+        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons',
+        'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/font-awesome-line-awesome/css/all.min.css',
+      ];
 
+      params.queryParse(location.search);
 
-      params.queryParse(location.search)
-
-      const { pkgs, css, cdn, vue, vuetify } = params.get()
-      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg
-
+      const { pkgs, css, cdn, vue, vuetify } = params.get();
+      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg;
 
       return [].concat(
-
         []
           .concat(vue ? 'vue@' + vue : 'vue', pkgs)
           .concat(vuetify ? 'vuetify@' + vuetify : 'vuetify', pkgs)
 
           .map(
-            pkg =>
+            (pkg) =>
               `<script src=${isAbsouteUrl(pkg) ? '' : prefix}${pkg}><\/script>`
           ),
         css
           .concat(heads)
           .map(
-            item =>
-              `<link rel=stylesheet href=${isAbsouteUrl(item) ? '' : prefix
+            (item) =>
+              `<link rel=stylesheet href=${
+                isAbsouteUrl(item) ? '' : prefix
               }${item}>`
-          ),
-
-      )
-
-
+          )
+      );
     },
 
-
-
-    emitToServer () {
+    emitToServer() {
       //Have different paramaters for component and projects
-      var modeType = this.mode
+      var modeType = this.mode;
       if (this.doc.type === 'project') {
-        var self = this
-        this.loader = true
+        var self = this;
+        this.loader = true;
 
         // values for project
         const content = {
-
           title: self.doc.title.toString().toUpperCase(),
           slug: self.doc.slug.toString().toLowerCase(),
           extention: '.md',
@@ -540,25 +468,22 @@ export default {
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
-        }
+        };
 
-        this.$socket.client.emit("properties", { content, modeType })
+        this.$socket.client.emit('properties', { content, modeType });
 
         setTimeout(() => {
           // add some loader while component is being generated
-          this.tempLoader = false
+          this.tempLoader = false;
 
-          this.$router.push(`/projects/`)
-        }, 500)
-
-
+          this.$router.push(`/projects/`);
+        }, 500);
       } else {
-        var self = this
-        this.tempLoader = true
+        var self = this;
+        this.tempLoader = true;
 
         // Values for component
         const content = {
-
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
@@ -568,59 +493,48 @@ export default {
           parent: self.doc.parent.toString().toUpperCase(),
           html: self.doc.html,
           css: self.doc.css,
-          js: self.doc.js
+          js: self.doc.js,
+        };
 
-        }
-
-        console.log('success')
-        this.$router.push(`/projects/`)
+        console.log('success');
+        this.$router.push(`/projects/`);
 
         setTimeout(() => {
-          this.$socket.client.emit("properties", { content, modeType })
-          this.tempLoader = false
-
-        }, 500)
+          this.$socket.client.emit('properties', { content, modeType });
+          this.tempLoader = false;
+        }, 500);
       }
 
       // this.title = ''
-      this.$refs.form.validate()
-
+      this.$refs.form.validate();
     },
 
-    reset () {
-      this.$refs.form.reset()
+    reset() {
+      this.$refs.form.reset();
     },
 
     //code Mirror methods
-    onCmReady (cm) {
-      console.log('the editor is readied!', cm)
+    onCmReady(cm) {
+      console.log('the editor is readied!', cm);
       // if (this.doc.html !== '') {
       //   this.compile()
       // }
     },
-    onCmFocus (cm) {
-      console.log('the editor is focus!', cm)
-
+    onCmFocus(cm) {
+      console.log('the editor is focus!', cm);
     },
-    onCmCodeChange (newCode) {
+    onCmCodeChange(newCode) {},
 
+    emptyOutVueTempFile() {
+      this.$socket.client.emit('emptyOutVueFile');
     },
-
-    emptyOutVueTempFile () {
-
-      this.$socket.client.emit("emptyOutVueFile")
-
-    }
-
   },
-  mounted () {
-    console.log(this.doc)
+  mounted() {
+    console.log(this.doc);
     if (this.doc.type === 'component' && this.doc.slug !== '') {
       setTimeout(() => {
-        this.compile()
-
-      }, 500)
-
+        this.compile();
+      }, 500);
     }
     // if (this.doc.slug !== '') {
     //   setTimeout(() => {
@@ -629,22 +543,16 @@ export default {
     //   }, 500)
     // }
     //Keep old value of path
-    var slug = this.doc.slug
-    var path = _.cloneDeep(slug)
-    this.oldPath = path
+    var slug = this.doc.slug;
+    var path = _.cloneDeep(slug);
+    this.oldPath = path;
 
-    var parent = this.doc.parent
-    var comp = _.cloneDeep(parent)
-    this.oldComp = comp
-
+    var parent = this.doc.parent;
+    var comp = _.cloneDeep(parent);
+    this.oldComp = comp;
   },
-  created () {
-
-
-  }
-
-
-}
+  created() {},
+};
 </script>
 
 
