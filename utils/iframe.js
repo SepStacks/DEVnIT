@@ -17,7 +17,7 @@ class Iframe {
       html = obj;
     } else {
       const { head = '', body = '' } = obj;
-      html = `<!DOCTYPE html><html><head>${head}</head><body><div id="app">${body}</div></body></html>`;
+      html = `<!DOCTYPE html><html><head>${head}</head><body><div>${body}</div></body></html>`;
     }
 
     const iframe = this.createIframe();

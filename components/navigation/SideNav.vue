@@ -17,8 +17,7 @@
     </v-app-bar>
 
     <v-navigation-drawer permanent app clipped v-model="drawer">
-      <div
-      class="mt-5" v-for="(category, index) in categories" :key="index">
+      <div class="mt-5" v-for="(category, index) in categories" :key="index">
         <p class="mb-2 grey--text font-weight-bold" v-if="category">
           {{ category }}
         </p>
@@ -28,14 +27,13 @@
             <v-list-item-content>
               <NuxtLink :to="doc.path">
                 <v-list-item-title class="active-link mt-3" color="green">
-                  {{
-                    doc.slug === 'index' ? 'Installation' : doc.slug
-                  }}</v-list-item-title
-                >
+                  {{ doc.slug === 'index' ? 'Installation' : doc.slug }}
+                </v-list-item-title>
               </NuxtLink>
             </v-list-item-content>
           </li>
         </ul>
+
       </div>
     </v-navigation-drawer>
   </div>

@@ -13,7 +13,7 @@ const sandboxAttributes = [
   'allow-pointer-lock',
   'allow-popups',
   'allow-same-origin',
-  'allow-scripts'
+  'allow-scripts',
 ];
 
 export default {
@@ -22,26 +22,26 @@ export default {
   mounted() {
     this.iframe = createIframe({
       el: this.$refs.iframe,
-      sandboxAttributes
+      sandboxAttributes,
     });
   },
 
   watch: {
     value(val) {
       this.iframe.setHTML(val);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-       html {
-               overflow-y: auto !important;
-               height: auto !important;
-            }
+html {
+  overflow-y: auto !important;
+  height: auto !important;
+}
 
-            .theme--light.application {
-            background: #fff !important;
-            }
+.theme--light.application {
+  background: #fff !important;
+}
 </style>
 

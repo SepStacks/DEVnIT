@@ -401,19 +401,17 @@ export default {
       <script>
         var exports = {};
         ${scriptContent}
-        var component = exports.default;
+        var component = exports.default
         component.template = component.template || ${JSON.stringify(
           template.content
         )}
-
-        Vue.use(Vuetify)
 
         new Vue(component).$mount('#app')
       <\/script>`);
 
       this.preview = {
         head: heads.join('\n'),
-        body: '<div id="app"><v-app></v-app></div>' + scripts.join('\n'),
+        body: `<div id="app"><v-app></v-app></div>` + scripts.join('\n'),
       };
       if (this.preview) {
         this.loadCompile = false;
@@ -421,8 +419,8 @@ export default {
     },
     genHeads() {
       let heads = [
+        'https://unpkg.com/vuetify@2.4.8/dist/vuetify.css',
         'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons',
-        'https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css',
         'https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/font-awesome-line-awesome/css/all.min.css',
       ];
 
@@ -431,10 +429,15 @@ export default {
       const { pkgs, css, cdn, vue, vuetify } = params.get();
       const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg;
 
+      let frameworkJS = [
+        'https://unpkg.com/vue@2.6.12/dist/vue.js',
+        'https://unpkg.com/vuetify@2.4.8/dist/vuetify.js',
+      ];
+
       return [].concat(
         []
-          .concat(vue ? 'vue@' + vue : 'vue', pkgs)
-          .concat(vuetify ? 'vuetify@' + vuetify : 'vuetify', pkgs)
+          // .concat(vue ? 'vue@' + vue : 'vue', pkgs)
+          .concat(frameworkJS)
 
           .map(
             (pkg) =>
@@ -515,7 +518,6 @@ export default {
 
     //code Mirror methods
     onCmReady(cm) {
-      console.log('the editor is readied!', cm);
       // if (this.doc.html !== '') {
       //   this.compile()
       // }
@@ -530,12 +532,11 @@ export default {
     },
   },
   mounted() {
-    console.log(this.doc);
-    if (this.doc.type === 'component' && this.doc.slug !== '') {
-      setTimeout(() => {
-        this.compile();
-      }, 500);
-    }
+    //  console.log(this.doc.type === 'component' && this.doc.slug.length > 0);
+    // if (this.doc.type === 'component' && this.doc.slug.length > 0) {
+    //   this.compile();
+    // }
+
     // if (this.doc.slug !== '') {
     //   setTimeout(() => {
     //     this.compile()
