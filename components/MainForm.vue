@@ -398,20 +398,21 @@ export default {
       });
 
       scripts.push(`
-      <script>
+      <script type="module">
         var exports = {};
         ${scriptContent}
         var component = exports.default
         component.template = component.template || ${JSON.stringify(
           template.content
         )}
-
-        new Vue(component).$mount('#app')
+        Vue.use(Vuetify);
+        new Vue({vuetify : new Vuetify()
+      }).$mount('#app')
       <\/script>`);
-
+      console.log('scripts', template);
       this.preview = {
         head: heads.join('\n'),
-        body: `<div id="app"><v-app></v-app></div>` + scripts.join('\n'),
+        body: `<div id="app"><v-app>${template.content}</v-app></div>` + scripts.join('\n'),
       };
       if (this.preview) {
         this.loadCompile = false;
@@ -518,14 +519,18 @@ export default {
 
     //code Mirror methods
     onCmReady(cm) {
-      // if (this.doc.html !== '') {
+      // if (this.doc.slug !== '') {
       //   this.compile()
       // }
     },
     onCmFocus(cm) {
       console.log('the editor is focus!', cm);
     },
-    onCmCodeChange(newCode) {},
+    onCmCodeChange(newCode) {
+      if (newCode) {
+        this.compile();
+      }
+    },
 
     emptyOutVueTempFile() {
       this.$socket.client.emit('emptyOutVueFile');
