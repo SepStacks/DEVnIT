@@ -406,48 +406,10 @@ export default {
           `<v-app>${template.content}</v-app>`
         )}
 
-        const LINE_AWESOME = {
-  complete: 'la-check',
-  cancel: 'la-ban',
-  close: 'la-times',
-  delete: 'la-trash', // delete (e.g. v-chip close)
-  clear: 'la-times',
-  success: 'la-check',
-  info: 'la-exclamation-circle',
-  warning: 'la-exclamation-triangle',
-  error: 'la-exclamation-triangle',
-  prev: 'la-angle-left',
-  next: 'la-angle-right',
-  checkboxOn: 'la-check',
-  checkboxOff: 'la-stop',
-  checkboxIndeterminate: '...',
-  delimiter: '...', // for carousel
-  sort: '...',
-  expand: 'la-angle-down',
-  menu: '...',
-  subgroup: '...',
-  dropdown: 'la-angle-down',
-  radioOn: 'la-check-circle',
-  radioOff: 'la-circle',
-  edit: 'la-edit',
-  ratingEmpty: '...',
-  ratingFull: '...',
-  ratingHalf: '...',
-  loading: '...',
-  first: '...',
-  last: '...',
-  unfold: '...',
-  file: '...'
-}
-
         const opts = {
-icons: {
-    iconfont: 'la', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
-    values: LINE_AWESOME
-  },
-  theme: {
-    themes: {
-      light: {
+        theme: {
+        themes: {
+        light: {
         success: '#A4DB75', //  Success
         error: '#DA4E71', //  Error
         primary: '#12152F', //  ALtron Grey BLue
@@ -488,7 +450,7 @@ icons: {
       let heads = [
         'https://unpkg.com/vuetify@2.4.8/dist/vuetify.css',
         'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons',
-        'https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css',
+        'https://unpkg.com/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css',
       ];
 
       params.queryParse(location.search);
