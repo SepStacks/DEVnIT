@@ -147,7 +147,6 @@
             <v-btn
               :disabled="!doc.html"
               @click="compile"
-              class="compile"
               :loading="loadCompile"
             >
               Run
