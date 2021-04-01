@@ -2,7 +2,9 @@
 parent: "{{parent}}"
 type: "component"
 category: "Components"
-
+position: 2
+version: 1.0
+menuTitle: "{{slug}}"
 ---
 
 # {{slug}}
