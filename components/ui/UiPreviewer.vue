@@ -35,13 +35,13 @@ export default {
 </script>
 
 <style scoped>
-html {
+/* html {
   overflow-y: auto !important;
   height: auto !important;
 }
 
 .theme--light.application {
   background: #fff !important;
-}
+} */
 </style>
 

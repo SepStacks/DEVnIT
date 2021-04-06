@@ -45,16 +45,6 @@
           <div class="mt-5 font-weight-bold">
             Add installation instructions(optional)
           </div>
-
-          <!-- <v-text-field v-model="doc.bodytitle" label="Body Title"></v-text-field>
-                <v-text-field v-model="doc.bodyDescription" label="Body Description"></v-text-field>
-
-                <v-textarea
-                name="input-7-1"
-                label="Body Content"
-                v-model="doc.bodyContent"
-                hint="Hint text">
-                </v-textarea> -->
         </div>
 
         <div v-if="doc.type === 'component'">
@@ -65,44 +55,38 @@
               :label="`create new component from this template`"
             ></v-checkbox>
           </v-container>
+          <v-row justify="end" class="mt-3">
+            <v-col cols="12">
+              <v-btn
+                :loading="loader"
+                class="mx-2"
+                @click.prevent="emitToServer"
+                :disabled="
+                  mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+                "
+              >
+                Submit
+              </v-btn>
 
+              <v-btn class="mx-2" @click="$router.go(-1)">cancel</v-btn>
+            </v-col>
+          </v-row>
           <v-container>
-            <v-sheet outlined>
-              <v-row justify="center" class="container">
-                <v-col v-if="makeTemplate" cols="12" md="4">
-                  <v-select
-                    @input="isFormValid = true"
-                    :items="projects"
-                    v-model="doc.parent"
-                    item-text="title"
-                    label="Select project"
-                    :rules="[rules.required]"
-                  ></v-select>
-                  <v-text-field
-                    v-model="doc.slug"
-                    label="component name"
-                    :rules="[rules.required, rules.string]"
-                  ></v-text-field>
-                </v-col>
-
-                <v-col>
-                  <v-card height="300" elevation="4" class="py-5">
-                    <!-- search in temp directory and place in name of temp component -->
-                    <!-- get placeholder component fist -->
-
-                    <v-row align="center" justify="center">
-                      <v-col v-if="!preview">
-                        <div>Add vue markup to generate previewer</div>
-                      </v-col>
-                      <v-col v-else>
-                        <UiPreviewer :value="preview" class="panel" />
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-sheet>
-
+            <v-col v-if="makeTemplate" cols="12" md="4">
+              <v-select
+                @input="isFormValid = true"
+                :items="projects"
+                v-model="doc.parent"
+                item-text="title"
+                label="Select project"
+                :rules="[rules.required]"
+              ></v-select>
+              <v-text-field
+                v-model="doc.slug"
+                label="component name"
+                :rules="[rules.required, rules.string, doesExist]"
+              ></v-text-field>
+            </v-col>
             <!-- codemirror -->
 
             <v-row class="container">
@@ -144,32 +128,28 @@
                 </client-only>
               </v-col>
             </v-row>
-            <v-btn
-              :disabled="!doc.html"
-              @click="compile"
-              :loading="loadCompile"
-            >
-              Run
-            </v-btn>
           </v-container>
+
+          <v-sheet outlined>
+            <v-row justify="center" class="container">
+              <v-col>
+                <v-row align="center" justify="center">
+                  <v-col v-if="!doc.slug">
+                    <div>Add vue markup to generate previewer</div>
+                  </v-col>
+                  <v-col v-else>
+                    <div v-if="loadCompile === true">
+                      <div>loading...</div>
+                    </div>
+                    <v-col v-if="loadCompile === false">
+                      <UiPreviewer :value="preview" class="panel" />
+                    </v-col>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-sheet>
         </div>
-
-        <v-row dense class="mt-3">
-          <v-col cols="12">
-            <v-btn
-              :loading="loader"
-              class="mx-2"
-              @click.prevent="emitToServer"
-              :disabled="
-                mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
-              "
-            >
-              Submit
-            </v-btn>
-
-            <v-btn class="mx-2" @click="$router.go(-1)">cancel</v-btn>
-          </v-col>
-        </v-row>
       </v-form>
     </v-container>
   </div>
@@ -238,48 +218,46 @@ export default {
     // }
   },
 
-  data() {
-    return {
-      showSample: false,
-      preview: '',
-      code: '',
-      loadCompile: false,
-      //Array of the code that will be applied to codemirror
-      tempLoader: false,
-      isEmptyTemplate: false,
-      loader: false,
-      isFormValid: true,
-      response: '',
-      isConnected: false,
-      oldPath: '',
-      oldComp: '',
-      check: false,
-      rules: {
-        required: (value) => !!value || 'Required.',
-        string: (value) =>
-          /^[A-Za-z]+$/.test(value) || 'Only strings are allowed',
+  data: () => ({
+    showSample: false,
+    preview: '',
+    code: '',
+    loadCompile: false,
+    //Array of the code that will be applied to codemirror
+    tempLoader: false,
+    isEmptyTemplate: false,
+    loader: false,
+    isFormValid: true,
+    response: '',
+    isConnected: false,
+    oldPath: '',
+    oldComp: '',
+    check: false,
+    rules: {
+      required: (value) => !!value || 'Required.',
+      string: (value) =>
+        /^[A-Za-z]+$/.test(value) || 'Only strings are allowed',
+    },
+    cmOption: {
+      mode: 'vue',
+      theme: 'base16-dark',
+      value: `<template></template>`,
+      lineNumbers: true,
+      tabSize: 2,
+      autofocus: true,
+      line: true,
+      styleActiveLine: true,
+      matchBrackets: true,
+      extraKeys: {
+        Tab: 'emmetExpandAbbreviation',
+        Enter: 'emmetInsertLineBreak',
       },
-      cmOption: {
-        mode: 'vue',
-        theme: 'base16-dark',
-        value: `<template></template>`,
-        lineNumbers: true,
-        tabSize: 2,
-        autofocus: true,
-        line: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        extraKeys: {
-          Tab: 'emmetExpandAbbreviation',
-          Enter: 'emmetInsertLineBreak',
-        },
-      },
+    },
 
-      // bodyTitle: '',
-      // bodyDescription: '',
-      // bodyContent: ''
-    };
-  },
+    // bodyTitle: '',
+    // bodyDescription: '',
+    // bodyContent: ''
+  }),
 
   computed: {
     makeTemplate() {
@@ -296,24 +274,34 @@ export default {
 
         return true;
       } else {
-        if (typeof this.doc.slug === 'string') {
-          const parent = this.doc.parent + '';
+             const parent = this.doc.parent + '';
           const slug = this.doc.slug + '';
+        const check = this.content.filter(
+          (data) =>
+            data.parent === parent.toString().toUpperCase() &&
+            data.slug === slug.toString().toLowerCase()
+        );
+        console.log('check', check);
 
-          const check = this.content.filter(
-            (data) =>
-              data.parent === parent.toUpperCase() &&
-              data.slug === slug.toLowerCase()
-          );
+        return check.length === 1 ? ` The ${slug} component already exist please choose a
+        different name` : true;
+        // if (typeof this.doc.slug === 'string' && this.doc.parent ) {
+        //   const parent = this.doc.parent + '';
+        //   const slug = this.doc.slug + '';
 
-          // check if component name exists based on the parent name
-          // return check.length === 1
-          if (check.length === 1) {
-            return `${slug} already exist`;
-          } else {
-            return true;
-          }
-        }
+        //   const check = this.content.filter(
+        //     (data) =>
+        //       data.parent === parent.toUpperCase() &&
+        //       data.slug === slug.toLowerCase()
+        //   );
+        //   console.log('check',check)
+
+        //   // check if component name exists based on the parent name
+        //   // return check.length === 1
+        //   if (check.length === 1) {
+        //     return true;
+        //   }
+        // }
       }
     },
   },
@@ -350,7 +338,6 @@ export default {
       }
     },
     async compile() {
-      this.loadCompile = true;
       const code =
         this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
       if (!code) {
@@ -397,13 +384,13 @@ export default {
       });
 
       scripts.push(`
+
       <script>
         var exports = {};
         ${scriptContent}
         var component = exports.default
-        component.template = component.template || ${JSON.stringify(
-          `<v-app>${template.content}</v-app>`
-        )}
+        component.template = component.template ||
+        ${JSON.stringify('<v-app> ' + template.content + '</v-app>')}
 
         const opts = {
         theme: {
@@ -423,27 +410,20 @@ export default {
         accenthover: '#0599CB',
         secondaryhover: '#099ED3',
         infohover: '#01AEFF',
-      },
-
-
-
-    }
-  }
-        }
+      }}}}
 
         Vue.use(Vuetify);
         new Vue({vuetify : new Vuetify(opts),
         render: h => h(component)
       }).$mount('#app')
-      <\/script>`);
-      console.log('scripts', template);
+      <\/script>
+
+      `);
+
       this.preview = {
         head: heads.join('\n'),
         body: `<div id="app"></div>` + scripts.join('\n'),
       };
-      if (this.preview) {
-        this.loadCompile = false;
-      }
     },
     genHeads() {
       let heads = [
@@ -545,13 +525,14 @@ export default {
     },
 
     //code Mirror methods
-    onCmReady(cm) {
-      // if (this.doc.slug !== '') {
-      //   this.compile()
-      // }
-    },
+    onCmReady(cm) {},
     onCmFocus(cm) {
       console.log('the editor is focus!', cm);
+      if (this.doc.slug) {
+        setTimeout(() => {
+          this.compile();
+        }, 500);
+      }
     },
     onCmCodeChange(newCode) {
       if (newCode) {
@@ -564,18 +545,6 @@ export default {
     },
   },
   mounted() {
-    //  console.log(this.doc.type === 'component' && this.doc.slug.length > 0);
-    // if (this.doc.type === 'component' && this.doc.slug.length > 0) {
-    //   this.compile();
-    // }
-
-    // if (this.doc.slug !== '') {
-    //   setTimeout(() => {
-    //     this.compile()
-
-    //   }, 500)
-    // }
-    //Keep old value of path
     var slug = this.doc.slug;
     var path = _.cloneDeep(slug);
     this.oldPath = path;
@@ -584,7 +553,6 @@ export default {
     var comp = _.cloneDeep(parent);
     this.oldComp = comp;
   },
-  created() {},
 };
 </script>
 

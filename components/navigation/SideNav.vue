@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import { sortBy } from 'lodash';
 export default {
   props: {
     categories: {
@@ -86,36 +85,7 @@ export default {
       }
       return false;
     },
-  },
-  computed: {
-    sortedDocs() {
-      const list = this.categories;
-      console.log(sortBy(list, 'menuTitle'));
-      // const result = Object.values(this.categories).map((doc) => {
-      //      const index = Object.keys(doc).length - 1
-      //       console.log(doc[index])
-      // return doc.sort((a, b) => (a.menuTitle > b.menuTitle ? 1 : -1));
-      // });
-      //   return result
-      // return result
-      // console.log('result', result);
-      // return result
+  }
 
-      // .sort((a, b) => (a.menuTitle > b.menuTitle ? 1 : -1));
-
-      // const cat =  this.categories
-      // return this.categories
-
-      // .map((item) => {
-      //   item.sort((a,b) => a.menuTitle > b.menuTitle ? 1 : -1)
-      // })
-
-      // colsole.log(this.cate)
-      // console.log(this.categories.filter(e => e.title))
-      //  return this.categories.sort((a, b) =>
-      //           a.menuTitle > b.menuTitle ? 1 : -1
-      //         )
-    },
-  },
 };
 </script>
