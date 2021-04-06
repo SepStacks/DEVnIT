@@ -10,12 +10,10 @@
       <!-- links -->
       <v-card-actions>
         <v-btn text to="/"> home </v-btn>
-
         <v-btn text to="/projects"> Projects </v-btn>
         <v-btn text to="/create_update"> Create </v-btn>
       </v-card-actions>
     </v-app-bar>
-
     <v-navigation-drawer permanent app clipped v-model="drawer">
       <div
         class="mt-5"
@@ -31,7 +29,9 @@
         </p>
 
         <ul>
-          <li v-for="doc of docs.sort((a, b) => (a.menuTitle > b.menuTitle) ? 1 : -1)" :key="doc.slug" link>
+          <!-- Using slice will make a copy of the array which means data.body will not change in value,
+            and therefore no re-render will be called. -->
+          <li v-for="doc of docs.slice().sort()" :key="doc.slug" link>
             <v-list-item-content>
               <NuxtLink :to="doc.path">
                 <v-list-item-title class="active-link mt-3" color="green">
@@ -54,7 +54,6 @@
 
 <script>
 import { sortBy } from 'lodash';
-
 export default {
   props: {
     categories: {
@@ -87,28 +86,36 @@ export default {
       }
       return false;
     },
-    // isCategoryActive(documents) {
-    //   return documents.filter(
-    //     (document) => document.path === this.$route.fullPath
-    //   );
-    // },
-    // subheader(category) {
-    //   return this.menus.filter((o) => o.category === category);
-    // },
-    // displayJson(o) {
-    //   return JSON.stringify(o, null, 2);
-    // },
   },
   computed: {
-    // sortMenus() {
-    //   this.menus.sortBy('position', 'asc')
-    // },
-    // categories() {
-    //   console.log(groupBy)
-    //   const category =  groupBy(this.menus, 'category')
-    //   return category
-    //   // return [...new Set(this.menus.map((o) => o.category))];
-    // },
+    sortedDocs() {
+      const list = this.categories;
+      console.log(sortBy(list, 'menuTitle'));
+      // const result = Object.values(this.categories).map((doc) => {
+      //      const index = Object.keys(doc).length - 1
+      //       console.log(doc[index])
+      // return doc.sort((a, b) => (a.menuTitle > b.menuTitle ? 1 : -1));
+      // });
+      //   return result
+      // return result
+      // console.log('result', result);
+      // return result
+
+      // .sort((a, b) => (a.menuTitle > b.menuTitle ? 1 : -1));
+
+      // const cat =  this.categories
+      // return this.categories
+
+      // .map((item) => {
+      //   item.sort((a,b) => a.menuTitle > b.menuTitle ? 1 : -1)
+      // })
+
+      // colsole.log(this.cate)
+      // console.log(this.categories.filter(e => e.title))
+      //  return this.categories.sort((a, b) =>
+      //           a.menuTitle > b.menuTitle ? 1 : -1
+      //         )
+    },
   },
 };
 </script>
