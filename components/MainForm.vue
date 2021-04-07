@@ -68,6 +68,8 @@
                 Submit
               </v-btn>
 
+              <v-btn @click="compile"> Run </v-btn>
+
               <v-btn class="mx-2" @click="$router.go(-1)">cancel</v-btn>
             </v-col>
           </v-row>
@@ -260,6 +262,9 @@ export default {
   }),
 
   computed: {
+    dynamicProps() {
+      return { value: 'preview' };
+    },
     makeTemplate() {
       return this.check === true || this.mode === 'create' ? true : false;
     },
@@ -274,8 +279,8 @@ export default {
 
         return true;
       } else {
-             const parent = this.doc.parent + '';
-          const slug = this.doc.slug + '';
+        const parent = this.doc.parent + '';
+        const slug = this.doc.slug + '';
         const check = this.content.filter(
           (data) =>
             data.parent === parent.toString().toUpperCase() &&
@@ -283,25 +288,10 @@ export default {
         );
         console.log('check', check);
 
-        return check.length === 1 ? ` The ${slug} component already exist please choose a
-        different name` : true;
-        // if (typeof this.doc.slug === 'string' && this.doc.parent ) {
-        //   const parent = this.doc.parent + '';
-        //   const slug = this.doc.slug + '';
-
-        //   const check = this.content.filter(
-        //     (data) =>
-        //       data.parent === parent.toUpperCase() &&
-        //       data.slug === slug.toLowerCase()
-        //   );
-        //   console.log('check',check)
-
-        //   // check if component name exists based on the parent name
-        //   // return check.length === 1
-        //   if (check.length === 1) {
-        //     return true;
-        //   }
-        // }
+        return check.length === 1
+          ? ` The ${slug} component already exist please choose a
+        different name`
+          : true;
       }
     },
   },
@@ -311,13 +301,6 @@ export default {
     connect() {
       this.isConnected = true;
       console.log('NODE-SERVER is connected');
-      // if (this.doc.slug !== '') {
-      //   setTimeout(() => {
-      //     this.compile()
-
-      //   }, 500)
-      // }
-      // console.log(this.doc)
     },
     disconnect() {
       this.isConnected = false;
@@ -525,7 +508,13 @@ export default {
     },
 
     //code Mirror methods
-    onCmReady(cm) {},
+    onCmReady(cm) {
+      if (this.doc.slug) {
+        setTimeout(() => {
+          this.compile();
+        }, 500);
+      }
+    },
     onCmFocus(cm) {
       console.log('the editor is focus!', cm);
       if (this.doc.slug) {
@@ -544,6 +533,9 @@ export default {
       this.$socket.client.emit('emptyOutVueFile');
     },
   },
+  updated() {
+    console.log(this.preview);
+  },
   mounted() {
     var slug = this.doc.slug;
     var path = _.cloneDeep(slug);
@@ -560,6 +552,10 @@ export default {
 <style scoped>
 .compile {
   white-space: pre;
+}
+
+.panel {
+  height: 500px;
 }
 </style>
 

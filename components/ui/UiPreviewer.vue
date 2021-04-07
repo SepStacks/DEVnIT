@@ -1,6 +1,6 @@
 <template>
   <div class="preview">
-    <div ref="iframe"></div>
+    <div ref="iframe" class="holds-the-iframe"></div>
   </div>
 </template>
 
@@ -43,5 +43,12 @@ export default {
 .theme--light.application {
   background: #fff !important;
 } */
+.preview {
+  /* iframe loader */
+  background: url('https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif')
+    center center no-repeat;
+  background-color: #fff;
+}
+
 </style>
 
