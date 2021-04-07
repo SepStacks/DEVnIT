@@ -32,8 +32,8 @@
                   v-model="dialog"
                 />
               </div>
-
               <nuxt-content :document="doc" ref="nuxtContent" />
+
               <v-row>
                 <v-col cols="12">
                   <div>Last updated: {{ doc.updatedAt }}</div>
@@ -44,7 +44,7 @@
         </v-container>
       </v-main>
       <!-- table of content -->
-      <Toc :doc="doc" />
+      <!-- <Toc :doc="doc" /> -->
     </div>
   </v-app>
 </template>
@@ -157,4 +157,5 @@ export default {
 .nuxt-content p {
   margin-bottom: 20px;
 }
+
 </style>
