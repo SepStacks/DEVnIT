@@ -376,6 +376,9 @@ export default {
         ${JSON.stringify('<v-app> ' + template.content + '</v-app>')}
 
         const opts = {
+          icons: {
+    iconfont: 'la', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+  },
         theme: {
         themes: {
         light: {
@@ -411,7 +414,8 @@ export default {
     genHeads() {
       let heads = [
         'https://unpkg.com/vuetify@2.4.8/dist/vuetify.css',
-        'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons',
+        'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900',
+        'https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css',
         'https://unpkg.com/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css',
       ];
 
