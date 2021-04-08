@@ -91,7 +91,7 @@
             </v-col>
             <!-- codemirror -->
 
-            <v-row class="container">
+            <v-row class="container" v-if="doc.slug && doc.parent">
               <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
@@ -132,20 +132,15 @@
             </v-row>
           </v-container>
 
-          <v-sheet outlined>
+          <v-sheet outlined v-if="doc.slug && doc.parent">
             <v-row justify="center" class="container">
               <v-col>
                 <v-row align="center" justify="center">
-                  <v-col v-if="!doc.slug">
+                  <v-col v-if="!doc.slug || !doc.html">
                     <div>Add vue markup to generate previewer</div>
                   </v-col>
                   <v-col v-else>
-                    <div v-if="loadCompile === true">
-                      <div>loading...</div>
-                    </div>
-                    <v-col v-if="loadCompile === false">
-                      <UiPreviewer :value="preview" class="panel" />
-                    </v-col>
+                    <UiPreviewer :value="preview" class="panel" />
                   </v-col>
                 </v-row>
               </v-col>
@@ -513,19 +508,19 @@ export default {
 
     //code Mirror methods
     onCmReady(cm) {
-      if (this.doc.slug) {
-        setTimeout(() => {
-          this.compile();
-        }, 500);
-      }
+      // if (this.doc.slug) {
+      //   setTimeout(() => {
+      //     this.compile();
+      //   }, 500);
+      // }
     },
     onCmFocus(cm) {
-      console.log('the editor is focus!', cm);
-      if (this.doc.slug) {
-        setTimeout(() => {
-          this.compile();
-        }, 500);
-      }
+      // console.log('the editor is focus!', cm);
+      // if (this.doc.slug) {
+      //   setTimeout(() => {
+      //     this.compile();
+      //   }, 500);
+      // }
     },
     onCmCodeChange(newCode) {
       if (newCode) {

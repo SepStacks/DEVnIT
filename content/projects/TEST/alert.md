@@ -22,7 +22,8 @@ xxx
 
 ## Usage
 
-xxx
+<!-- Component template need to be here -->
+<DocComponent :file="'TEST/alert/TEST_alert-usage'"/>
 
 
 
