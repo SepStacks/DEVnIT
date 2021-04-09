@@ -12,6 +12,18 @@
                 <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}`">
                   <v-btn>edit component {{ doc.slug }}</v-btn>
                 </nuxt-link>
+                <!-- add a prefix to each child component -->
+                <!-- <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}-${doc.prefix}`">
+                  <v-btn>edit component {{doc.slug}} - {{doc.prefix}}</v-btn>
+                </nuxt-link> -->
+                <v-btn @click="editChildComponent(doc)">edit child</v-btn>
+
+                <!-- add a prefix to each child component -->
+                <nuxt-link
+                  :to="`/create_update/${projectParent}/${doc.slug}/addChildComponent`"
+                >
+                  <v-btn>add a component </v-btn>
+                </nuxt-link>
 
                 <Dialog
                   @click="deleteSlug"
@@ -103,6 +115,13 @@ export default {
   },
 
   methods: {
+    editChildComponent(doc) {
+      console.log(doc);
+      // this.$router.push('/recipes/recipedetail?recipeuuid=' + item.recipeuuid)
+      // this.$router.push(`create_update/${projectParent}/${doc.slug}/addChildComponent?${doc.prefix}`)
+
+      //create_update/${projectParent}/${doc.slug}-${doc.prefix}`
+    },
     deleteProject() {
       //add loading here within settimeout function
       this.loading = true;
@@ -157,5 +176,4 @@ export default {
 .nuxt-content p {
   margin-bottom: 20px;
 }
-
 </style>

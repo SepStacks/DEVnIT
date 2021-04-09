@@ -1,5 +1,6 @@
 <template>
   <div >
+    <!-- Primary component creation -->
 
         <MainForm
         :projects="projectTitle"
