@@ -1,6 +1,6 @@
 <template>
   <div >
-    <!-- Primary component creation -->
+    <!-- Primary Component Edit Page-->
 
         <MainForm
         :projects="projectTitle"
@@ -97,10 +97,11 @@ components: {
     //Import vue file as string
     async importTemplate () {
       try {
-        const template = await import(
+        const suffix = this.getDoc.type === 'component' ? 'usage' : this.getDoc.suffix
+        const template =
+        await import(
           // raw-loader is a loader for webpack that allows importing files as a String.
-          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-usage.vue`
-
+          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-${suffix}.vue`
         )
 
         this.boot(template.default)

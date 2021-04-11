@@ -53,8 +53,15 @@
               v-if="mode !== 'create'"
               v-model="check"
               :label="`create new component from this template`"
-            ></v-checkbox>
+            >
+            </v-checkbox>
           </v-container>
+
+          <v-checkbox
+            v-model="isChild"
+            :label="`Add Child Component`"
+          ></v-checkbox>
+
           <v-row justify="end" class="mt-3">
             <v-col cols="12">
               <v-btn
@@ -70,7 +77,7 @@
 
               <v-btn @click="compile"> Run </v-btn>
 
-              <v-btn class="mx-2" @click="$router.go(-1)">cancel</v-btn>
+
             </v-col>
           </v-row>
           <v-container>
@@ -84,10 +91,21 @@
                 :rules="[rules.required]"
               ></v-select>
               <v-text-field
+                v-if="!isChild"
                 v-model="doc.slug"
-                label="component name"
+                label="Component name"
                 :rules="[rules.required, rules.string, doesExist]"
-              ></v-text-field>
+              >
+              </v-text-field>
+              <v-select
+                v-else
+                @input="isFormValid = true"
+                :items="content"
+                v-model="doc.parent"
+                item-text="slug"
+                label="Parent Component"
+                :rules="[rules.required]"
+              ></v-select>
             </v-col>
             <!-- codemirror -->
 
@@ -187,6 +205,9 @@ export default {
     projects: {
       type: Array,
     },
+    Parentcomponents: {
+      type: Array
+    },
     content: {
       type: Array,
     },
@@ -230,6 +251,7 @@ export default {
     oldPath: '',
     oldComp: '',
     check: false,
+    isChild: false,
     rules: {
       required: (value) => !!value || 'Required.',
       string: (value) =>
@@ -257,6 +279,9 @@ export default {
   }),
 
   computed: {
+    parentComponents() {
+      return this.contents
+    },
     dynamicProps() {
       return { value: 'preview' };
     },
@@ -471,7 +496,7 @@ export default {
 
           this.$router.push(`/projects/`);
         }, 500);
-      } else {
+      } else if(this.doc.type === 'component') {
         var self = this;
         this.tempLoader = true;
 
