@@ -26,7 +26,7 @@
           <v-btn text v-on="{ ...$listeners }"> yes </v-btn>
 
           <v-btn color="primary" text @click.stop="show = false">
-            cancel
+            No
           </v-btn>
         </v-card-actions>
       </v-card>

@@ -331,9 +331,7 @@ export default {
     dialogInfo() {
       return {
         title: 'Discard changes?',
-        text: `Changes Made has not been saved, do you add ${
-          this.isChild === true ? 'child' : 'parent'
-        } component?`,
+        text: 'Changes has not been submitted, Are you sure you want to discard changes?',
         message: 'Warning unsaved data will be lost',
       };
     },
