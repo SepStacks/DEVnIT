@@ -19,11 +19,11 @@
                 <v-btn @click="editChildComponent(doc)">edit child</v-btn>
 
                 <!-- add a prefix to each child component -->
-                <nuxt-link
+                <!-- <nuxt-link
                   :to="`/create_update/${projectParent}/${doc.slug}/addChildComponent`"
                 >
                   <v-btn>add a component </v-btn>
-                </nuxt-link>
+                </nuxt-link> -->
 
                 <Dialog
                   @click="deleteSlug"

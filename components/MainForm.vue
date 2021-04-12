@@ -3,7 +3,7 @@
     <v-container>
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
 
-      <v-form ref="form" v-model="isFormValid">
+      <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
         <v-radio-group
           v-show="showRadio"
           v-model="doc.type"
@@ -62,24 +62,6 @@
             :label="`Add Child Component`"
           ></v-checkbox>
 
-          <v-row justify="end" class="mt-3">
-            <v-col cols="12">
-              <v-btn
-                :loading="loader"
-                class="mx-2"
-                @click.prevent="emitToServer"
-                :disabled="
-                  mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
-                "
-              >
-                Submit
-              </v-btn>
-
-              <v-btn @click="compile"> Run </v-btn>
-
-
-            </v-col>
-          </v-row>
           <v-container>
             <v-col v-if="makeTemplate" cols="12" md="4">
               <v-select
@@ -100,8 +82,8 @@
               <v-select
                 v-else
                 @input="isFormValid = true"
-                :items="content"
-                v-model="doc.parent"
+                :items="parentComponents"
+                v-model="doc.parentComponent"
                 item-text="slug"
                 label="Parent Component"
                 :rules="[rules.required]"
@@ -165,6 +147,22 @@
             </v-row>
           </v-sheet>
         </div>
+
+        <v-row justify="end" class="mt-3">
+          <v-col cols="12">
+            <v-btn
+              :loading="loader"
+              class="mx-2"
+              @click.prevent="emitToServer"
+              :disabled="
+                mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+              "
+            >
+              Submit
+            </v-btn>
+            <v-btn v-if="doc.type === 'component'" type="submit"> Run </v-btn>
+          </v-col>
+        </v-row>
       </v-form>
     </v-container>
   </div>
@@ -206,7 +204,7 @@ export default {
       type: Array,
     },
     Parentcomponents: {
-      type: Array
+      type: Array,
     },
     content: {
       type: Array,
@@ -280,7 +278,16 @@ export default {
 
   computed: {
     parentComponents() {
-      return this.contents
+      //Filter function that displays the parent components based on project name
+        const parent = this.doc.parent + '';
+        const check = this.content.filter(
+          (data) =>
+            data.parent === parent.toString().toUpperCase() &&
+            data.slug !== 'index'
+
+        );
+
+      return check;
     },
     dynamicProps() {
       return { value: 'preview' };
@@ -490,15 +497,13 @@ export default {
 
         this.$socket.client.emit('properties', { content, modeType });
 
-        setTimeout(() => {
+        this.$nextTick(() => {
           // add some loader while component is being generated
-          this.tempLoader = false;
-
           this.$router.push(`/projects/`);
-        }, 500);
-      } else if(this.doc.type === 'component') {
+        });
+      } else if (this.doc.type === 'component') {
         var self = this;
-        this.tempLoader = true;
+        // this.tempLoader = true;
 
         // Values for component
         const content = {
@@ -514,13 +519,13 @@ export default {
           js: self.doc.js,
         };
 
-        console.log('success');
         this.$router.push(`/projects/`);
-
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.$socket.client.emit('properties', { content, modeType });
-          this.tempLoader = false;
-        }, 500);
+          // this.tempLoader = false;
+        });
+      } else {
+
       }
 
       // this.title = ''

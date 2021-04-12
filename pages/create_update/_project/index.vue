@@ -9,7 +9,6 @@
         :mode="'edit'"
       />
     </v-row>
-    <v-btn @click="go(-1)">Back</v-btn>
   </div>
 </template>
 
