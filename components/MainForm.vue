@@ -56,10 +56,11 @@
             >
             </v-checkbox>
           </v-container>
-
+          <!-- switch between parent and child components -->
           <v-checkbox
-            v-model="isChild"
+            v-model.lazy="isChild"
             :label="`Add Child Component`"
+            @click="discardChanges"
           ></v-checkbox>
 
           <v-container>
@@ -88,10 +89,43 @@
                 label="Parent Component"
                 :rules="[rules.required]"
               ></v-select>
+              <v-text-field
+                v-if="isChild"
+                class="text-capitalize"
+                persistent-hint
+                hint=""
+                v-model="doc.title"
+                :value="doc.slug !== 'index'"
+                label="component name"
+              ></v-text-field>
+              <v-text-field
+                v-if="isChild && doc.parent"
+                class="text-capitalize"
+                persistent-hint
+                hint="prefix result"
+                readonly
+                :value="(doc.prefix = doc.parent)"
+                label="Prefix"
+              ></v-text-field>
+              <v-text-field
+                v-if="isChild && doc.prefix && doc.title"
+                class="text-capitalize"
+                persistent-hint
+                hint=""
+                readonly
+                :value="(doc.slug = doc.prefix + '-' + doc.title)"
+                label="Slug"
+              ></v-text-field>
             </v-col>
             <!-- codemirror -->
-
-            <v-row class="container" v-if="doc.slug && doc.parent || doc.parentComponent && isChild === true">
+            {{ doc }}
+            <v-row
+              class="container"
+              v-if="
+                (doc.slug && doc.parent) ||
+                (doc.parentComponent && isChild === true)
+              "
+            >
               <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
@@ -165,6 +199,8 @@
         </v-row>
       </v-form>
     </v-container>
+
+    <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
 </template>
 
@@ -229,12 +265,14 @@ export default {
       type: Boolean,
       default: false,
     },
+
     // markdownTemplate: {
     //     required: false
     // }
   },
 
   data: () => ({
+    dialog: false,
     showSample: false,
     preview: '',
     code: '',
@@ -249,7 +287,7 @@ export default {
     oldPath: '',
     oldComp: '',
     check: false,
-    isChild: false,
+    isChild: null,
     rules: {
       required: (value) => !!value || 'Required.',
       string: (value) =>
@@ -290,6 +328,16 @@ export default {
         return this.projects;
       }
     },
+    dialogInfo() {
+      return {
+        title: 'Discard changes?',
+        text: `Changes Made has not been saved, do you add ${
+          this.isChild === true ? 'child' : 'parent'
+        } component?`,
+        message: 'Warning unsaved data will be lost',
+      };
+    },
+
     parentComponents() {
       //Filter function that displays the parent components based on project name
       const parent = this.doc.parent + '';
@@ -537,14 +585,62 @@ export default {
           // this.tempLoader = false;
         });
       } else {
-        console.log('hello this has been emmited to the backend')
+        var self = this;
+        // this.tempLoader = true;
+
+        // Values for Child component
+        const content = {
+          slug: self.doc.slug.toString().toLowerCase(),
+          oldPath: self.oldPath,
+          oldProject: self.oldComp,
+          extention: self.doc.extention,
+          type: 'childComponent',
+          parent: self.doc.parent.toString().toUpperCase(),
+          parentComponent: self.doc.parentComponent.toString().toUpperCase(),
+          html: self.doc.html,
+          css: self.doc.css,
+          js: self.doc.js,
+        };
+        console.log(content);
       }
 
       // this.title = ''
       this.$refs.form.validate();
     },
+    discardChanges() {
+      // check if any field has been edited
+
+      if (
+        this.doc.title !== null ||
+        this.doc.slug !== null ||
+        this.doc.extention !== '.md' ||
+        this.doc.type !== 'component' ||
+        this.doc.parent !== '' ||
+        this.doc.html !== '' ||
+        this.doc.css !== ''
+      ) {
+        this.dialog = true;
+      }
+    },
+    resetForm() {
+      let self = this;
+      let doc = self.doc;
+
+      (doc.title = null),
+        (doc.slug = null),
+        (doc.extention = '.md'),
+        (doc.type = 'component'),
+        (doc.parent = ''),
+        (doc.html = ''),
+        (doc.css = ''),
+        (doc.js = '');
+      this.$refs.form.resetValidation();
+      this.dialog = false;
+    },
 
     reset() {
+      // const ref = this.$refs
+      // console.log({ref})
       this.$refs.form.reset();
     },
 

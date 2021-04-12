@@ -64,7 +64,7 @@
 <script>
 import SideNav from '~/components/navigation/SideNav';
 import Toc from '~/components/navigation/Toc';
-import Dialog from '~/components/Dialog';
+// import Dialog from '~/components/Dialog';
 import { groupBy } from 'lodash';
 
 export default {
