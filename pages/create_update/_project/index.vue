@@ -40,7 +40,7 @@ export default {
     projectTitle() {
       //Get the tiles of all projects and remove any null values
       const title = this.projects
-        .map((project) => project.title)
+        .map((project) => {project.title, project.slug})
         .filter((el) => {
           return el != null;
         });

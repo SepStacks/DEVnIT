@@ -66,9 +66,9 @@
             <v-col v-if="makeTemplate" cols="12" md="4">
               <v-select
                 @input="isFormValid = true"
-                :items="projects"
+                :items="filterProjects"
                 v-model="doc.parent"
-                item-text="title"
+                item-text="parent"
                 label="Select project"
                 :rules="[rules.required]"
               ></v-select>
@@ -91,7 +91,7 @@
             </v-col>
             <!-- codemirror -->
 
-            <v-row class="container" v-if="doc.slug && doc.parent">
+            <v-row class="container" v-if="doc.slug && doc.parent || doc.parentComponent && isChild === true">
               <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
@@ -277,15 +277,27 @@ export default {
   }),
 
   computed: {
+    filterProjects() {
+      if (this.isChild === true) {
+        //only show projects that can have a child component
+        const check = this.content.filter(
+          (data) => data.parent && data.slug !== 'index'
+        );
+        console.log('check', check);
+        return check;
+      } else {
+        //return all project titles
+        return this.projects;
+      }
+    },
     parentComponents() {
       //Filter function that displays the parent components based on project name
-        const parent = this.doc.parent + '';
-        const check = this.content.filter(
-          (data) =>
-            data.parent === parent.toString().toUpperCase() &&
-            data.slug !== 'index'
-
-        );
+      const parent = this.doc.parent + '';
+      const check = this.content.filter(
+        (data) =>
+          data.parent === parent.toString().toUpperCase() &&
+          data.slug !== 'index'
+      );
 
       return check;
     },
@@ -501,7 +513,7 @@ export default {
           // add some loader while component is being generated
           this.$router.push(`/projects/`);
         });
-      } else if (this.doc.type === 'component') {
+      } else if (this.doc.type === 'component' && this.isChild === false) {
         var self = this;
         // this.tempLoader = true;
 
@@ -525,7 +537,7 @@ export default {
           // this.tempLoader = false;
         });
       } else {
-
+        console.log('hello this has been emmited to the backend')
       }
 
       // this.title = ''
