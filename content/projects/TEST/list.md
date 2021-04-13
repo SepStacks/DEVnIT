@@ -17,3 +17,9 @@ These types of ComponentName are usually used for notifications, eg. appearing o
 
 <!-- Component template need to be here -->
 <doc-component :file="'TEST/list/TEST_list-usage'"></doc-component >
+
+## textarea
+
+this is a list that is used as a list lol
+
+<doc-component :file="'TEST/list/TEST_list-textarea'"></doc-component>

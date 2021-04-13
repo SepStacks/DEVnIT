@@ -17,3 +17,15 @@ These types of ComponentName are usually used for notifications, eg. appearing o
 
 <!-- Component template need to be here -->
 <doc-component :file="'SEPKITT/noo/SEPKITT_noo-usage'"></doc-component >
+
+## buttons
+
+undefined
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-buttons'"></doc-component>
+
+## prep
+
+undefined
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-prep'"></doc-component>

@@ -80,6 +80,7 @@
                 :rules="[rules.required, rules.string, doesExist]"
               >
               </v-text-field>
+
               <v-select
                 v-else
                 @input="isFormValid = true"
@@ -89,6 +90,12 @@
                 label="Parent Component"
                 :rules="[rules.required]"
               ></v-select>
+              <v-textarea
+                v-model="doc.description"
+                label="Description"
+                :rules="[rules.required]"
+              >
+              </v-textarea>
               <v-text-field
                 v-if="isChild"
                 class="text-capitalize"
@@ -113,7 +120,7 @@
                 persistent-hint
                 hint=""
                 readonly
-                :value="(doc.slug = doc.prefix + '-' + doc.title)"
+                :value="(doc.slug = doc.parentComponent + '-' + doc.title)"
                 label="Slug"
               ></v-text-field>
             </v-col>
@@ -331,7 +338,8 @@ export default {
     dialogInfo() {
       return {
         title: 'Discard changes?',
-        text: 'Changes has not been submitted, Are you sure you want to discard changes?',
+        text:
+          'Changes has not been submitted, Are you sure you want to discard changes?',
         message: 'Warning unsaved data will be lost',
       };
     },
@@ -576,30 +584,39 @@ export default {
           css: self.doc.css,
           js: self.doc.js,
         };
+        this.$socket.client.emit('properties', { content, modeType });
 
-        this.$router.push(`/projects/`);
         this.$nextTick(() => {
-          this.$socket.client.emit('properties', { content, modeType });
           // this.tempLoader = false;
+          this.$router.push(`/projects/`);
         });
       } else {
         var self = this;
         // this.tempLoader = true;
 
         // Values for Child component
+        //add versioning in the future to components aswell
         const content = {
+          title: self.doc.title,
+          description: self.doc.description,
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
           extention: self.doc.extention,
           type: 'childComponent',
           parent: self.doc.parent.toString().toUpperCase(),
-          parentComponent: self.doc.parentComponent.toString().toUpperCase(),
+          parentComponent: self.doc.parentComponent.toString(),
           html: self.doc.html,
           css: self.doc.css,
           js: self.doc.js,
         };
-        console.log(content);
+        this.$nextTick(() => {
+          this.$socket.client.emit('properties', { content, modeType });
+          this.$router.push(`/projects/${content.parent}/index`);
+
+          // this.tempLoader = false;
+        });
+        console.log({ content });
       }
 
       // this.title = ''

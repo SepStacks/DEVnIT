@@ -52,6 +52,7 @@ const component = (content, templatePath, globalComponentPath, pathToContent ) =
         //Create folder with slug name
 
         // Create a vue component and inject values from frontend through the content variable
+        // Renders the template with the given view and partials using the default writer.
         let vueOutput = render(vueCompTemplate, content)
 
         fs.writeFile(

@@ -13,7 +13,7 @@ menuTitle: "{{slug}}"
 
 ## Usage
 
-These types of ComponentName are usually used for notifications, eg. appearing onscreen the moment you logged in. ComponentName can be useful when you need to display certain message onscreen for the user/client.
+{{description}}
 
 <!-- Component template need to be here -->
 <doc-component :file="'{{parent}}/{{slug}}/{{parent}}_{{slug}}-usage'"></doc-component >
