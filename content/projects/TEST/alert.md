@@ -3,7 +3,7 @@ parent: "TEST"
 type: "component"
 category: "Components"
 position: 2
-version: 1.0
+version: 1.
 menuTitle: "alert"
 ---
 

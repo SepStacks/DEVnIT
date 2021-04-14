@@ -5,6 +5,15 @@ category: "Components"
 position: 2
 version: 1.0
 menuTitle: "list"
+children: [
+    {   id: 1,
+        title: "textarea",
+        slug: "list-text-area",
+        parentComponent: "list",
+        parent: "TEST",
+        type: "childComponent"
+    }
+]
 ---
 
 # list

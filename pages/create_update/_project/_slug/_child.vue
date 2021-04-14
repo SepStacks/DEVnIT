@@ -25,13 +25,13 @@ export default {
     const projects = await $content('projects', {
       deep: true,
     })
-      .only(['title', 'slug', 'parent', 'parentComponent'])
+      .only(['title', 'slug', 'parent'])
       .fetch();
-      //import a child.md file here to get the values (wip)
+    //import a child.md file here to get the values (wip)
     const slug = `${params.project}/${params.slug}`;
     //Get current slug
     const slugData = await $content(`projects/${slug}`).fetch();
-    console.log({ $content });
+    // console.log({ slugData });
     return {
       projects,
       slugData,
@@ -44,10 +44,20 @@ export default {
     //Import vue file as string and nest it into text field
 
     getDoc() {
+      const nestedComponents = this.slugData.children
+      console.log({nestedComponents});
+      //textarea
+      const childTitle = this.$route.params.child;
+      //filter through the nestedComponents array and return the current childComponent
+      const childComponent = nestedComponents.filter(child => {
+        child.title === childTitle
+      })
       const doc = {
+        //Build an object for the child-components
+        title: childTitle,
         slug: this.slugData.slug,
         extention: '.md',
-        type: this.slugData.type,
+        type: 'childComponents',
         parent: this.slugData.parent,
         html: this.pen ? this.pen.template : '',
         css: this.pen ? this.pen.style : '',
@@ -59,6 +69,7 @@ export default {
     },
     projectTitle() {
       //Get the tiles of all projects and remove any null values
+
       const title = this.projects
         .map((project) => project.title)
         .filter((el) => {

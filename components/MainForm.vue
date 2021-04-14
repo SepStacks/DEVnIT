@@ -2,7 +2,6 @@
   <div>
     <v-container>
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
-
       <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
         <v-radio-group
           v-show="showRadio"
@@ -58,6 +57,7 @@
           </v-container>
           <!-- switch between parent and child components -->
           <v-checkbox
+            v-if="mode === 'create'"
             v-model.lazy="isChild"
             :label="`Add Child Component`"
             @click="discardChanges"
@@ -125,7 +125,6 @@
               ></v-text-field>
             </v-col>
             <!-- codemirror -->
-            {{ doc }}
             <v-row
               class="container"
               v-if="
@@ -567,7 +566,7 @@ export default {
           // add some loader while component is being generated
           this.$router.push(`/projects/`);
         });
-      } else if (this.doc.type === 'component' && this.isChild === false) {
+      } else if (this.doc.type === 'component') {
         var self = this;
         // this.tempLoader = true;
 
@@ -588,9 +587,9 @@ export default {
 
         this.$nextTick(() => {
           // this.tempLoader = false;
-          this.$router.push(`/projects/`);
+          this.$router.push(`/projects/${content.parent}/index`);
         });
-      } else {
+      } else if (this.doc.parentComponent) {
         var self = this;
         // this.tempLoader = true;
 

@@ -49,8 +49,7 @@
           contain
         ></v-img>
         <div class="subheading pt-4">
-          Too low
-        </div>
+sdsadff        </div>
         <v-img
           src="https://picsum.photos/510/300?random"
           aspect-ratio="1.4"
@@ -61,7 +60,7 @@
   </v-container>
 </template>
 
-o
+
 
 
 
