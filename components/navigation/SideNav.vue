@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-app-bar
-      app
-      clipped-left
-    >
-
+    <v-app-bar app clipped-left>
       <v-toolbar-title class="ml-4">
         <div class="font-weight-bold">SepStacks</div>
         <!-- <v-img src="/svg/altron.svg" max-width="50%" /> -->
@@ -13,69 +9,45 @@
 
       <!-- links -->
       <v-card-actions>
-        <v-btn
-          text
-          to="/"
-        >
-          home
-        </v-btn>
-
-        <v-btn
-          text
-          to="/projects"
-        >
-          Projects
-        </v-btn>
-        <v-btn
-          text
-          to="/create_update"
-        >
-          Create
-        </v-btn>
-
+        <v-btn text to="/"> home </v-btn>
+        <v-btn text to="/projects"> Projects </v-btn>
+        <v-btn text to="/create_update"> Create </v-btn>
       </v-card-actions>
-
     </v-app-bar>
-
-    <v-navigation-drawer
-      permanent
-      app
-      clipped
-      v-model="drawer"
-    >
-
+    <v-navigation-drawer permanent app clipped v-model="drawer">
       <div
-        class="region"
-        v-for="category in categories.reverse()"
+        class="mt-5"
+        v-for="(docs, category, index) in categories"
         :key="category"
+        :class="{
+          active: isCategoryActive(docs),
+          'lg:mb-0': index === Object.keys(categories).length - 1,
+        }"
       >
-        <v-subheader>{{category}}</v-subheader>
-        <v-list>
+        <p class="mb-2 grey--text font-weight-bold" v-if="category">
+          {{ category }}
+        </p>
 
-          <v-list-item
-            v-for="(doc, i) in subheader(category)"
-            :key="i"
-            link
-          >
-
+        <ul>
+          <!-- Using slice will make a copy of the array which means data.body will not change in value,
+            and therefore no re-render will be called. -->
+          <li v-for="doc of docs.slice().sort()" :key="doc.slug" link>
             <v-list-item-content>
-
               <NuxtLink :to="doc.path">
-
-                <v-list-item-title
-                  class="active-link mt-3"
-                  color="green"
-                > {{ doc.slug === "index" ? "Installation" : doc.slug }}</v-list-item-title>
-
+                <v-list-item-title class="active-link mt-3" color="green">
+                  {{ doc.menuTitle || doc.title }}
+                </v-list-item-title>
               </NuxtLink>
-
+              <client-only>
+                <span
+                  v-if="isDocumentNew(doc)"
+                  class="animate-pulse rounded-full bg-primary-500 opacity-75 h-2 w-2"
+                />
+              </client-only>
             </v-list-item-content>
-
-          </v-list-item>
-        </v-list>
-
+          </li>
+        </ul>
       </div>
-
     </v-navigation-drawer>
   </div>
 </template>
@@ -83,29 +55,37 @@
 <script>
 export default {
   props: {
-    menus: {
-      type: Array
-    }
+    categories: {
+      type: [Array, Object],
+    },
+    // docs: {
+    //   type: [Array, Object],
+    // },
   },
-  data () {
+  data() {
     return {
       drawer: null,
-
-    }
+    };
   },
   methods: {
-    subheader (category) {
-      return this.menus.filter(o => o.category === category)
-    },
-    displayJson (o) {
-      return JSON.stringify(o, null, 2)
-    }
-  },
-  computed: {
-    categories () {
-      return [...new Set(this.menus.map(o => o.category))]
+    isCategoryActive(documents) {
+      return documents.some((document) => document.to === this.$route.fullPath);
     },
 
+    isDocumentNew(document) {
+      if (process.server) {
+        return;
+      }
+      if (!document.version || document.version <= 0) {
+        return;
+      }
+      const version = localStorage.getItem(`document-${document.slug}-version`);
+      if (document.version > Number(version)) {
+        return true;
+      }
+      return false;
+    },
   }
+
 };
 </script>

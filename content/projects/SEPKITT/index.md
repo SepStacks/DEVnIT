@@ -1,6 +1,6 @@
 ---
-title: "{{title}}"
-parent: "{{title}}"
+title: "SEPKITT"
+parent: "SEPKITT"
 type: "project"
 category: "Getting Started"
 position: 1
@@ -28,7 +28,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## {{title}}
+## SEPKITT
 
 Installation instructions goers here...
 

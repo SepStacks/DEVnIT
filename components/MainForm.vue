@@ -1,13 +1,8 @@
 <template>
   <div>
     <v-container>
-      <div>{{mode === 'create' ? 'Create Page' : 'Edit Page'}}</div>
-
-      <v-form
-        ref="form"
-        v-model="isFormValid"
-      >
-
+      <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
+      <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
         <v-radio-group
           v-show="showRadio"
           v-model="doc.type"
@@ -42,111 +37,102 @@
             readonly
             v-show="false"
             v-model="doc.slug"
-            :value="doc.slug ='index'"
+            :value="(doc.slug = 'index')"
             label="component name"
           ></v-text-field>
 
-          <div class="mt-5 font-weight-bold"> Add installation instructions(optional)</div>
-
-          <!-- <v-text-field v-model="doc.bodytitle" label="Body Title"></v-text-field>
-                <v-text-field v-model="doc.bodyDescription" label="Body Description"></v-text-field>
-
-                <v-textarea
-                name="input-7-1"
-                label="Body Content"
-                v-model="doc.bodyContent"
-                hint="Hint text">
-                </v-textarea> -->
-
+          <div class="mt-5 font-weight-bold">
+            Add installation instructions(optional)
+          </div>
         </div>
 
         <div v-if="doc.type === 'component'">
-
-          <v-container
-            class="px-0"
-            fluid
-          >
+          <v-container class="px-0" fluid>
             <v-checkbox
               v-if="mode !== 'create'"
               v-model="check"
               :label="`create new component from this template`"
-            ></v-checkbox>
+            >
+            </v-checkbox>
           </v-container>
+          <!-- switch between parent and child components -->
+          <v-checkbox
+            v-if="mode === 'create'"
+            v-model.lazy="isChild"
+            :label="`Add Child Component`"
+            @click="discardChanges"
+          ></v-checkbox>
 
           <v-container>
-
-            <v-sheet outlined>
-              <v-row
-                justify="center"
-                class="container"
+            <v-col v-if="makeTemplate" cols="12" md="4">
+              <v-select
+                @input="isFormValid = true"
+                :items="filterProjects"
+                v-model="doc.parent"
+                item-text="parent"
+                label="Select project"
+                :rules="[rules.required]"
+              ></v-select>
+              <v-text-field
+                v-if="!isChild"
+                v-model="doc.slug"
+                label="Component name"
+                :rules="[rules.required, rules.string, doesExist]"
               >
-                <v-col
-                  v-if="makeTemplate"
-                  cols="12"
-                  md="4"
-                >
+              </v-text-field>
 
-                  <v-select
-                    @input="isFormValid = true"
-                    :items="projects"
-                    v-model="doc.parent"
-                    item-text="title"
-                    label="Select project"
-                    :rules="[rules.required]"
-                  ></v-select>
-                  <v-text-field
-                    v-model="doc.slug"
-                    label="component name"
-                    :rules="[rules.required, rules.string]"
-                  ></v-text-field>
-
-                </v-col>
-
-                <v-col>
-                  <v-card
-                    height="300"
-                    elevation="4"
-                    class="py-5"
-                  >
-                    <!-- search in temp directory and place in name of temp component -->
-                    <!-- get placeholder component fist -->
-
-                    <v-row
-                      align="center"
-                      justify="center"
-                    >
-
-                      <!-- <v-col v-if="doc.html === ''">
-                        <div>Add vue markup to generate previewer</div>
-
-                      </v-col>
-                      <v-col v-else>
-                        <Previewer
-                          :value="preview"
-                          class="panel"
-                        />
-
-
-
-                      </v-col> -->
-                      <UiPreviewer
-                        :value="preview"
-                        class="panel"
-                      />
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-sheet>
-
+              <v-select
+                v-else
+                @input="isFormValid = true"
+                :items="parentComponents"
+                v-model="doc.parentComponent"
+                item-text="slug"
+                label="Parent Component"
+                :rules="[rules.required]"
+              ></v-select>
+              <v-textarea
+                v-model="doc.description"
+                label="Description"
+                :rules="[rules.required]"
+              >
+              </v-textarea>
+              <v-text-field
+                v-if="isChild"
+                class="text-capitalize"
+                persistent-hint
+                hint=""
+                v-model="doc.title"
+                :value="doc.slug !== 'index'"
+                label="component name"
+              ></v-text-field>
+              <v-text-field
+                v-if="isChild && doc.parent"
+                class="text-capitalize"
+                persistent-hint
+                hint="prefix result"
+                readonly
+                :value="(doc.prefix = doc.parent)"
+                label="Prefix"
+              ></v-text-field>
+              <v-text-field
+                v-if="isChild && doc.prefix && doc.title"
+                class="text-capitalize"
+                persistent-hint
+                hint=""
+                readonly
+                :value="(doc.slug = doc.parentComponent + '-' + doc.title)"
+                label="Slug"
+              ></v-text-field>
+            </v-col>
             <!-- codemirror -->
-
-            <v-row class="container">
-
-              <v-col
-                cols="12"
-                md="4"
-              >
+            <v-row
+              class="container"
+              v-if="
+                (doc.slug && doc.parent) ||
+                (doc.parentComponent && isChild === true)
+              "
+            >
+              <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
                   <codemirror
@@ -160,10 +146,7 @@
                 </client-only>
               </v-col>
 
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <client-only>
                   <div>CSS</div>
                   <codemirror
@@ -175,12 +158,8 @@
                 </client-only>
               </v-col>
 
-              <v-col
-                cols="12"
-                md="4"
-              >
+              <v-col cols="12" md="4">
                 <client-only>
-
                   <div>JS</div>
                   <codemirror
                     v-model.lazy="doc.js"
@@ -191,339 +170,386 @@
                 </client-only>
               </v-col>
             </v-row>
-            <v-btn
-              @click="compile"
-              class="compile"
-            >
-              Run
-            </v-btn>
-
           </v-container>
 
+          <v-sheet outlined v-if="doc.slug && doc.parent">
+            <v-row justify="center" class="container">
+              <v-col>
+                <v-row align="center" justify="center">
+                  <v-col v-if="!doc.slug || !doc.html">
+                    <div>Add vue markup to generate previewer</div>
+                  </v-col>
+                  <v-col v-else>
+                    <UiPreviewer :value="preview" class="panel" />
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-sheet>
         </div>
 
-        <v-row
-          dense
-          class="mt-3"
-        >
+        <v-row justify="end" class="mt-3">
           <v-col cols="12">
             <v-btn
               :loading="loader"
               class="mx-2"
               @click.prevent="emitToServer"
-              :disabled="mode === 'Edit Page' ? isFormValid = false : !isFormValid"
+              :disabled="
+                mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+              "
             >
               Submit
             </v-btn>
-
-            <v-btn
-              class="mx-2"
-              @click="[$router.go(-1), emptyFile()]"
-            >cancel</v-btn>
-
+            <v-btn v-if="doc.type === 'component'" type="submit"> Run </v-btn>
           </v-col>
-
         </v-row>
       </v-form>
     </v-container>
+
+    <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
 </template>
 
 <script>
 // import 'some-codemirror-resource'
 // import Previewer from '~/components/ui/Previewer'
-import Snackbar from '~/components/Snackbar'
+import Snackbar from '~/components/Snackbar';
 
-import { parseComponent } from 'vue-template-compiler/browser'
-import { parse as queryParse } from 'query-string'
+import { parseComponent } from 'vue-template-compiler/browser';
+import { parse as queryParse } from 'query-string';
 // import getImports from '@/utils/get-imports'
-import getPkgs from '@/utils/get-pkgs'
-import isAbsouteUrl from 'is-absolute-url'
+import getPkgs from '@/utils/get-pkgs';
+import isAbsouteUrl from 'is-absolute-url';
 // import { upload } from '@/utils/store';
-import * as params from '@/utils/params'
+import * as params from '@/utils/params';
 
 // const babel = require('babel-core')
-import * as Babel from 'babel-standalone'
+import * as Babel from 'babel-standalone';
 // var babel = require("@babel/core");
 // import { transform } from "@babel/core";
 // import * as babel from "@babel/core";
 
-
 const CDN_MAP = {
   unpkg: '//unpkg.com/',
-  jsdelivr: '//cdn.jsdelivr.net/npm/'
-}
-
+  jsdelivr: '//cdn.jsdelivr.net/npm/',
+};
 
 export default {
-
   name: 'MainForm',
   components: {
     //  Previewer,
-    Snackbar
+    Snackbar,
   },
 
   props: {
     projects: {
       type: Array,
     },
+    Parentcomponents: {
+      type: Array,
+    },
     content: {
-      type: Array
+      type: Array,
     },
     //document object with all the content
     doc: {
-      type: Object
+      type: Object,
     },
     /* choose to show radio group (should be hidden on edit pages as we do not
       want the values to mix/overlap with other components)*/
     showRadio: {
       type: Boolean,
-      default: true
-
+      default: true,
     },
     // Create or Edit mode
     mode: {
       type: String,
-      default: 'create'
-
+      default: 'create',
     },
 
     template: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+
     // markdownTemplate: {
     //     required: false
     // }
   },
 
-  data () {
-    return {
-      showSample: false,
-      preview: '',
-      code: '',
-      //Array of the code that will be applied to codemirror
-      tempLoader: false,
-      isEmptyTemplate: false,
-      loader: false,
-      isFormValid: true,
-      response: '',
-      isConnected: false,
-      oldPath: '',
-      oldComp: '',
-      check: false,
-      rules:
-      {
-        required: value => !!value || 'Required.',
-        string: value => /^[A-Za-z]+$/.test(value) || 'Only strings are allowed'
+  data: () => ({
+    dialog: false,
+    showSample: false,
+    preview: '',
+    code: '',
+    loadCompile: false,
+    //Array of the code that will be applied to codemirror
+    tempLoader: false,
+    isEmptyTemplate: false,
+    loader: false,
+    isFormValid: true,
+    response: '',
+    isConnected: false,
+    oldPath: '',
+    oldComp: '',
+    check: false,
+    isChild: null,
+    rules: {
+      required: (value) => !!value || 'Required.',
+      string: (value) =>
+        /^[A-Za-z]+$/.test(value) || 'Only strings are allowed',
+    },
+    cmOption: {
+      mode: 'vue',
+      theme: 'base16-dark',
+      value: `<template></template>`,
+      lineNumbers: true,
+      tabSize: 2,
+      autofocus: true,
+      line: true,
+      styleActiveLine: true,
+      matchBrackets: true,
+      extraKeys: {
+        Tab: 'emmetExpandAbbreviation',
+        Enter: 'emmetInsertLineBreak',
       },
-      cmOption: {
-        mode: 'vue',
-        theme: 'base16-dark',
-        value: `<template></template>`,
-        lineNumbers: true,
-        tabSize: 2,
-        autofocus: true,
-        line: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        extraKeys: {
-          Tab: 'emmetExpandAbbreviation',
-          Enter: 'emmetInsertLineBreak'
-        }
-      }
+    },
 
-
-      // bodyTitle: '',
-      // bodyDescription: '',
-      // bodyContent: ''
-
-    }
-  },
+    // bodyTitle: '',
+    // bodyDescription: '',
+    // bodyContent: ''
+  }),
 
   computed: {
-
-    makeTemplate () {
-
-      return this.check === true || this.mode === 'create' ? true : false
-
+    filterProjects() {
+      if (this.isChild === true) {
+        //only show projects that can have a child component
+        const check = this.content.filter(
+          (data) => data.parent && data.slug !== 'index'
+        );
+        console.log('check', check);
+        return check;
+      } else {
+        //return all project titles
+        return this.projects;
+      }
     },
-    doesExist () {
+    dialogInfo() {
+      return {
+        title: 'Discard changes?',
+        text:
+          'Changes has not been submitted, Are you sure you want to discard changes?',
+        message: 'Warning unsaved data will be lost',
+      };
+    },
+
+    parentComponents() {
+      //Filter function that displays the parent components based on project name
+      const parent = this.doc.parent + '';
+      const check = this.content.filter(
+        (data) =>
+          data.parent === parent.toString().toUpperCase() &&
+          data.slug !== 'index'
+      );
+
+      return check;
+    },
+    dynamicProps() {
+      return { value: 'preview' };
+    },
+    makeTemplate() {
+      return this.check === true || this.mode === 'create' ? true : false;
+    },
+    doesExist() {
       // Check if project exist
       if (this.doc.type === 'project') {
-        const string = this.doc.title + ""
+        const string = this.doc.title + '';
         // Without this line below switching betweeen component and project produces an error
         if (this.projects.includes(string.toUpperCase())) {
-          return `${this.doc.parent} already exist`
+          return `${this.doc.parent} already exist`;
         }
 
-
-        return true
-
-
-
-
+        return true;
       } else {
+        const parent = this.doc.parent + '';
+        const slug = this.doc.slug + '';
+        const check = this.content.filter(
+          (data) =>
+            data.parent === parent.toString().toUpperCase() &&
+            data.slug === slug.toString().toLowerCase()
+        );
+        console.log('check', check);
 
-        if (typeof this.doc.slug === 'string') {
-          const parent = this.doc.parent + ""
-          const slug = this.doc.slug + ""
-
-          const check = this.content.filter(data => data.parent === parent.toUpperCase() && data.slug === slug.toLowerCase())
-
-          // check if component name exists based on the parent name
-          // return check.length === 1
-          if (check.length === 1) {
-            return `${slug} already exist`
-          } else {
-            return true
-          }
-        }
-
+        return check.length === 1
+          ? ` The ${slug} component already exist please choose a
+        different name`
+          : true;
       }
-
     },
-
   },
 
   sockets: {
-
     // Fired when the socket connects.
-    connect () {
-      this.isConnected = true
-      console.log('NODE-SERVER is connected')
-      // if (this.doc.slug !== '') {
-      //   setTimeout(() => {
-      //     this.compile()
-
-      //   }, 500)
-      // }
-      // console.log(this.doc)
-
+    connect() {
+      this.isConnected = true;
+      console.log('NODE-SERVER is connected');
     },
-    disconnect () {
-      this.isConnected = false
+    disconnect() {
+      this.isConnected = false;
     },
-    output (data) {
+    output(data) {
       // This method was fired by the node-server. eg: io.emit("output", content)'
       return this.$notifier.showMessage({
         content: 'new ' + `<strong>${data.type}</strong>` + ' has been created',
-        color: "success",
-      })
-
+        color: 'success',
+      });
     },
-
   },
 
   methods: {
-    emptyFile () {
+    emptyFile() {
       if (this.doc.type === 'component') {
-        this.doc.html = '',
-          this.doc.css = '',
-          this.doc.js = ''
+        (this.doc.html = ''), (this.doc.css = ''), (this.doc.js = '');
       }
     },
-    async compile () {
-      const code = this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css
+    async compile() {
+      const code =
+        this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
       if (!code) {
-        return
+        return;
       }
       // const imports = []
-      const { template, script, styles, customBlocks } = parseComponent(code)
-      let config
+      const { template, script, styles, customBlocks } = parseComponent(code);
+      let config;
 
-      if ((config = customBlocks.find(n => n.type === 'config'))) {
-        params.clear()
-        params.parse(config.content)
+      if ((config = customBlocks.find((n) => n.type === 'config'))) {
+        params.clear();
+        params.parse(config.content);
       }
 
-      let compiled
-      const pkgs = []
-      let scriptContent = 'exports = { default: {} }'
+      let compiled;
+      const pkgs = [];
+      let scriptContent = 'exports = { default: {} }';
 
       if (script) {
-        console.log(Babel)
+        console.log(Babel);
         try {
           compiled = Babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
             // plugins: [[getImports]]
-          }).code
+          }).code;
         } catch (e) {
-          this.preview = `<pre style="color: red">${e.message}</pre>`
-          return
+          this.preview = `<pre style="color: red">${e.message}</pre>`;
+          return;
         }
-        scriptContent = await getPkgs(compiled, pkgs)
+        scriptContent = await getPkgs(compiled, pkgs);
       }
 
-      const heads = this.genHeads()
-      const scripts = []
+      const heads = this.genHeads();
+      const scripts = [];
 
-      pkgs.forEach(pkg => {
+      pkgs.forEach((pkg) => {
         scripts.push(
-          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${pkg.name
-          }><\/script>`
-        )
-      })
+          `<script src=//packd.now.sh/${pkg.module}${pkg.path}?name=${pkg.name}><\/script>`
+        );
+      });
 
-      styles.forEach(style => {
-        heads.push(`<style>${style.content}</style>`)
-      })
+      styles.forEach((style) => {
+        heads.push(`<style>${style.content}</style>`);
+      });
 
       scripts.push(`
+
       <script>
         var exports = {};
         ${scriptContent}
-        var component = exports.default;
-        component.template = component.template || ${JSON.stringify(
-        template.content
-      )}
+        var component = exports.default
+        component.template = component.template ||
+        ${JSON.stringify('<v-app> ' + template.content + '</v-app>')}
 
-        new Vue(component).$mount('#app')
-      <\/script>`)
+        const opts = {
+          icons: {
+    iconfont: 'la', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+  },
+        theme: {
+        themes: {
+        light: {
+        success: '#A4DB75', //  Success
+        error: '#DA4E71', //  Error
+        primary: '#12152F', //  ALtron Grey BLue
+        accent: '#01C5FF', //  ALtron light BLue
+        secondary: '#20274F', //  ALtron white
+        info: '#0169FF', //  ALtron dark Blue
+        primaryShade: '#161A37',
+        accentShade: '#41D4FF',
+        secondaryShade: '#184F7B',
+        infoShade: '#0180FF',
+        primaryhover: '#12152F',
+        accenthover: '#0599CB',
+        secondaryhover: '#099ED3',
+        infohover: '#01AEFF',
+      }}}}
+
+        Vue.use(Vuetify);
+        new Vue({vuetify : new Vuetify(opts),
+        render: h => h(component)
+      }).$mount('#app')
+      <\/script>
+
+      `);
 
       this.preview = {
         head: heads.join('\n'),
-        body: '<div id="app"></div>' + scripts.join('\n')
-      }
+        body: `<div id="app"></div>` + scripts.join('\n'),
+      };
     },
-    genHeads () {
-      let heads = []
+    genHeads() {
+      let heads = [
+        'https://unpkg.com/vuetify@2.4.8/dist/vuetify.css',
+        'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900',
+        'https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css',
+        'https://unpkg.com/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css',
+      ];
 
-      params.queryParse(location.search)
+      params.queryParse(location.search);
 
-      const { pkgs, css, cdn, vue, vuetify } = params.get()
-      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg
+      const { pkgs, css, cdn, vue, vuetify } = params.get();
+      const prefix = CDN_MAP[cdn] || CDN_MAP.unpkg;
+
+      let frameworkJS = [
+        'https://unpkg.com/vue@2.6.12/dist/vue.js',
+        'https://unpkg.com/vuetify@2.4.8/dist/vuetify.js',
+      ];
 
       return [].concat(
         []
-          .concat(vue ? 'vue@' + vue : 'vue', pkgs)
-          .concat(vuetify ? 'vuetify@' + vuetify : 'vuetify', pkgs)
+          // .concat(vue ? 'vue@' + vue : 'vue', pkgs)
+          .concat(frameworkJS)
 
           .map(
-            pkg =>
+            (pkg) =>
               `<script src=${isAbsouteUrl(pkg) ? '' : prefix}${pkg}><\/script>`
           ),
-        css.map(
-          item =>
-            console.log('css', item)
-              `<link rel=stylesheet href=${isAbsouteUrl(item) ? '' : prefix
+        css
+          .concat(heads)
+          .map(
+            (item) =>
+              `<link rel=stylesheet href=${
+                isAbsouteUrl(item) ? '' : prefix
               }${item}>`
-        )
-      )
+          )
+      );
     },
 
-
-
-    emitToServer () {
+    emitToServer() {
       //Have different paramaters for component and projects
-      var modeType = this.mode
+      var modeType = this.mode;
       if (this.doc.type === 'project') {
-        var self = this
-        this.loader = true
+        var self = this;
+        this.loader = true;
 
         // values for project
         const content = {
-
           title: self.doc.title.toString().toUpperCase(),
           slug: self.doc.slug.toString().toLowerCase(),
           extention: '.md',
@@ -532,25 +558,20 @@ export default {
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
-        }
+        };
 
-        this.$socket.client.emit("properties", { content, modeType })
+        this.$socket.client.emit('properties', { content, modeType });
 
-        setTimeout(() => {
+        this.$nextTick(() => {
           // add some loader while component is being generated
-          this.tempLoader = false
-
-          this.$router.push(`/projects/`)
-        }, 500)
-
-
-      } else {
-        var self = this
-        this.tempLoader = true
+          this.$router.push(`/projects/`);
+        });
+      } else if (this.doc.type === 'component') {
+        var self = this;
+        // this.tempLoader = true;
 
         // Values for component
         const content = {
-
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
@@ -560,83 +581,132 @@ export default {
           parent: self.doc.parent.toString().toUpperCase(),
           html: self.doc.html,
           css: self.doc.css,
-          js: self.doc.js
+          js: self.doc.js,
+        };
+        this.$socket.client.emit('properties', { content, modeType });
 
-        }
-        console.log("content ", content)
+        this.$nextTick(() => {
+          // this.tempLoader = false;
+          this.$router.push(`/projects/${content.parent}/index`);
+        });
+      } else if (this.doc.parentComponent) {
+        var self = this;
+        // this.tempLoader = true;
 
-        console.log('success')
-        this.$router.push(`/projects/`)
+        // Values for Child component
+        //add versioning in the future to components aswell
+        const content = {
+          title: self.doc.title,
+          description: self.doc.description,
+          slug: self.doc.slug.toString().toLowerCase(),
+          oldPath: self.oldPath,
+          oldProject: self.oldComp,
+          extention: self.doc.extention,
+          type: 'childComponent',
+          parent: self.doc.parent.toString().toUpperCase(),
+          parentComponent: self.doc.parentComponent.toString(),
+          html: self.doc.html,
+          css: self.doc.css,
+          js: self.doc.js,
+        };
+        this.$nextTick(() => {
+          this.$socket.client.emit('properties', { content, modeType });
+          this.$router.push(`/projects/${content.parent}/index`);
 
-        setTimeout(() => {
-          this.$socket.client.emit("properties", { content, modeType })
-          this.tempLoader = false
-
-        }, 500)
+          // this.tempLoader = false;
+        });
+        console.log({ content });
       }
 
       // this.title = ''
-      this.$refs.form.validate()
+      this.$refs.form.validate();
+    },
+    discardChanges() {
+      // check if any field has been edited
 
+      if (
+        this.doc.title !== null ||
+        this.doc.slug !== null ||
+        this.doc.extention !== '.md' ||
+        this.doc.type !== 'component' ||
+        this.doc.parent !== '' ||
+        this.doc.html !== '' ||
+        this.doc.css !== ''
+      ) {
+        this.dialog = true;
+      }
+    },
+    resetForm() {
+      let self = this;
+      let doc = self.doc;
+
+      (doc.title = null),
+        (doc.slug = null),
+        (doc.extention = '.md'),
+        (doc.type = 'component'),
+        (doc.parent = ''),
+        (doc.html = ''),
+        (doc.css = ''),
+        (doc.js = '');
+      this.$refs.form.resetValidation();
+      this.dialog = false;
     },
 
-    reset () {
-      this.$refs.form.reset()
+    reset() {
+      // const ref = this.$refs
+      // console.log({ref})
+      this.$refs.form.reset();
     },
 
     //code Mirror methods
-    onCmReady (cm) {
-      console.log('the editor is readied!', cm)
-      if (this.doc.html !== '') {
-        this.compile()
+    onCmReady(cm) {
+      // if (this.doc.slug) {
+      //   setTimeout(() => {
+      //     this.compile();
+      //   }, 500);
+      // }
+    },
+    onCmFocus(cm) {
+      // console.log('the editor is focus!', cm);
+      // if (this.doc.slug) {
+      //   setTimeout(() => {
+      //     this.compile();
+      //   }, 500);
+      // }
+    },
+    onCmCodeChange(newCode) {
+      if (newCode) {
+        this.compile();
       }
     },
-    onCmFocus (cm) {
-      console.log('the editor is focus!', cm)
 
+    emptyOutVueTempFile() {
+      this.$socket.client.emit('emptyOutVueFile');
     },
-    onCmCodeChange (newCode) {
-
-    },
-
-    emptyOutVueTempFile () {
-
-      this.$socket.client.emit("emptyOutVueFile")
-
-    }
-
   },
-  mounted () {
-
-   if (this.doc.slug !== '') {
-        setTimeout(() => {
-          this.compile()
-
-        }, 500)
-      }
-    //Keep old value of path
-    var slug = this.doc.slug
-    var path = _.cloneDeep(slug)
-    this.oldPath = path
-
-    var parent = this.doc.parent
-    var comp = _.cloneDeep(parent)
-    this.oldComp = comp
-
+  updated() {
+    console.log(this.preview);
   },
-  created () {
+  mounted() {
+    var slug = this.doc.slug;
+    var path = _.cloneDeep(slug);
+    this.oldPath = path;
 
-
-  }
-
-
-}
+    var parent = this.doc.parent;
+    var comp = _.cloneDeep(parent);
+    this.oldComp = comp;
+  },
+};
 </script>
 
 
 <style scoped>
 .compile {
   white-space: pre;
+}
+
+.panel {
+  height: 500px;
 }
 </style>
 

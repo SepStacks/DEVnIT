@@ -1,9 +1,11 @@
 ---
-title: "NEW"
-parent: "NEW"
+title: "ADMIN"
+parent: "ADMIN"
 type: "project"
 category: "Getting Started"
-
+position: 1
+version: 1.0
+menuTitle: "Intro"
 ---
 
 # Installation
@@ -26,7 +28,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## NEW
+## ADMIN
 
 Installation instructions goers here...
 
