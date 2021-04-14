@@ -159,15 +159,22 @@ io.on("connection", socket => {
     }
 
     if (modeType === "edit") {
-      console.log("CONTENT", content);
-
       // Proceed to generate new version of component
-      generate.component(
-        content,
-        templatePath,
-        globalComponentPath,
-        pathToContent
-      );
+      if (content.type === "component") {
+        generate.component(
+          content,
+          templatePath,
+          globalComponentPath,
+          pathToContent
+        );
+      } else if (content.type === "childComponent") {
+        childComponent.generate({
+          content,
+          templatePath,
+          globalComponentPath,
+          pathToContent
+        });
+      }
     }
     // Emit message to frontend
     socket.emit("output", content);

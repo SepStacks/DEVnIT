@@ -16,7 +16,7 @@
                 <!-- <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}-${doc.prefix}`">
                   <v-btn>edit component {{doc.slug}} - {{doc.prefix}}</v-btn>
                 </nuxt-link> -->
-                <v-btn @click="editChildComponent(doc)">edit child</v-btn>
+                <!-- <v-btn @click="editChildComponent(doc)">edit child</v-btn> -->
 
                 <!-- add a prefix to each child component -->
                 <!-- <nuxt-link

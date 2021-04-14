@@ -22,10 +22,16 @@ These types of ComponentName are usually used for notifications, eg. appearing o
 
 undefined
 
-<doc-component :file="'SEPKITT/noo/SEPKITT_noo-buttons'"></doc-component>
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-buttons'" :name="'noo-buttons'"></doc-component>
 
 ## prep
 
 undefined
 
 <doc-component :file="'SEPKITT/noo/SEPKITT_noo-prep'"></doc-component>
+
+## heyxd
+
+sasadcvxcvxcvxcvdsfdfsf
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-heyxd'"></doc-component>
