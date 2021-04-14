@@ -78,6 +78,7 @@
         <CodeCodepen
           ref="codepen"
           :pen="pen"
+          :name="name"
         />
 
       </div>
@@ -153,6 +154,12 @@ export default {
           title: 'code',
           onClick: () => (this.expand = !this.expand),
         },
+        //   {
+        //   icon: 'la-edit',
+        //   path: 'Edit Component',
+        //   title: 'code',
+        //   onClick: () => (this.expand = !this.expand),
+        // }
       ]
     },
   },
