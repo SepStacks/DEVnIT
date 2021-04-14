@@ -27,6 +27,7 @@ export default {
     })
       .only(['title', 'slug', 'parent', 'parentComponent'])
       .fetch();
+      //import a child.md file here to get the values (wip)
     const slug = `${params.project}/${params.slug}`;
     //Get current slug
     const slugData = await $content(`projects/${slug}`).fetch();
