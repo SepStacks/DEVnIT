@@ -1,5 +1,12 @@
 <template>
-<TextField v-model="test"/>
+<div>
+ <TextField v-model="test" title="Name of User"/>
+  <v-row>
+  	<div>
+  	{{test}}
+  </div>
+  </v-row>
+  </div>
 </template>
 
 <script>

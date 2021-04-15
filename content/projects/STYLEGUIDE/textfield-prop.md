@@ -9,8 +9,7 @@ menuTitle: "textfield-prop"
 
 # textfield-prop
 
-> This component was based on the textfield-prop component of the style guide, well have to link it to the main style guide project if this component was seperate but if we want to have it as a nested component we can work out a process for that aswell
-
+> This component was based on the textfield-prop component of [Vuetify](https://vuetifyjs.com/en/components/textfield-prop/ "Vuetify's textfield-prop component")
 
 ## Usage
 
