@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Primary Component Edit Page-->
-Child component is here
+    Child component is here
     <MainForm
       :projects="projectTitle"
       :content="contentArray"
@@ -44,28 +44,31 @@ export default {
     //Import vue file as string and nest it into text field
 
     getDoc() {
-      const nestedComponents = this.slugData.children
-      console.log({nestedComponents});
+      const nestedComponents = this.slugData.children;
       //textarea
       const childTitle = this.$route.params.child;
+      const parent = this.$route.params.project;
+      const parentComponent = this.$route.params.slug;
       //filter through the nestedComponents array and return the current childComponent
-      const childComponent = nestedComponents.filter(child => {
-        child.title === childTitle
-      })
-      const doc = {
-        //Build an object for the child-components
-        title: childTitle,
-        slug: this.slugData.slug,
-        extention: '.md',
-        type: 'childComponents',
-        parent: this.slugData.parent,
-        html: this.pen ? this.pen.template : '',
-        css: this.pen ? this.pen.style : '',
-        js: this.pen ? this.pen.script : '',
-      };
-      console.log(doc);
-
-      return doc;
+      const getChild = nestedComponents
+        .filter((child) => child.title === childTitle)
+        .map((child) => {
+          const doc = {
+            //Build an object for the child-components
+            title: childTitle,
+            description: child.description,
+            slug: childTitle,
+            extention: '.md',
+            type: child.type,
+            parentComponent: parentComponent,
+            parent: this.slugData.parent,
+            html: this.pen ? this.pen.template : '',
+            css: this.pen ? this.pen.style : '',
+            js: this.pen ? this.pen.script : '',
+          };
+          return doc;
+        });
+      return getChild[0];
     },
     projectTitle() {
       //Get the tiles of all projects and remove any null values
@@ -91,11 +94,13 @@ export default {
   methods: {
     //Import vue file as string
     async importTemplate() {
-      const child = this.$route.params.child;
+      const childTitle = this.$route.params.child;
+      const parent = this.$route.params.project;
+      const ParentComponent = this.$route.params.slug;
       try {
         const template = await import(
           // raw-loader is a loader for webpack that allows importing files as a String.
-          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-${child}.vue`
+          `!raw-loader!~/components/examples/${parent}/${ParentComponent}/${parent}_${ParentComponent}-${childTitle}.vue`
         );
         this.boot(template.default);
       } catch (err) {
@@ -131,5 +136,3 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>

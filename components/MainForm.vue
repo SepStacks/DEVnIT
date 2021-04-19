@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-container>
+      {{ doc }}
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
       <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
         <v-radio-group
@@ -17,8 +18,15 @@
           <v-radio
             @change="reset"
             name="Component"
-            label="create new component"
+            label="create new main component"
             value="component"
+          ></v-radio>
+          <v-radio
+            @change="reset"
+            name="Component"
+            label="create new nested component"
+            value="childComponent"
+
           ></v-radio>
         </v-radio-group>
 
@@ -46,7 +54,7 @@
           </div>
         </div>
 
-        <div v-if="doc.type === 'component'">
+        <div v-if="doc.type === 'component' || doc.type === 'childComponent'">
           <v-container class="px-0" fluid>
             <v-checkbox
               v-if="mode !== 'create'"
@@ -56,12 +64,16 @@
             </v-checkbox>
           </v-container>
           <!-- switch between parent and child components -->
-          <v-checkbox
-            v-if="mode === 'create' || doc.type === 'component'"
+          <!-- <v-checkbox
+            v-if="
+              mode === 'create' ||
+              doc.type === 'component' ||
+              doc.type === 'childComponent'
+            "
             v-model.lazy="isChild"
             :label="`Add Child Component`"
             @click="discardChanges"
-          ></v-checkbox>
+          ></v-checkbox> -->
 
           <v-container>
             <v-col v-if="makeTemplate" cols="12" md="4">
@@ -74,7 +86,7 @@
                 :rules="[rules.required]"
               ></v-select>
               <v-text-field
-                v-if="!isChild"
+                v-if="doc.type === 'component'"
                 v-model="doc.slug"
                 label="Component name"
                 :rules="[rules.required, rules.string, doesExist]"
@@ -97,7 +109,7 @@
               >
               </v-textarea>
               <v-text-field
-                v-if="isChild"
+                v-if="doc.type === 'childComponent'"
                 class="text-capitalize"
                 persistent-hint
                 hint=""
@@ -106,7 +118,7 @@
                 label="component name"
               ></v-text-field>
               <v-text-field
-                v-if="isChild && doc.parent"
+                v-if="doc.type === 'childComponent' && doc.parent"
                 class="text-capitalize"
                 persistent-hint
                 hint="prefix result"
@@ -115,7 +127,7 @@
                 label="Prefix"
               ></v-text-field>
               <v-text-field
-                v-if="isChild && doc.prefix && doc.title"
+                v-if="doc.type === 'childComponent' && doc.prefix && doc.title"
                 class="text-capitalize"
                 persistent-hint
                 hint=""
@@ -128,8 +140,8 @@
             <v-row
               class="container"
               v-if="
-                (doc.slug && doc.parent) ||
-                (doc.parentComponent && isChild === true)
+                doc.type === 'component' ||
+                 doc.type === 'childComponent'
               "
             >
               <v-col cols="12" md="4">
@@ -200,7 +212,12 @@
             >
               Submit
             </v-btn>
-            <v-btn v-if="doc.type === 'component'" type="submit"> Run </v-btn>
+            <v-btn
+              v-if="doc.type === 'component' || doc.type === 'childComponent'"
+              type="submit"
+            >
+              Run
+            </v-btn>
           </v-col>
         </v-row>
       </v-form>
@@ -212,7 +229,7 @@
 
 <script>
 // import 'some-codemirror-resource'
-import UiPreviewer from '~/components/ui/UiPreviewer'
+import UiPreviewer from '~/components/ui/UiPreviewer';
 import Snackbar from '~/components/Snackbar';
 
 import { parseComponent } from 'vue-template-compiler/browser';
@@ -322,7 +339,7 @@ export default {
 
   computed: {
     filterProjects() {
-      if (this.isChild === true) {
+      if (this.doc.type === 'childComponent') {
         //only show projects that can have a child component
         const check = this.content.filter(
           (data) => data.parent && data.slug !== 'index'

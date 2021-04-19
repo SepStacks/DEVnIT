@@ -23,7 +23,7 @@ const generate = ({
     prefix: content.prefix,
     parentComponent: content.parentComponent,
     extention: content.extention,
-    content: `<doc-component :file="'${content.parent}/${content.parentComponent}/${content.parent}_${content.slug}'"></doc-component>`
+    content: `<doc-component :file="'${content.parent}/${content.parentComponent}/${content.parent}_${content.slug}'" :name="'${content.title}'"></doc-component>`
   };
   let path =
     pathToContent + data.parent + "/" + data.parentComponent + data.extention;

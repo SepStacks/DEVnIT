@@ -67,7 +67,7 @@ components: {
         js: this.pen ? this.pen.script : ''
 
       }
-      console.log(doc)
+      console.log({doc})
 
       return doc
 

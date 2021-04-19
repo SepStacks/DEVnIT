@@ -18,3 +18,22 @@ menuTitle: "noo"
 <!-- Component template need to be here -->
 
 <doc-component :file="'SEPKITT/noo/SEPKITT_noo-usage'" :name="'noo'"></doc-component >
+
+
+## admin
+
+assadasd
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-admin'"></doc-component>
+
+## property
+
+ssdsdsaefsgfrqdsfe
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-property'" :name="'property'"></doc-component>
+
+## mytest
+
+this is new!
+
+<doc-component :file="'SEPKITT/noo/SEPKITT_noo-mytest'" :name="'mytest'"></doc-component>
