@@ -145,10 +145,27 @@ io.on("connection", socket => {
           pathToContent
         );
       }
+      if (modeType === "edit") {
+        // Proceed to generate new version of component
+        generate.component(
+          content,
+          templatePath,
+          globalComponentPath,
+          pathToContent
+        );
+      }
     } else if (content.type === "childComponent") {
       if (modeType === "create") {
-        console.log("this is running yay!!");
-        //child-component creation
+        //create child-component
+        childComponent.generate({
+          content,
+          templatePath,
+          globalComponentPath,
+          pathToContent
+        });
+      }
+      if (modeType === "edit") {
+        //edit child-component
         childComponent.generate({
           content,
           templatePath,
@@ -158,30 +175,6 @@ io.on("connection", socket => {
       }
     }
 
-    if (modeType === "edit") {
-      // Proceed to generate new version of component
-      generate.component(
-        content,
-        templatePath,
-        globalComponentPath,
-        pathToContent
-      );
-      // if (content.type === "component") {
-      //   generate.component(
-      //     content,
-      //     templatePath,
-      //     globalComponentPath,
-      //     pathToContent
-      //   );
-      // } else if (content.type === "childComponent") {
-      //   childComponent.generate({
-      //     content,
-      //     templatePath,
-      //     globalComponentPath,
-      //     pathToContent
-      //   });
-      // }
-    }
     // Emit message to frontend
     socket.emit("output", content);
 
