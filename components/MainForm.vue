@@ -57,7 +57,7 @@
           </v-container>
           <!-- switch between parent and child components -->
           <v-checkbox
-            v-if="mode === 'create'"
+            v-if="mode === 'create' || doc.type === 'component'"
             v-model.lazy="isChild"
             :label="`Add Child Component`"
             @click="discardChanges"
@@ -212,7 +212,7 @@
 
 <script>
 // import 'some-codemirror-resource'
-// import Previewer from '~/components/ui/Previewer'
+import UiPreviewer from '~/components/ui/UiPreviewer'
 import Snackbar from '~/components/Snackbar';
 
 import { parseComponent } from 'vue-template-compiler/browser';

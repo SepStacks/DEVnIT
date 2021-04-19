@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-sheet
-      color="accent"
-      elevation-10
-      class="mb-9 v-example"
-    >
-
-      <v-lazy
-        min-height="52"
-        @mouseenter="importTemplate"
-      >
+    <v-sheet color="accent" elevation-10 class="mb-9 v-example">
+      <v-lazy min-height="52" @mouseenter="importTemplate">
         <div class="d-flex justify-end text-end pa-2">
           <CodeTooltip
             v-for="(tooltip, i) in tooltips"
@@ -25,23 +17,10 @@
 
       <div v-if="pen">
         <v-expand-transition>
-          <v-card
-            tile
-            v-if="expand"
-            color="#2a2139"
-            id="loginCard"
-            dark
-          >
-            <v-item-group
-              v-model="selected"
-              class="pa-2"
-              mandatory
-            >
+          <v-card tile v-if="expand" color="#2a2139" id="loginCard" dark>
+            <v-item-group v-model="selected" class="pa-2" mandatory>
               <template v-for="(section, i) in sections">
-                <v-item
-                  :key="`item-${i}`"
-                  :value="section"
-                >
+                <v-item :key="`item-${i}`" :value="section">
                   <v-btn
                     slot-scope="{ active, toggle }"
                     :color="active ? 'accent' : 'transparent'"
@@ -49,7 +28,8 @@
                     class="mr-0"
                     depressed
                     @click="toggle"
-                  >{{ section }}</v-btn>
+                    >{{ section }}</v-btn
+                  >
                 </v-item>
               </template>
             </v-item-group>
@@ -66,7 +46,6 @@
                   <div>
                     <div class="v-markup">
                       <CodeMarkup :code="pen[section]" />
-
                     </div>
                   </div>
                 </v-window-item>
@@ -75,20 +54,11 @@
           </v-card>
         </v-expand-transition>
 
-        <CodeCodepen
-          ref="codepen"
-          :pen="pen"
-          :name="name"
-        />
-
+        <CodeCodepen ref="codepen" :pen="pen" :title="name" />
       </div>
-      <v-sheet
-        elevation="4"
-        class="pa-4"
-      >
+      <v-sheet elevation="4" class="pa-4">
         <!-- Vue file that gets generated from examples folder -->
         <CodeVueFile :file="file" />
-
       </v-sheet>
     </v-sheet>
   </div>
@@ -99,50 +69,53 @@
 // import syntax highlighting styles
 
 // Mixins
-import Codepen from '~/mixins/codepen'
-import CodeVueFile from '~/components/code/VueFile'
-import CodeMarkup from '~/components/code/Markup'
-import CodeTooltip from '~/components/code/Tooltip'
-
+import Codepen from '~/mixins/codepen';
+import CodeVueFile from '~/components/code/VueFile';
+import CodeMarkup from '~/components/code/Markup';
+import CodeTooltip from '~/components/code/Tooltip';
 
 export default {
-
   components: {
-    Prism: () => import("vue-prism-component"),
+    Prism: () => import('vue-prism-component'),
     CodeVueFile,
     CodeMarkup,
-    CodeTooltip
+    CodeTooltip,
   },
   mixins: [Codepen],
 
   props: {
     name: {
-      type: String
+      type: String,
     },
     file: {
-      type: String
+      type: String,
     },
   },
 
-
-  data () {
+  data() {
     return {
       copied: false,
       expand: false,
-      selected: "template"
-    }
+      selected: 'template',
+    };
   },
 
   computed: {
-    sections () {
-      return [
-        'template',
-        'script',
-        'style',
-      ].filter(section => this.pen[section])
+    sections() {
+      return ['template', 'script', 'style'].filter(
+        (section) => this.pen[section]
+      );
     },
-    tooltips () {
+    tooltips() {
       return [
+        {
+          icon: 'la-edit',
+          path: `Edit ${this.name} component`,
+          title: 'code',
+          //feature: find a way distingush between child and parent components
+          // if object does not have -usage in its name then attach + /child component to the route
+          onClick: this.pushRoute,
+        },
         {
           icon: 'la-codepen',
           path: 'edit-in-codepen',
@@ -154,42 +127,44 @@ export default {
           title: 'code',
           onClick: () => (this.expand = !this.expand),
         },
-        //   {
-        //   icon: 'la-edit',
-        //   path: 'Edit Component',
-        //   title: 'code',
-        //   onClick: () => (this.expand = !this.expand),
-        // }
-      ]
+      ];
     },
   },
 
   methods: {
-    sendToCodepen () {
-      this.$refs.codepen.submit()
+    pushRoute() {
+      let file = this.file.split(/[/]/);
+      let fullComponentName = /[^/]*$/.exec(this.file)[0];
+      let parent = file[0];
+      let parentComponent = file[1];
+      let isParent = fullComponentName.endsWith('usage');
+
+      //Check if component is parent or child
+      if (isParent) {
+        //push to parent path
+        this.$router.push(`/create_update/${parent}/${parentComponent}`);
+      } else {
+        //Push to child path
+        this.$router.push(
+          `/create_update/${parent}/${parentComponent}/${this.name}`
+        );
+      }
     },
-    copyMarkup () {
-      const markup = this.$el.querySelector("pre")
-      markup.setAttribute("contenteditable", "true")
-      markup.focus()
-      document.execCommand("selectAll", false, null)
-      this.copied = document.execCommand("copy")
-      markup.removeAttribute("contenteditable")
+    sendToCodepen() {
+      this.$refs.codepen.submit();
+    },
+    copyMarkup() {
+      const markup = this.$el.querySelector('pre');
+      markup.setAttribute('contenteditable', 'true');
+      markup.focus();
+      document.execCommand('selectAll', false, null);
+      this.copied = document.execCommand('copy');
+      markup.removeAttribute('contenteditable');
       setTimeout(() => {
-        this.copied = false
-      }, 2000)
-    }
+        this.copied = false;
+      }, 2000);
+    },
   },
-
-
 };
 </script>
 
-<style lang="sass">
-  .v-example
-    code[class*="language-"],
-    pre[class*="language-"]
-      text-shadow: none
-    pre.language-markup::after
-      content: 'vue'
-</style>

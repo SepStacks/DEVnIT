@@ -28,6 +28,9 @@ export default {
     name: 'VueFile',
     inheritAttrs: false,
     props: {
+      name: {
+        type: String
+      },
       file: {
         type: String,
         required: true,

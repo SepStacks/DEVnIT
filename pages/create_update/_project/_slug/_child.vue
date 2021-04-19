@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Primary Component Edit Page-->
-
+Child component is here
     <MainForm
       :projects="projectTitle"
       :content="contentArray"
