@@ -1,5 +1,6 @@
 ---
 parent: "{{parent}}"
+title: "{{title}}"
 type: "component"
 category: "Components"
 position: 2
@@ -17,4 +18,4 @@ menuTitle: "{{slug}}"
 
 <!-- Component template need to be here -->
 
-<doc-component :file="'{{parent}}/{{slug}}/{{parent}}_{{slug}}-usage'" :name="'{{slug}}'"></doc-component >
+<doc-component :file="'{{parent}}/{{slug}}/{{parent}}_{{slug}}-{{title}}'" :name="'{{slug}}'"></doc-component >

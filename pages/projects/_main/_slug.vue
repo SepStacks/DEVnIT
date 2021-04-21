@@ -48,7 +48,7 @@
               <div>Last updated: {{ doc.updatedAt }}</div>
 
               <!-- add nested page here -->
-              <nuxt-child keep-alive />
+              <!-- <nuxt-child keep-alive /> -->
               <v-row>
                 <v-col cols="12"> </v-col>
               </v-row>
@@ -79,11 +79,9 @@ export default {
     }
     const slug = params.slug;
     const main = params.main;
-    const doc = await $content(`projects/${main}/${slug}`, {
-      deep: true,
-    }).fetch();
+    const doc = await $content(`projects/${main}/${slug}`).fetch();
     console.log('doc from slug',doc)
-
+    
     const nav = await $content(`projects/${main}`)
       .only(['title', 'menuTitle', 'category', 'slug', 'version'])
       //Set the order of the components thats underneath the headings

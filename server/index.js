@@ -146,16 +146,14 @@ io.on("connection", socket => {
         );
       }
     } else if (content.type === "childComponent") {
-      if (modeType === "create") {
         console.log("this is running yay!!");
         //child-component creation
-        childComponent.generate({
+          generate.component(
           content,
           templatePath,
           globalComponentPath,
           pathToContent
-        });
-      }
+        );
     }
 
     if (modeType === "edit") {

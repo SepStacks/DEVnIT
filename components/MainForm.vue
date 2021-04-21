@@ -589,6 +589,7 @@ export default {
 
         // Values for component
         const content = {
+          title: "usage",
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
