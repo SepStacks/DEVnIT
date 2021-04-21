@@ -8,7 +8,6 @@ const generate = ({
   globalComponentPath,
   pathToContent
 }) => {
-  console.log("hello");
   let vueCompTemplate = fs
     .readFileSync(templatePath + "vueCompTemplate.js")
     .toString();
