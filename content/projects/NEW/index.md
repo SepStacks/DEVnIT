@@ -1,6 +1,6 @@
 ---
-title: "STYLEGUIDE"
-parent: "STYLEGUIDE"
+title: "NEW"
+parent: "NEW"
 type: "project"
 category: "Getting Started"
 position: 1
@@ -28,7 +28,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## STYLEGUIDE
+## NEW
 
 Installation instructions goers here...
 

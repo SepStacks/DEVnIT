@@ -13,12 +13,14 @@ export default {
   async asyncData({ $content, params, route }) {
     const slug = params.slug;
     const main = params.main;
-    console.log({ params });
+    //do a check to see if project/components has nested children
     if (slug !== 'index') {
-      const docs = await $content(`/projects/${main}/child/${slug}`)
-        //Set the order of the components thats underneath the headings
-        .where({ type: 'childComponent' })
+      //get all items and only return those that matches
+      const docs = await $content({ deep: true })
+       //display nested components based on their type and their parent
+        .where({ type: 'childComponent', prefix: params.slug })
         .fetch();
+      console.log({ docs });
 
       return {
         docs,

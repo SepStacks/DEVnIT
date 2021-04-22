@@ -1,6 +1,7 @@
 <template>
   <div>
     <MainForm :projects="projectTitle" :content="contentArray" :doc="doc" />
+    {{projectTitle}}
   </div>
 </template>
 
@@ -12,11 +13,11 @@ export default {
   // List the projects directory items
   async asyncData({ $content, params, error }) {
     // const menus = await $content({ deep: true }).fetch();
-    const projects = await $content('projects', { deep: true })
+    const projects = await $content({ deep: true })
       .only(['title', 'slug', 'parent', 'category'])
       .where({ type: 'project' })
       .fetch();
-
+    console.log({projects})
     return {
       projects,
     };
