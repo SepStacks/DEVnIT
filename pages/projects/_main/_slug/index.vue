@@ -9,28 +9,33 @@
     <div>descripion</div>
         <CodeContainer :file="file" :name="name" /> -->
     <!-- {{ doc }} -->
-    <nuxt-content :document="docs" ref="nuxtContent" />
-    {{ docs }}
+    <!-- <div v-for="doc in docs" :key="doc.slug">
+            {{ doc.slug }}
+    <nuxt-content :document="doc" ref="nuxtContent" />
+
+
+    </div> -->
     hello from nested page
+
+
   </div>
 </template>
 
 <script>
 export default {
-  async asyncData({ $content, params }) {
+  async asyncData({ $content, params, route }) {
     // Avoid re-fetching in production
     // if (process.dev === false && categories) {
     //   return;
     // }
     const slug = params.slug;
     const main = params.main;
-
-    const docs = await $content(`/projects/PLEASEWORK/child`, {
-      deep: true,
-    })
+    console.log({route})
+    console.log(params)
+    // const docs = await $content(`/projects/${main}/child`)
       //Set the order of the components thats underneath the headings
 
-      .fetch();
+    //   .fetch();
 
     // .catch((err) => {
     //   error({
@@ -39,7 +44,7 @@ export default {
     //   });
     // });
     return {
-      docs,
+    //   docs,
     };
   },
   // async fetch({$content, params}) {

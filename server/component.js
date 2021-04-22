@@ -41,20 +41,32 @@ const component = (
         }
         throw err;
       }
-      fs.writeFile(
-        nestedDir + "/" + content.slug + content.extention,
-        output,
-        { recursive: true },
-        err => {
-          if (err) {
-            consola.error(new Error("Failed to create component"));
-            return err;
+      //add another directly seperating each child by parentComponent
+      fs.mkdir(nestedDir + `/${content.parentComponent}`, { recursive: true }, err => {
+        if (err) {
+          if (err.code === "EEXIST") {
+            console.error("directory already exists");
+            return;
           }
-
-          // Log this message if the file was written to successfully
-          consola.success("component successfully created");
+          throw err;
         }
-      );
+        fs.writeFile(
+          //within projects/child/slug/
+          nestedDir + `/${content.parentComponent}` + "/" + content.slug + content.extention,
+          output,
+          { recursive: true },
+          err => {
+            if (err) {
+              consola.error(new Error("Failed to create component"));
+              return err;
+            }
+
+            // Log this message if the file was written to successfully
+            consola.success("component successfully created");
+          }
+        );
+      })
+
     });
 
 

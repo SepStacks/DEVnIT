@@ -26,7 +26,6 @@
             name="Component"
             label="create new nested component"
             value="childComponent"
-
           ></v-radio>
         </v-radio-group>
 
@@ -139,10 +138,7 @@
             <!-- codemirror -->
             <v-row
               class="container"
-              v-if="
-                doc.type === 'component' ||
-                 doc.type === 'childComponent'
-              "
+              v-if="doc.type === 'component' || doc.type === 'childComponent'"
             >
               <v-col cols="12" md="4">
                 <client-only placeholder="Codemirror Loading...">
@@ -589,7 +585,8 @@ export default {
 
         // Values for component
         const content = {
-          title: "usage",
+          title: 'usage',
+          prefix: self.doc.slug.toString().toLowerCase(),
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,
           oldProject: self.oldComp,
@@ -615,6 +612,7 @@ export default {
         //add versioning in the future to components aswell
         const content = {
           title: self.doc.title,
+          prefix: self.doc.parentComponent.toString(),
           description: self.doc.description,
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,

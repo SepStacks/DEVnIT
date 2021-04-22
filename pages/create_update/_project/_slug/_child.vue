@@ -26,6 +26,7 @@ export default {
       deep: true,
     })
       .only(['title', 'slug', 'parent'])
+      .where({ type: 'project' })
       .fetch();
     //import a child.md file here to get the values (wip)
     const slug = `${params.project}/${params.slug}`;

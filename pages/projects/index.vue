@@ -70,9 +70,10 @@ export default {
     error
   }) {
     // const menus = await $content({ deep: true }).fetch();
+    //.where({}) will only get those files that has a type of projects to avoid nested subroutes from displaying
     const menus = await $content('projects' || "index", {
       deep: true
-    })
+    }).where({ type: 'project' })
       .fetch()
 
       .catch(err => {

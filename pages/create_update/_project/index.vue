@@ -24,6 +24,7 @@ export default {
     // const menus = await $content({ deep: true }).fetch();
     const projects = await $content('projects', { deep: true })
       .only(['title', 'slug', 'parent'])
+      .where({ type: 'project' })
       .fetch();
 
     const slug = `${params.project}/index`;
@@ -40,7 +41,9 @@ export default {
     projectTitle() {
       //Get the tiles of all projects and remove any null values
       const title = this.projects
-        .map((project) => {project.title, project.slug})
+        .map((project) => {
+          project.title, project.slug;
+        })
         .filter((el) => {
           return el != null;
         });
