@@ -48,7 +48,9 @@
               <div>Last updated: {{ doc.updatedAt }}</div>
 
               <!-- add nested page here -->
-              <nuxt-child keep-alive  />
+             <div v-if="doc.type === 'component'">
+                <nuxt-child keep-alive  />
+             </div>
               <v-row>
                 <v-col cols="12"> </v-col>
               </v-row>
@@ -79,7 +81,8 @@ export default {
     }
     const slug = params.slug;
     const main = params.main;
-    const doc = await $content(`projects/${main}/${slug}`).fetch();
+    const doc = await $content(`projects/${main}/${slug}`)
+    .fetch();
     console.log('doc from slug',doc)
 
     const nav = await $content(`projects/${main}`)

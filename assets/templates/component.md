@@ -1,7 +1,7 @@
 ---
 parent: "{{parent}}"
 title: "{{title}}"
-type: "component"
+type: "{{type}}"
 category: "Components"
 position: 2
 version: 1.0

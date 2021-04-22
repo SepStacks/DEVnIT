@@ -1,7 +1,7 @@
 ---
 parent: "PLEASEWORK"
 title: "deep"
-type: "component"
+type: "childComponent"
 category: "Components"
 position: 2
 version: 1.0
