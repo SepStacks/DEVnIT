@@ -586,6 +586,7 @@ export default {
         // Values for component
         const content = {
           title: 'usage',
+          description: self.doc.description.toString().toLowerCase(),
           prefix: self.doc.slug.toString().toLowerCase(),
           slug: self.doc.slug.toString().toLowerCase(),
           oldPath: self.oldPath,

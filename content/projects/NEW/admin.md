@@ -1,6 +1,7 @@
 ---
 parent: "NEW"
 title: "usage"
+description: "sfsdfdsfdsfdf"
 type: "component"
 category: "Components"
 position: 2
@@ -15,7 +16,7 @@ prefix: "admin"
 
 ## Usage -->
 
-
+sfsdfdsfdsfdf
 
 <!-- Component template need to be here -->
 
