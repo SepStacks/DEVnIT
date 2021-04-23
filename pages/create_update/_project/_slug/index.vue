@@ -30,8 +30,10 @@ export default {
 
     const slug = `${params.project}/${params.slug}`;
     //Get current slug
-    const slugData = await $content(`projects/${slug}`).fetch();
+    const slugData = await $content(`projects/${slug}` ,{ deep: true })
 
+      .fetch();
+      // console.log({slugData})
     return {
       projects,
       slugData,
@@ -46,6 +48,7 @@ export default {
     getDoc() {
       const doc = {
         slug: this.slugData.slug,
+        description: this.slugData.description,
         extention: '.md',
         type: this.slugData.type,
         parent: this.slugData.parent,
@@ -53,8 +56,7 @@ export default {
         css: this.pen ? this.pen.style : '',
         js: this.pen ? this.pen.script : '',
       };
-      console.log({ doc });
-
+      console.log({doc})
       return doc;
     },
     projectTitle() {
@@ -81,11 +83,11 @@ export default {
     //Import vue file as string
     async importTemplate() {
       try {
-        const suffix =
-          this.getDoc.type === 'component' ? 'usage' : this.getDoc.suffix;
+        // const suffix =
+        //   this.getDoc.type === 'component' ? 'usage' : this.getDoc.suffix;
         const template = await import(
           // raw-loader is a loader for webpack that allows importing files as a String.
-          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-${suffix}.vue`
+          `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-usage.vue`
         );
 
         this.boot(template.default);

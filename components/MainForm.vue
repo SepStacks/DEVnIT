@@ -78,7 +78,7 @@
             <v-col v-if="makeTemplate" cols="12" md="4">
               <v-select
                 @input="isFormValid = true"
-                :items="filterProjects"
+                :items="projects"
                 v-model="doc.parent"
                 item-text="parent"
                 label="Select project"
@@ -91,7 +91,6 @@
                 :rules="[rules.required, rules.string, doesExist]"
               >
               </v-text-field>
-
               <v-select
                 v-else
                 @input="isFormValid = true"
@@ -334,19 +333,20 @@ export default {
   }),
 
   computed: {
-    filterProjects() {
-      if (this.doc.type === 'childComponent') {
-        //only show projects that can have a child component
-        const check = this.content.filter(
-          (data) => data.parent && data.slug !== 'index'
-        );
-        console.log('check', check);
-        return check;
-      } else {
-        //return all project titles
-        return this.projects;
-      }
-    },
+    // filterProjects() {
+    //   if (this.doc.type === 'childComponent') {
+    //     //only show projects that can have a child component
+    //     console.log('projects',this.projects)
+    //     const check = this.content.filter(
+    //       (data) => data.parent && data.slug !== 'index'
+    //     );
+    //     console.log('check', check);
+    //     return check;
+    //   } else {
+    //     //return all project titles
+    //     return this.projects;
+    //   }
+    // },
     dialogInfo() {
       return {
         title: 'Discard changes?',

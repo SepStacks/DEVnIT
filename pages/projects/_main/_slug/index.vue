@@ -1,10 +1,8 @@
 <template>
   <div>
     <div v-for="doc in docs" :key="doc.slug">
-      {{ doc.slug }}
       <nuxt-content :document="doc" ref="nuxtContent" />
     </div>
-    asdasd
   </div>
 </template>
 
@@ -27,18 +25,7 @@ export default {
       };
     }
   },
-  // async fetch({$content, params}) {
-  //   this.docs = await $content(`projects/${main}/${slug}/child`, {
-  //     deep: true,
-  //   }).fetch();
-  //   // console.log(params);
-  //   console.log('content here', this.docs);
-  // },
-  // props: {
-  //   doc: {
-  //     required: true,
-  //   },
-  // },
+
 };
 </script>
 

@@ -1,6 +1,7 @@
 ---
 parent: "{{parent}}"
 title: "{{title}}"
+description: "{{description}}"
 type: "{{type}}"
 category: "Components"
 position: 2

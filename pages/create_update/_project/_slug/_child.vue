@@ -9,6 +9,7 @@
       :showRadio="false"
       :mode="'edit'"
     />
+    {{ getDoc }}
   </div>
 </template>
 
@@ -31,8 +32,12 @@ export default {
     //import a child.md file here to get the values (wip)
     const slug = `${params.project}/${params.slug}`;
     //Get current slug
-    const slugData = await $content(`projects/${slug}`).fetch();
-    // console.log({ slugData });
+    const slugData = await $content({ deep: true })
+    //get all nested components
+      .where({ type: 'childComponent', prefix: params.slug })
+
+      .fetch();
+    console.log({ slugData });
     return {
       projects,
       slugData,
@@ -45,14 +50,15 @@ export default {
     //Import vue file as string and nest it into text field
 
     getDoc() {
-      const nestedComponents = this.slugData.children;
+      const nestedComponents = this.slugData;
       //textarea
+      console.log('params', this.$route.params)
       const childTitle = this.$route.params.child;
       const parent = this.$route.params.project;
       const parentComponent = this.$route.params.slug;
       //filter through the nestedComponents array and return the current childComponent
       const getChild = nestedComponents
-        .filter((child) => child.title === childTitle)
+        .filter((item) => item.slug === childTitle)
         .map((child) => {
           const doc = {
             //Build an object for the child-components
@@ -69,7 +75,8 @@ export default {
           };
           return doc;
         });
-      return getChild[0];
+      console.log({getChild});
+      // return getChild[0];
     },
     projectTitle() {
       //Get the tiles of all projects and remove any null values
