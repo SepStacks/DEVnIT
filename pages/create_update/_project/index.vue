@@ -2,7 +2,7 @@
   <div>
     <v-row justify="center" align="center">
       <LazyMainForm
-        :projects="projects"
+        :projects="projectTitle"
         :doc="slugData"
         :showRadio="false"
         :mode="'edit'"
@@ -22,29 +22,38 @@ export default {
   // mixins: [content],
   // List the projects directory items
   async asyncData({ $content, params, error }) {
+    const projects = await $content({ deep: true })
+      .only(['title', 'slug', 'parent', 'category'])
+      .where({ type: 'project' })
+      .fetch();
+    const parentComponents = await $content({ deep: true })
+      .only(['title', 'slug', 'parent', 'type'])
+      .where({ type: 'component' })
+      .fetch();
     // const menus = await $content({ deep: true }).fetch();
     const slug = `${params.project}/index`;
     //Get current slug
     const slugData = await $content(`projects/${slug}`).fetch();
 
     return {
-
+      projects,
+      parentComponents,
       slugData,
     };
   },
 
   computed: {
-    // projectTitle() {
-    //   //Get the tiles of all projects and remove any null values
-    //   const title = this.projects
-    //     .map((project) => {
-    //       project.title, project.slug;
-    //     })
-    //     .filter((el) => {
-    //       return el != null;
-    //     });
-    //   return title;
-    // },
+    projectTitle() {
+      //Get the tiles of all projects and remove any null values
+      const title = this.projects
+        .map((project) => {
+          project.title, project.slug;
+        })
+        .filter((el) => {
+          return el != null;
+        });
+      return title;
+    },
     // contentArray() {
     // //Get the component name of all projects and remove any null values
     // const slug = this.projects

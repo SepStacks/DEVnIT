@@ -15,16 +15,24 @@
 // import MainForm from '~/components/MainForm';
 
 export default {
-
   // List the projects directory items
   async asyncData({ $content, params, error }) {
     // const menus = await $content({ deep: true }).fetch();
-
+    const projects = await $content({ deep: true })
+      .only(['title', 'slug', 'parent', 'category'])
+      .where({ type: 'project' })
+      .fetch();
+    const parentComponents = await $content({ deep: true })
+      .only(['title', 'slug', 'parent', 'type'])
+      .where({ type: 'component' })
+      .fetch();
     const slug = `${params.project}/${params.slug}`;
     //Get current slug
     const slugData = await $content(`projects/${slug}`, { deep: true }).fetch();
     // console.log({slugData})
     return {
+      projects,
+      parentComponents,
       slugData,
       pen: undefined,
       test: 'testings',

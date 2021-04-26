@@ -1,6 +1,6 @@
 ---
-title: "PLEASEWORK"
-parent: "PLEASEWORK"
+title: "KMS"
+parent: "KMS"
 type: "project"
 category: "Getting Started"
 position: 1
@@ -28,7 +28,7 @@ You can check you have the right version (3.x) with this command:
 vue --version
 ```
 
-## PLEASEWORK
+## KMS
 
 Installation instructions goers here...
 
