@@ -1,7 +1,11 @@
 <template>
   <div>
-    <MainForm :projects="projectTitle" :content="contentArray" :doc="doc" />
-    {{projectTitle}}
+    xc
+    <MainForm
+      :projects="projectTitle"
+      :doc="doc"
+      :parentComponents="parentComponents"
+    />
   </div>
 </template>
 
@@ -17,9 +21,13 @@ export default {
       .only(['title', 'slug', 'parent', 'category'])
       .where({ type: 'project' })
       .fetch();
-    console.log({projects})
+    const parentComponents = await $content({ deep: true })
+      .only(['title', 'slug', 'parent', 'type'])
+      .where({ type: 'component' })
+      .fetch();
     return {
       projects,
+      parentComponents,
     };
   },
 
@@ -47,16 +55,6 @@ export default {
           return el != null;
         });
       return title;
-    },
-
-    contentArray() {
-      //Get the component name of all projects and remove any null values
-      const slug = this.projects
-        .map((project) => project)
-        .filter((el) => {
-          return el;
-        });
-      return slug;
     },
   },
 };

@@ -91,6 +91,7 @@
                 :rules="[rules.required, rules.string, doesExist]"
               >
               </v-text-field>
+
               <v-select
                 v-else
                 @input="isFormValid = true"
@@ -130,7 +131,11 @@
                 persistent-hint
                 hint=""
                 readonly
-                :value="(doc.slug = doc.parentComponent + '-' + doc.title)"
+                :value="
+                  mode === 'create'
+                    ? (doc.slug = doc.parentComponent + '-' + doc.title)
+                    : doc.slug
+                "
                 label="Slug"
               ></v-text-field>
             </v-col>
@@ -245,9 +250,11 @@ const CDN_MAP = {
   unpkg: '//unpkg.com/',
   jsdelivr: '//cdn.jsdelivr.net/npm/',
 };
+// import contentProperties from '~/mixins/contentProperties.js';
 
 export default {
   name: 'MainForm',
+  // mixins: [contentProperties],
   components: {
     //  Previewer,
     Snackbar,
@@ -257,12 +264,12 @@ export default {
     projects: {
       type: Array,
     },
-    Parentcomponents: {
+    parentComponents: {
       type: Array,
     },
-    content: {
-      type: Array,
-    },
+    // content: {
+    //   type: Array,
+    // },
     //document object with all the content
     doc: {
       type: Object,
@@ -288,6 +295,8 @@ export default {
     //     required: false
     // }
   },
+
+
 
   data: () => ({
     dialog: false,
@@ -333,6 +342,7 @@ export default {
   }),
 
   computed: {
+
     // filterProjects() {
     //   if (this.doc.type === 'childComponent') {
     //     //only show projects that can have a child component
@@ -356,17 +366,17 @@ export default {
       };
     },
 
-    parentComponents() {
-      //Filter function that displays the parent components based on project name
-      const parent = this.doc.parent + '';
-      const check = this.content.filter(
-        (data) =>
-          data.parent === parent.toString().toUpperCase() &&
-          data.slug !== 'index'
-      );
-
-      return check;
-    },
+    // filterParentComponents() {
+    //   //Filter function that displays the parent components based on project name
+    //   const parent = this.doc.parent + '';
+    //   const check = this.parentComponents.filter(
+    //     (data) =>
+    //       data.parent === parent.toString().toUpperCase() &&
+    //       data.slug !== 'index'
+    //   );
+    //   console.log('content', check);
+    //   return check;
+    // },
     dynamicProps() {
       return { value: 'preview' };
     },
@@ -386,7 +396,7 @@ export default {
       } else {
         const parent = this.doc.parent + '';
         const slug = this.doc.slug + '';
-        const check = this.content.filter(
+        const check = this.projects.filter(
           (data) =>
             data.parent === parent.toString().toUpperCase() &&
             data.slug === slug.toString().toLowerCase()

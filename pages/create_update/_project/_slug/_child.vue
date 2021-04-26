@@ -2,44 +2,36 @@
   <div>
     <!-- Primary Component Edit Page-->
     Child component is here
-    <MainForm
-      :projects="projectTitle"
-      :content="contentArray"
+    <LazyMainForm
+      :projects="projects"
       :doc="getDoc"
       :showRadio="false"
       :mode="'edit'"
+      :parentcomponents="parentcomponents"
     />
-    {{ getDoc }}
   </div>
 </template>
 
 <script>
-import MainForm from '~/components/MainForm';
+
 export default {
-  components: {
-    MainForm,
-  },
+
+  // components: {
+  //   MainForm,
+  // },
   // List the projects directory items
   async asyncData({ $content, params, error }) {
     // const menus = await $content({ deep: true }).fetch();
     console.log({ params });
-    const projects = await $content('projects', {
-      deep: true,
-    })
-      .only(['title', 'slug', 'parent'])
-      .where({ type: 'project' })
-      .fetch();
     //import a child.md file here to get the values (wip)
-    const slug = `${params.project}/${params.slug}`;
     //Get current slug
     const slugData = await $content({ deep: true })
-    //get all nested components
+      //get all nested components
       .where({ type: 'childComponent', prefix: params.slug })
 
       .fetch();
     console.log({ slugData });
     return {
-      projects,
       slugData,
       pen: undefined,
       test: 'testings',
@@ -52,7 +44,7 @@ export default {
     getDoc() {
       const nestedComponents = this.slugData;
       //textarea
-      console.log('params', this.$route.params)
+      console.log('params', this.$route.params);
       const childTitle = this.$route.params.child;
       const parent = this.$route.params.project;
       const parentComponent = this.$route.params.slug;
@@ -75,29 +67,28 @@ export default {
           };
           return doc;
         });
-      console.log({getChild});
-      // return getChild[0];
+      return getChild[0];
     },
-    projectTitle() {
-      //Get the tiles of all projects and remove any null values
+    // projectTitle() {
+    //   //Get the tiles of all projects and remove any null values
 
-      const title = this.projects
-        .map((project) => project.title)
-        .filter((el) => {
-          return el != null;
-        });
-      return title;
-    },
+    //   const title = this.projects
+    //     .map((project) => project.title)
+    //     .filter((el) => {
+    //       return el != null;
+    //     });
+    //   return title;
+    // },
 
-    contentArray() {
-      //Get the component name of all projects and remove any null values
-      const slug = this.projects
-        .map((project) => project)
-        .filter((el) => {
-          return el;
-        });
-      return slug;
-    },
+    // contentArray() {
+    //   //Get the component name of all projects and remove any null values
+    //   const slug = this.projects
+    //     .map((project) => project)
+    //     .filter((el) => {
+    //       return el;
+    //     });
+    //   return slug;
+    // },
   },
   methods: {
     //Import vue file as string
