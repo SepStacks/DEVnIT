@@ -49,6 +49,7 @@
           ></v-text-field>
 
           <div class="mt-5 font-weight-bold">
+            <!-- add installation instructions here -->
             Add installation instructions(optional)
           </div>
         </div>
@@ -296,8 +297,6 @@ export default {
     // }
   },
 
-
-
   data: () => ({
     dialog: false,
     showSample: false,
@@ -342,7 +341,6 @@ export default {
   }),
 
   computed: {
-
     // filterProjects() {
     //   if (this.doc.type === 'childComponent') {
     //     //only show projects that can have a child component

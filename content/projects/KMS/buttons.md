@@ -1,7 +1,7 @@
 ---
 parent: "KMS"
 title: "usage"
-description: "butttons are a component"
+description: "helloo mr. button"
 type: "component"
 category: "Components"
 position: 2
@@ -16,7 +16,7 @@ prefix: "buttons"
 
 ## Usage -->
 
-butttons are a component
+helloo mr. button
 
 <!-- Component template need to be here -->
 
