@@ -1,6 +1,6 @@
 <template>
   <div>
-    xc
+
     <MainForm
       :projects="projectTitle"
       :doc="doc"

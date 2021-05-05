@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-container>
-      {{ doc }}
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
       <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
         <v-radio-group
@@ -51,6 +50,8 @@
           <div class="mt-5 font-weight-bold">
             <!-- add installation instructions here -->
             Add installation instructions(optional)
+
+            <v-textarea v-model="doc.contentBody" />
           </div>
         </div>
 
@@ -149,7 +150,7 @@
                 <client-only placeholder="Codemirror Loading...">
                   <div>HTML</div>
                   <codemirror
-                    v-model.lazy="doc.html"
+                    v-model="doc.html"
                     :options="cmOption"
                     @ready="onCmReady"
                     @focus="onCmFocus"
@@ -163,7 +164,7 @@
                 <client-only>
                   <div>CSS</div>
                   <codemirror
-                    v-model.lazy="doc.css"
+                    v-model="doc.css"
                     :options="cmOption"
                     @focus="onCmFocus"
                   >
@@ -175,7 +176,7 @@
                 <client-only>
                   <div>JS</div>
                   <codemirror
-                    v-model.lazy="doc.js"
+                    v-model="doc.js"
                     :options="cmOption"
                     @focus="onCmFocus"
                   >
@@ -185,20 +186,10 @@
             </v-row>
           </v-container>
 
-          <v-sheet outlined v-if="doc.slug && doc.parent">
-            <v-row justify="center" class="container">
-              <v-col>
-                <v-row align="center" justify="center">
-                  <v-col v-if="!doc.slug || !doc.html">
-                    <div>Add vue markup to generate previewer</div>
-                  </v-col>
-                  <v-col v-else>
-                    <UiPreviewer :value="preview" class="panel" />
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-sheet>
+            <LazyUiPreviewer :value="preview" ref="iframe"  />
+            <!-- <div v-else>
+              press run
+            </div> -->
         </div>
 
         <v-row justify="end" class="mt-3">
@@ -214,6 +205,7 @@
               Submit
             </v-btn>
             <v-btn
+              :disabled="!doc.html"
               v-if="doc.type === 'component' || doc.type === 'childComponent'"
               type="submit"
             >
@@ -298,6 +290,7 @@ export default {
   },
 
   data: () => ({
+    showPreviewer: false,
     dialog: false,
     showSample: false,
     preview: '',
@@ -428,6 +421,9 @@ export default {
   },
 
   methods: {
+    paste() {
+      console.log('pasted yay!');
+    },
     emptyFile() {
       if (this.doc.type === 'component') {
         (this.doc.html = ''), (this.doc.css = ''), (this.doc.js = '');
@@ -453,7 +449,6 @@ export default {
       let scriptContent = 'exports = { default: {} }';
 
       if (script) {
-        console.log(Babel);
         try {
           compiled = Babel.transform(script.content, {
             presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
@@ -523,6 +518,7 @@ export default {
         head: heads.join('\n'),
         body: `<div id="app"></div>` + scripts.join('\n'),
       };
+
     },
     genHeads() {
       let heads = [
@@ -583,10 +579,8 @@ export default {
 
         this.$socket.client.emit('properties', { content, modeType });
 
-        this.$nextTick(() => {
-          // add some loader while component is being generated
-          this.$router.push(`/projects/`);
-        });
+        // add some loader while component is being generated
+        this.$router.push(`/projects/`);
       } else if (this.doc.type === 'component') {
         var self = this;
         // this.tempLoader = true;
@@ -705,13 +699,13 @@ export default {
       }
     },
 
-    emptyOutVueTempFile() {
-      this.$socket.client.emit('emptyOutVueFile');
-    },
+    // emptyOutVueTempFile() {
+    //   this.$socket.client.emit('emptyOutVueFile');
+    // },
   },
-  updated() {
-    console.log(this.preview);
-  },
+updated() {
+  console.log('updated',this.$refs.iframe)
+},
   mounted() {
     var slug = this.doc.slug;
     var path = _.cloneDeep(slug);
@@ -730,8 +724,6 @@ export default {
   white-space: pre;
 }
 
-.panel {
-  height: 500px;
-}
+
 </style>
 

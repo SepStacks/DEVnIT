@@ -1,36 +1,51 @@
 <template>
-  <div class="preview">
-    <div ref="iframe" class="holds-the-iframe"></div>
-  </div>
+  <v-sheet outlined>
+    <!-- <div ref="iframe"></div> -->
+    <div v-if="value">
+          <iframe :srcdoc="resultIFrameHtml"  width="100%" frameborder="0" />
+
+    </div>
+    <div v-else>value loading?</div>
+  </v-sheet>
 </template>
 
 <script>
 import createIframe from '@/utils/iframe';
 
-const sandboxAttributes = [
-  'allow-modals',
-  'allow-forms',
-  'allow-pointer-lock',
-  'allow-popups',
-  'allow-same-origin',
-  'allow-scripts',
-];
+// const sandboxAttributes = [
+//   'allow-modals',
+//   'allow-forms',
+//   'allow-pointer-lock',
+//   'allow-popups',
+//   'allow-same-origin',
+//   'allow-scripts',
+// ];
 
 export default {
   props: ['value'],
 
-  mounted() {
-    this.iframe = createIframe({
-      el: this.$refs.iframe,
-      sandboxAttributes,
-    });
-  },
-
-  watch: {
-    value(val) {
-      this.iframe.setHTML(val);
+  computed: {
+    resultIFrameHtml() {
+      console.log('value', this.value)
+      return `
+        <!DOCTYPE html><html><head>${this.value.head}</head><body>${this.value.body}</body></html>
+      `;
+      // iframe.name = this.name
     },
   },
+
+  // mounted() {
+  //   this.iframe = createIframe({
+  //     el: this.$refs.iframe,
+  //     sandboxAttributes,
+  //   });
+  // },
+
+  // watch: {
+  //   value(val) {
+  //     this.iframe.setHTML(val);
+  //   },
+  // },
 };
 </script>
 
@@ -50,5 +65,8 @@ export default {
   background-color: #fff;
 }
 
+.panel {
+  height: 500px;
+}
 </style>
 
