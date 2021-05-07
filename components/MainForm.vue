@@ -572,6 +572,7 @@ export default {
           extention: '.md',
           type: self.doc.type,
           parent: self.doc.parent.toString().toUpperCase(),
+          contentBody: self.doc.contentBody
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
@@ -703,9 +704,7 @@ export default {
     //   this.$socket.client.emit('emptyOutVueFile');
     // },
   },
-updated() {
-  console.log('updated',this.$refs.iframe)
-},
+
   mounted() {
     var slug = this.doc.slug;
     var path = _.cloneDeep(slug);

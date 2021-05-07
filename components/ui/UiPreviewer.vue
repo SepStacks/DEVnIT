@@ -1,12 +1,18 @@
 <template>
-  <v-sheet outlined>
-    <!-- <div ref="iframe"></div> -->
-    <div v-if="value">
-          <iframe :srcdoc="resultIFrameHtml"  width="100%" frameborder="0" />
-
-    </div>
-    <div v-else>value loading?</div>
-  </v-sheet>
+  <client-only>
+    <v-sheet outlined>
+      <!-- <div ref="iframe"></div> -->
+      <div v-if="value">
+        <iframe
+          :srcdoc="resultIFrameHtml"
+          ref="iframe"
+          width="100%"
+          frameborder="0"
+        />
+      </div>
+      <div v-else>value loading?</div>
+    </v-sheet></client-only
+  >
 </template>
 
 <script>
@@ -23,17 +29,36 @@ import createIframe from '@/utils/iframe';
 
 export default {
   props: ['value'],
+  data() {
+    return {
+      height: '',
+    };
+  },
 
   computed: {
     resultIFrameHtml() {
-      console.log('value', this.value)
       return `
-        <!DOCTYPE html><html><head>${this.value.head}</head><body>${this.value.body}</body></html>
+        <!DOCTYPE html><html><head>${this.value.head}</head><body>${this.value.body}
+        <style>
+            html {
+               overflow-y: auto !important;
+               height: auto !important;
+            }
+
+            .theme--light.application {
+            background: #fff !important;
+            }
+
+            <\/style>
+            </body></html>
       `;
       // iframe.name = this.name
     },
   },
-
+  methods: {},
+  mounted() {
+    console.log('ref', this.$refs);
+  },
   // mounted() {
   //   this.iframe = createIframe({
   //     el: this.$refs.iframe,

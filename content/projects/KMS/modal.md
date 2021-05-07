@@ -1,7 +1,7 @@
 ---
 parent: "KMS"
 title: "usage"
-description: "asdfsdsd"
+description: "modal test"
 type: "component"
 category: "Components"
 position: 2
@@ -16,7 +16,7 @@ prefix: "modal"
 
 ## Usage -->
 
-asdfsdsd
+modal test
 
 <!-- Component template need to be here -->
 

@@ -1,7 +1,7 @@
 ---
 parent: "KMS"
 title: "child"
-description: "nested component"
+description: "nested component...yes"
 type: "childComponent"
 category: "Components"
 position: 2
@@ -16,7 +16,7 @@ prefix: "buttons"
 
 ## Usage -->
 
-nested component
+nested component...yes
 
 <!-- Component template need to be here -->
 
