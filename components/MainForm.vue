@@ -186,8 +186,8 @@
             </v-row>
           </v-container>
 
-            <LazyUiPreviewer :value="preview" ref="iframe"  />
-            <!-- <div v-else>
+          <LazyUiPreviewer :value="preview" ref="iframe" />
+          <!-- <div v-else>
               press run
             </div> -->
         </div>
@@ -474,6 +474,8 @@ export default {
         heads.push(`<style>${style.content}</style>`);
       });
 
+      const vuetifyOpts = require('@/plugins/vuetify').default;
+      console.log({ vuetifyOpts });
       scripts.push(`
 
       <script>
@@ -482,11 +484,45 @@ export default {
         var component = exports.default
         component.template = component.template ||
         ${JSON.stringify('<v-app> ' + template.content + '</v-app>')}
+        const LINE_AWESOME = {
+            complete: 'la-check',
+            cancel: 'la-ban',
+            close: 'la-times',
+            delete: 'la-trash', // delete (e.g. v-chip close)
+            clear: 'la-times',
+            success: 'la-check',
+            info: 'la-exclamation-circle',
+            warning: 'la-exclamation-triangle',
+            error: 'la-exclamation-triangle',
+            prev: 'la-angle-left',
+            next: 'la-angle-right',
+            checkboxOn: 'la-check',
+            checkboxOff: 'la-stop',
+            checkboxIndeterminate: '...',
+            delimiter: '...', // for carousel
+            sort: '...',
+            expand: 'la-angle-down',
+            menu: '...',
+            subgroup: '...',
+            dropdown: 'la-angle-down',
+            radioOn: 'la-check-circle',
+            radioOff: 'la-circle',
+            edit: 'la-edit',
+            ratingEmpty: '...',
+            ratingFull: '...',
+            ratingHalf: '...',
+            loading: '...',
+            first: '...',
+            last: '...',
+            unfold: '...',
+            file: '...'
+        }
 
         const opts = {
-          icons: {
-    iconfont: 'la', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
-  },
+        icons: {
+          iconfont: 'la',
+          values: LINE_AWESOME
+          },
         theme: {
         themes: {
         light: {
@@ -518,7 +554,6 @@ export default {
         head: heads.join('\n'),
         body: `<div id="app"></div>` + scripts.join('\n'),
       };
-
     },
     genHeads() {
       let heads = [
@@ -572,7 +607,7 @@ export default {
           extention: '.md',
           type: self.doc.type,
           parent: self.doc.parent.toString().toUpperCase(),
-          contentBody: self.doc.contentBody
+          contentBody: self.doc.contentBody,
           // bodyTitle: `# ${this.bodyTitle}`,
           // bodyDescription: this.bodyDescription,
           // bodyContent: this.bodyContent
@@ -722,7 +757,5 @@ export default {
 .compile {
   white-space: pre;
 }
-
-
 </style>
 

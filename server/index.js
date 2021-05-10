@@ -1,7 +1,6 @@
 var fs = require("fs");
 const express = require("express");
 let { render } = require("mustache");
-// const glob = require("glob")
 // Just for fancy logging
 const consola = require("consola");
 const path = require("path");
@@ -13,8 +12,6 @@ const server = app.listen(port, host);
 const io = require("socket.io").listen(server);
 const removeDir = require("./remove");
 const generate = require("./component");
-const genVueTemp = require("./createVueTemp");
-const childComponent = require("./childComponent");
 
 app.set("port", port);
 
@@ -164,21 +161,7 @@ io.on("connection", socket => {
         globalComponentPath,
         pathToContent
       );
-      // if (content.type === "component") {
-      //   generate.component(
-      //     content,
-      //     templatePath,
-      //     globalComponentPath,
-      //     pathToContent
-      //   );
-      // } else if (content.type === "childComponent") {
-      //   childComponent.generate({
-      //     content,
-      //     templatePath,
-      //     globalComponentPath,
-      //     pathToContent
-      //   });
-      // }
+  
     }
     // Emit message to frontend
     socket.emit("output", content);
@@ -238,24 +221,9 @@ io.on("connection", socket => {
     }
   });
 
-  //Write to vueFile
-  const tmpDir = path.join(__dirname, "../" + "/components/examples/tmp/");
 
-  socket.on("writeToVue", ({ content }) => {
-    genVueTemp.createVueTemp(tmpDir, templatePath, content);
-    // Emit message to frontend
-    if (content.html === "") {
-      socket.emit("ifEmptyTemplate", "Template is empty");
-    }
-  });
 
-  //finished with file
 
-  socket.on("emptyOutVueFile", () => {
-    fs.truncate(tmpDir + "vueDemo.vue", () => {
-      console.log("File has been cleared");
-    });
-  });
 });
 // Listen the server
 

@@ -1,14 +1,5 @@
 <template>
-    <div>
+    <div class="text-center">
         Component not found
     </div>
 </template>
-
-<script>
-    export default {
-
-    }
-</script>
-<style scoped>
-
-</style>

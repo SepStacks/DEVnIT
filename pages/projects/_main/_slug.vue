@@ -9,22 +9,6 @@
           <v-row justify="center">
             <v-col cols="11" md="8" lg="6">
               <div v-if="doc.type === 'component'">
-                <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}`">
-                  <v-btn>edit component {{ doc.slug }}</v-btn>
-                </nuxt-link>
-                <!-- add a prefix to each child component -->
-                <!-- <nuxt-link :to="`/create_update/${projectParent}/${doc.slug}-${doc.prefix}`">
-                  <v-btn>edit component {{doc.slug}} - {{doc.prefix}}</v-btn>
-                </nuxt-link> -->
-                <!-- <v-btn @click="editChildComponent(doc)">edit child</v-btn> -->
-
-                <!-- add a prefix to each child component -->
-                <!-- <nuxt-link
-                  :to="`/create_update/${projectParent}/${doc.slug}/addChildComponent`"
-                >
-                  <v-btn>add a component </v-btn>
-                </nuxt-link> -->
-
                 <Dialog
                   @click="deleteSlug"
                   @loading="loading"
@@ -45,21 +29,20 @@
                 />
               </div>
               <nuxt-content :document="doc" ref="nuxtContent" />
-              <div>Last updated: {{ doc.updatedAt }}</div>
 
               <!-- add nested page here -->
-             <div v-if="doc.type === 'component'">
-                <nuxt-child keep-alive  />
-             </div>
-              <v-row>
-                <v-col cols="12"> </v-col>
-              </v-row>
+              <div v-if="doc.type === 'component'">
+                <nuxt-child keep-alive />
+              </div>
+
+              <div>Last updated: {{ doc.updatedAt }}</div>
             </v-col>
           </v-row>
         </v-container>
       </v-main>
       <!-- table of content -->
-      <!-- <Toc :doc="doc" /> -->
+
+      <Toc :doc="doc" /> -->
     </div>
   </v-app>
 </template>
@@ -81,10 +64,7 @@ export default {
     }
     const slug = params.slug;
     const main = params.main;
-    const doc = await $content(`projects/${main}/${slug}`)
-    .fetch();
-    console.log('doc from slug',doc)
-
+    const doc = await $content(`projects/${main}/${slug}`).fetch();
     const nav = await $content(`projects/${main}`)
       .only(['title', 'menuTitle', 'category', 'slug', 'version'])
       //Set the order of the components thats underneath the headings
@@ -120,13 +100,7 @@ export default {
   },
 
   methods: {
-    editChildComponent(doc) {
-      console.log(doc);
-      // this.$router.push('/recipes/recipedetail?recipeuuid=' + item.recipeuuid)
-      // this.$router.push(`create_update/${projectParent}/${doc.slug}/addChildComponent?${doc.prefix}`)
-
-      //create_update/${projectParent}/${doc.slug}-${doc.prefix}`
-    },
+   
     deleteProject() {
       //add loading here within settimeout function
       this.loading = true;
