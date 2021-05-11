@@ -111,20 +111,24 @@ export default {
         {
           icon: 'la-edit',
           path: `Edit ${this.name} component`,
-          title: 'code',
           //feature: find a way distingush between child and parent components
           // if object does not have -usage in its name then attach + /child component to the route
           onClick: this.pushRoute,
         },
         {
+          icon: 'la-trash',
+          path: `Delete ${this.name} component`,
+          onClick: this.deleteComponent,
+        },
+
+        {
           icon: 'la-codepen',
-          path: 'edit-in-codepen',
+          path: 'Edit-in-codepen',
           onClick: this.sendToCodepen,
         },
         {
           icon: 'la-code',
-          path: 'view-source',
-          title: 'code',
+          path: 'View-source',
           onClick: () => (this.expand = !this.expand),
         },
       ];
@@ -132,6 +136,60 @@ export default {
   },
 
   methods: {
+    deleteComponent() {
+      //add loading here within settimeout function
+      // this.loading = true;
+      // const content = this.doc;
+
+      // console.log(content);
+      // //return to selected project route
+      // this.$router.push(`/projects`);
+
+      // this.$socket.client.emit('deleteProperty', {
+      //   content,
+      // });
+      // setTimeout(() => {
+      //   this.loading = false;
+      // }, 500);
+
+      //Check if component is parent or child
+      let file = this.file.split(/[/]/);
+      let fullComponentName = /[^/]*$/.exec(this.file)[0];
+      let parent = file[0];
+      let parentComponent = file[1];
+      let isParent = fullComponentName.endsWith('usage');
+
+      if (isParent) {
+        //delete parent component
+        const content = {
+          parent: parent,
+          slug: this.name,
+          path: this.$route.path,
+          type: 'component',
+          extention: '.md',
+        };
+        console.log({ content });
+
+        this.$socket.client.emit('deleteProperty', { content });
+        this.$router.push(`/projects`);
+        console.log(this.$route);
+      } else {
+        //delete child component
+        const content = {
+          parent: parent,
+          slug:  this.name,
+          parentComponent: parentComponent,
+          path: this.$route.path,
+          type: 'childComponent',
+          extention: '.md',
+        };
+        console.log({ content });
+        console.log(this.$route);
+
+        this.$socket.client.emit('deleteProperty', { content });
+        this.$router.push(`/projects`);
+      }
+    },
     pushRoute() {
       let file = this.file.split(/[/]/);
       let fullComponentName = /[^/]*$/.exec(this.file)[0];

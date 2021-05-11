@@ -41,7 +41,6 @@
         </v-container>
       </v-main>
       <!-- table of content -->
-
       <Toc :doc="doc" /> -->
     </div>
   </v-app>
@@ -100,7 +99,7 @@ export default {
   },
 
   methods: {
-   
+
     deleteProject() {
       //add loading here within settimeout function
       this.loading = true;

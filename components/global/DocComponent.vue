@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- attach to markdown with slug as its file and name properties -->
-    {{file}}
+   file: {{ file }}
     <CodeContainer :file="file" :name="name" />
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
     },
     name: {
       type: String,
-  },
+    },
   },
 
 };

@@ -215,7 +215,11 @@
         </v-row>
       </v-form>
     </v-container>
+    <!-- loader -->
 
+    <v-overlay :value="loader">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
 </template>
@@ -421,14 +425,6 @@ export default {
   },
 
   methods: {
-    paste() {
-      console.log('pasted yay!');
-    },
-    emptyFile() {
-      if (this.doc.type === 'component') {
-        (this.doc.html = ''), (this.doc.css = ''), (this.doc.js = '');
-      }
-    },
     async compile() {
       const code =
         this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
@@ -598,7 +594,6 @@ export default {
       var modeType = this.mode;
       if (this.doc.type === 'project') {
         var self = this;
-        this.loader = true;
 
         // values for project
         const content = {
@@ -638,14 +633,20 @@ export default {
           js: self.doc.js,
         };
         this.$socket.client.emit('properties', { content, modeType });
-
-        this.$nextTick(() => {
-          // this.tempLoader = false;
-          this.$router.push(`/projects/${content.parent}/index`);
+        // navigate to route if it exists
+        let l = this.$router.resolve({
+          name: `/projects/${content.parent}/index`,
         });
+        if (l.resolved.matched.length > 0) {
+          //the route is exists.
+          this.loader = false
+          this.$router.push(`/projects/${content.parent}/${content.slug}`)
+        } else {
+          //the route does not exists.
+          this.loader = true;
+        }
       } else if (this.doc.parentComponent) {
         var self = this;
-        // this.tempLoader = true;
 
         // Values for Child component
         //add versioning in the future to components aswell
@@ -664,13 +665,20 @@ export default {
           css: self.doc.css,
           js: self.doc.js,
         };
-        this.$nextTick(() => {
-          this.$socket.client.emit('properties', { content, modeType });
-          this.$router.push(`/projects/${content.parent}/index`);
+        this.$socket.client.emit('properties', { content, modeType });
 
-          // this.tempLoader = false;
+        let l = this.$router.resolve({
+          name: `/projects/${content.parent}/${content.parentComponent}`,
         });
-        console.log({ content });
+        if (l.resolved.matched.length > 0) {
+          //the route is exists.
+          this.loader = false;
+          this.$router.push( `/projects/${content.parent}/${content.parentComponent}`)
+
+        } else {
+          //the route does not exists.
+          this.loader = true
+        }
       }
 
       // this.title = ''
