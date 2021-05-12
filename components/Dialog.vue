@@ -12,17 +12,17 @@
           v-bind="attrs"
           v-on="on"
         >
-         Delete Component
+         Delete {{doc.type}}
         </v-btn>
       </template>
 
       <v-card>
         <v-card-title class="headline grey lighten-2">
-         compoent will be deleted
+         {{doc.type}} will be deleted
         </v-card-title>
 
         <v-card-text>
-        Are you sure you want to delete the {{doc.slug}} component?
+        Are you sure you want to delete the {{doc.slug}} {{doc.type}}?
         </v-card-text>
 
         <v-divider></v-divider>

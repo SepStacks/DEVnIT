@@ -1,5 +1,8 @@
 var fs = require("fs");
 const { throttle } = require("lodash");
+/* If you want to check file before delete whether it exist or not. So, use
+   fs.stat or fs.statSync(Synchronous) instead of fs.exists. Because according to
+   the latest node.js documentation, fs.exists now deprecated.*/
 
 // Check if directory exist
 const ifExist = (root, path, directory, fileType) => {
@@ -10,18 +13,31 @@ const ifExist = (root, path, directory, fileType) => {
       console.log(err);
     } else {
       if (directory) {
-        fs.rmdir(path, { recursive: true }, err => {
+        fs.rm(root, { recursive: true, force: true }, err => {
           if (err) throw err;
 
-          console.log("Code has been");
-
-          console.log(`${path} is deleted!`);
+          consola.success({
+            message: `Directory removed successfully`,
+            badge: true
+          });
         });
       } else {
         fs.unlink(path + fileType, err => {
           if (err) throw err;
-          console.log("file deleted successfully");
-          console.log(path + fileType);
+          consola.success({
+            message: `File removed successfully`,
+            badge: true
+          });
+        });
+
+        //remove directories if its empty
+        fs.rmdir(root, err => {
+          if (err) throw err;
+
+          consola.success({
+            message: `Removed empty directory at ${root}`,
+            badge: true
+          });
         });
       }
     }
