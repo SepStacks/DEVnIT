@@ -226,6 +226,11 @@ io.on("connection", socket => {
           "../" +
             `/content/projects/${content.parent}/child/${content.parentComponent}/${content.slug}`
         );
+        const rootContent = path.join(
+          __dirname,
+          "../" +
+            `/content/projects/${content.parent}/child`
+        );
         const root = path.join(
           __dirname,
           "../" +
@@ -234,11 +239,9 @@ io.on("connection", socket => {
         // add seperately a function that would also remove an eddited project component
         // delete directory recursively
         //set to false to remove file set to true to remove directory
-        removeDir.ifExist(root, dirComponent, false, ".vue");
+        removeDir.ifExist(root, dirComponent, false, ".vue" );
 
-       
-
-        removeDir.ifExist(root, dirSlug, false, ".md");
+        removeDir.ifExist(rootContent, dirSlug, false, ".md", content.parentComponent);
       }
     }
   });

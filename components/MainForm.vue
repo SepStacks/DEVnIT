@@ -217,9 +217,8 @@
     </v-container>
     <!-- loader -->
 
-    <v-overlay :value="loader">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
-    </v-overlay>
+  <OverlayLoader v-model="loader"/>
+
     <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
 </template>

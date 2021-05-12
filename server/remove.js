@@ -5,7 +5,7 @@ const { throttle } = require("lodash");
    the latest node.js documentation, fs.exists now deprecated.*/
 
 // Check if directory exist
-const ifExist = (root, path, directory, fileType) => {
+const ifExist = (root, path, directory, fileType, fileName) => {
   // attach md file to dir only if the target to delete is the .md file
 
   fs.stat(root, (err, stats) => {
@@ -31,14 +31,34 @@ const ifExist = (root, path, directory, fileType) => {
         });
 
         //remove directories if its empty
-        fs.rmdir(root, err => {
-          if (err) throw err;
+        fs.readdir(root + '/' + fileName, function(err, files) {
+          if (err) {
+             // some sort of error
+          } else {
+             if (!files.length) {
+              // root + '/' + fileName,
+              fs.rmdir(root, err => {
+                if (err) throw err;
 
-          consola.success({
-            message: `Removed empty directory at ${root}`,
-            badge: true
-          });
-        });
+                consola.success({
+                  message: `Removed empty directory at ${root}/${fileName}`,
+                  badge: true
+                });
+
+                // fs.rmdir(root, err => {
+                //   if (err) throw err;
+
+                //   consola.success({
+                //     message: `Removed empty directory at ${root}`,
+                //     badge: true
+                //   });
+                // });
+              });
+             }
+          }
+      });
+
+
       }
     }
   });

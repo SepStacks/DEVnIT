@@ -2,18 +2,6 @@
 <template>
   <div class="text-center">
     <v-dialog v-model="show" width="500">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          :icon="isIcon"
-          color="red lighten-2"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          <div v-if="!isIcon">Delete {{ doc.type }}</div>
-          <v-icon v-else>{{ icon }}</v-icon>
-        </v-btn>
-      </template>
 
       <v-card>
         <v-card-title class="headline grey lighten-2">
@@ -46,12 +34,8 @@
 export default {
   props: {
     value: Boolean,
-    doc: Object,
-    isIcon: {
-      type: Boolean,
-      default: false,
-    },
-    icon: String,
+    doc: Object
+
   },
   // This allow me to open and close the modal without any issues
   computed: {
