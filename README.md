@@ -31,10 +31,10 @@
  ```bash  
    git clone https://github.com/SepStacks/DEVnIT.git
    cd devnit
-   npm install
+   yarn install
    
    # serve with hot reload at localhost:3000
-   npm run dev
+   yarn dev
  ```
 
 ## Credits
