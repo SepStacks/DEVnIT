@@ -1,6 +1,7 @@
 # DEVnIT
 
-    Documentation solution for frontend developers. A snippet from my full project
+    Documentation solution for frontend developers.
+    Made with Nuxt, Vuetify and Node
     
 ## DEMO
 ![til](./assets/devnit.gif)
@@ -20,6 +21,8 @@
     •	Node Js server
     •	socket IO connected to app.
     •	Ability to create .md files with a UI.
+    • Live code previewer when creating vue components (vuetify)
+    • Ability to open up code within codepen
     
 
 ## Installation
@@ -34,5 +37,8 @@
    npm run dev
  ```
 
+## Credits
+
+This project would not be possible without Vue, @Nuxt/Content and Vuetify
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
