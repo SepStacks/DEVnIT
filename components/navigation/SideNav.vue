@@ -1,86 +1,91 @@
 <template>
-<div>
+  <div>
     <v-app-bar app clipped-left>
+      <v-toolbar-title class="ml-4">
+        <div class="font-weight-bold">SepStacks</div>
+        <!-- <v-img src="/svg/altron.svg" max-width="50%" /> -->
+      </v-toolbar-title>
+      <v-spacer />
 
-        <v-toolbar-title class="ml-4">
-            <div class="font-weight-bold">SepStacks</div>
-            <!-- <v-img src="/svg/altron.svg" max-width="50%" /> -->
-        </v-toolbar-title>
-        <v-spacer />
-
-        <!-- links -->
-        <v-card-actions>
-            <v-btn text to="/">
-              home
-            </v-btn>
-
-                <v-btn text to="/projects">
-              Projects
-            </v-btn>
-            <v-btn text to="/create_update">
-              Create
-            </v-btn>
-
-        </v-card-actions>
-
+      <!-- links -->
+      <v-card-actions>
+        <v-btn text to="/"> home </v-btn>
+        <v-btn text to="/projects"> Projects </v-btn>
+        <v-btn text to="/create_update"> Create </v-btn>
+      </v-card-actions>
     </v-app-bar>
-
     <v-navigation-drawer permanent app clipped v-model="drawer">
+      <div
+        class="mt-5"
+        v-for="(docs, category, index) in categories"
+        :key="category"
+        :class="{
+          active: isCategoryActive(docs),
+          'lg:mb-0': index === Object.keys(categories).length - 1,
+        }"
+      >
+        <p class="mb-2 grey--text font-weight-bold" v-if="category">
+          {{ category }}
+        </p>
 
-        <v-list nav dense>
-            <div v-for="(header, index) in Object.keys(headers)" :key="index">
-                <div class="font-weight-bold">{{ header }}</div>
-
-                <v-list-item v-for="(slug, innerIndex) in headers[header]" :key="innerIndex" :to="slug">
-                    {{ slug === "index" ? "Installation" : slug }}
-                </v-list-item>
-            </div>
-        </v-list>
-
+        <ul>
+          <!-- Using slice will make a copy of the array which means data.body will not change in value,
+            and therefore no re-render will be called. -->
+          <li v-for="doc of docs.slice().sort()" :key="doc.slug" link>
+            <v-list-item-content>
+              <NuxtLink :to="doc.path">
+                <v-list-item-title class="active-link mt-3" color="green">
+                  {{ doc.menuTitle || doc.title }}
+                </v-list-item-title>
+              </NuxtLink>
+              <client-only>
+                <span
+                  v-if="isDocumentNew(doc)"
+                  class="animate-pulse rounded-full bg-primary-500 opacity-75 h-2 w-2"
+                />
+              </client-only>
+            </v-list-item-content>
+          </li>
+        </ul>
+      </div>
     </v-navigation-drawer>
-</div>
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        menus: {
-            type: Array
-        }
+  props: {
+    categories: {
+      type: [Array, Object],
     },
-    data() {
-        return {
-            drawer: null,
-
-        }
+    // docs: {
+    //   type: [Array, Object],
+    // },
+  },
+  data() {
+    return {
+      drawer: null,
+    };
+  },
+  methods: {
+    isCategoryActive(documents) {
+      return documents.some((document) => document.to === this.$route.fullPath);
     },
-    computed: {
-        headers() {
-            let ar = [];
 
-            this.menus.forEach(el => {
-                ar.push({
-                    title: el.title,
-                    path: el.path,
-                    slug: el.slug,
-                    header: el.slug === "index" ? "Getting Started" : el.slug === "commits" ? "Gitlab Commits" : "Components"
-                });
-            });
+    isDocumentNew(document) {
+      if (process.server) {
+        return;
+      }
+      if (!document.version || document.version <= 0) {
+        return;
+      }
+      const version = localStorage.getItem(`document-${document.slug}-version`);
+      if (document.version > Number(version)) {
+        return true;
+      }
+      return false;
+    },
+  }
 
-            return ar.reduce((header, group) => {
-                if (
-                    header.hasOwnProperty(group.header) &&
-                    Array.isArray(header[group.header])
-                ) {
-                    header[group.header].push(group.slug);
-                } else {
-                    Object.assign(header, {
-                        [group.header]: [group.slug]
-                    });
-                }
-                return header;
-            }, {});
-        }
-    }
 };
 </script>

@@ -1,169 +1,254 @@
-var fs = require("fs")
-const express = require('express')
+var fs = require("fs");
+const express = require("express");
+let { render } = require("mustache");
 // Just for fancy logging
-const consola = require('consola')
+const consola = require("consola");
+const path = require("path");
+const app = express();
+const host = process.env.HOST || "localhost";
+const port = process.env.PORT || 4000;
 
-const path = require('path')
-const app = express()
-const host = process.env.HOST || 'localhost'
-const port = process.env.PORT || 4000
+const server = app.listen(port, host);
+const io = require("socket.io").listen(server);
+const removeDir = require("./remove");
+const generate = require("./component");
 
+app.set("port", port);
 
-console.log("Hello from node")
+io.on("connection", socket => {
+  //paths
+  const pathToContent = path.join(__dirname, "../" + "/content/projects/");
+  const templatePath = path.join(__dirname, "../" + "/assets/templates/");
+  const globalComponentPath = path.join(
+    __dirname,
+    "../" + "/components/examples/"
+  );
+  // create project folder
 
-const server = app.listen(port, host)
-const io = require('socket.io').listen(server)
-app.set('port', port)
-
-
-io.on('connection', (socket) => {
-  console.log(socket.id)
-  console.log("Hooray!")
+  fs.promises
+    .access(pathToContent)
+    .then(() => {
+      // It exists
+    })
+    .catch(() => {
+      // It doesn't exist
+      fs.mkdir(pathToContent, err => {
+        if (err) {
+          throw err;
+        }
+        console.log("Directory created successfully!");
+      });
+    });
 
   // the name properties references the emit that takes place on the frotnend
   // content is the data that is being generated from the frontend
 
-  socket.on('properties', (content) => {
-
-    const pathToContent = path.join(__dirname, '../' + '/content/projects/')
-
+  socket.on("properties", ({ content, modeType }) => {
+    // check if you are in Create modeType eg: if(content.modeType === 'create') {}
     // If file requires a directory
+    if (content.type === "project") {
+      if (modeType === "create") {
+        //Create a folder within content/projects
+        fs.mkdir(pathToContent + content.title, err => {
+          if (err) {
+            if (err.code === "EEXIST") {
+              console.error("myfile already exists");
+              return;
+            }
+            throw err;
+          }
 
-    if (content.type === 'project') {
+          console.log("Directory created successfully!");
 
-      //Create a folder within content/projects
-
-      fs.mkdir(pathToContent + content.title, (err) => {
-        if (err) {
-          return console.error(err)
-        }
-
-          console.log('Directory created successfully!')
-
-          //create the index file
-          // Markdown data is within content.markdownData
-
-          fs.writeFile(pathToContent + content.title + "/" + content.slug + content.extention, content.markdownData, (err) => {
-
+          //Get project.md template and inject project variables and generate an index file
+          let projTemplate = fs
+            .readFileSync(templatePath + "project.md")
+            .toString();
+          //project template path + content from frontend
+          let output = render(projTemplate, content);
+          fs.writeFile(
+            pathToContent +
+              content.title +
+              "/" +
+              content.slug +
+              content.extention,
+            output,
+            err => {
               if (err) {
-
-                  return err
+                return err;
               }
 
               // Log this message if the file was written to successfully
-              console.log('File successfully created')
-          })
-      })
-
-
-    }
-
-
-    //Wip???
-    if (content.type === 'component') {
-      //Check if project directory exist
-
-      if (fs.existsSync(pathToContent + content.parent)) {
-
-      //components should be nested in an existing project
-      //?? Component needs data. perhaps some form of slot template that we can somehow use to inject custom data?
-        fs.writeFile(pathToContent + content.parent + '/' + content.slug + content.extention, content.data, (err) => {
-
-          if (err) {
-            return err
-          }
-
-          // Log this message if the file was written to successfully
-          console.log('component successfully created')
-        })
+              console.log("File successfully created");
+            }
+          );
+        });
       }
 
+      // check if you are in edit modeType eg: if(content.modeType === 'edit') {}
+      //edit file
 
+      if (modeType === "edit") {
+        const oldDirName = pathToContent + content.parent;
+        const newDirName = pathToContent + content.title;
+
+        /* Function is syncronous because I want the folder to be renamed and only continue
+        once that hascompleted */
+
+        if (fs.existsSync(oldDirName)) {
+          console.log("This folder exists woooh!!");
+
+          try {
+            fs.renameSync(oldDirName, newDirName);
+            //create new index file from template
+
+            //Get project.md template and inject project variables and generate an index file
+            let projTemplate = fs
+              .readFileSync(templatePath + "project.md")
+              .toString();
+            //project template path + content from frontend
+            let output = render(projTemplate, content);
+            fs.writeFile(
+              pathToContent +
+                content.title +
+                "/" +
+                content.slug +
+                content.extention,
+              output,
+              err => {
+                if (err) {
+                  return err;
+                }
+
+                // Log this message if the file was written to successfully
+                console.log("File renamed successfully!");
+              }
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
     }
 
+    //Component Generation
+    else if (content.type === "component") {
+      if (modeType === "create") {
+        //parent-component creation
+        generate.component(
+          content,
+          templatePath,
+          globalComponentPath,
+          pathToContent
+        );
+      }
+    } else if (content.type === "childComponent") {
+      console.log("this is running yay!!");
+      //child-component creation
+      generate.component(
+        content,
+        templatePath,
+        globalComponentPath,
+        pathToContent
+      );
+    }
+
+    if (modeType === "edit") {
+      // Proceed to generate new version of component
+      generate.component(
+        content,
+        templatePath,
+        globalComponentPath,
+        pathToContent
+      );
+    }
     // Emit message to frontend
-    socket.emit('output', content)
+    socket.emit("output", content);
 
-  })
+    socket.on("disconnect", () => {
+      // Remove all listeners when socket-connection disconnects
+      socket.removeAllListeners();
+    });
+  });
 
-  socket.on('disconnect', () => {
-    // Display connection message when pager is disconnected
-    console.log('pager disconnected')
-  })
+  socket.on("deleteProperty", ({ content }) => {
+    if (content.type === "project") {
+      const dirProject = path.join(
+        __dirname,
+        "../" + `/components/examples/${content.parent}`
+      );
+      const dirProjectSlug = path.join(
+        __dirname,
+        "../" + `/content/projects/${content.parent}`
+      );
+      const root = dirProject;
+      const rootSlug = dirProjectSlug;
 
-})
+      // Delete Function for project
 
-io.on('connect', (socket) => {
-  console.log('socket is connected')
+      // Delete project dir and its components
+      removeDir.ifExist(root, dirProject, true);
 
-  socket.on('disconnect', () => {
+      // Delete project content and its pages
+      removeDir.ifExist(rootSlug, dirProjectSlug, true);
+    } else {
+      if (content.type === "component") {
+        // Delete Function for component0
 
-    console.log('Node-Server disconnected')
-  })
-})
+        // directory path
+        //use old parent variable incase project name has been changed
+        const dirComponent = path.join(
+          __dirname,
+          "../" + `/components/examples/${content.parent}`
+        );
+        const dirSlug = path.join(
+          __dirname,
+          "../" + `/content/${content.path}`
+        );
+        const root = dirComponent;
+        // add seperately a function that would also remove an eddited project component
+        // delete directory recursively
+        removeDir.ifExist(root, dirComponent, true);
 
+        removeDir.ifExist(root, dirSlug, false, ".md");
+      } else {
+        // Delete Function for component0
 
+        // directory path
+        //use old parent variable incase project name has been changed
+        const dirComponent = path.join(
+          __dirname,
+          "../" +
+            `/components/examples/${content.parent}/${content.parentComponent}/${content.parent}_${content.slug}`
+        );
+        const dirSlug = path.join(
+          __dirname,
+          "../" +
+            `/content/projects/${content.parent}/child/${content.parentComponent}/${content.slug}`
+        );
+        const rootContent = path.join(
+          __dirname,
+          "../" +
+            `/content/projects/${content.parent}/child`
+        );
+        const root = path.join(
+          __dirname,
+          "../" +
+            `/components/examples/${content.parent}/${content.parentComponent}`
+        );
+        // add seperately a function that would also remove an eddited project component
+        // delete directory recursively
+        //set to false to remove file set to true to remove directory
+        removeDir.ifExist(root, dirComponent, false, ".vue" );
 
-// Get data from the frontend
-
-// axios.get('http://localhost:3000/_content/projects')
-//     .then(response => {
-//         console.log('Hello from backend')
-
-//     const pathToContent = path.join(__dirname, '../' + '/content/projects/')
-//         // place response into a custom object
-
-//         markdownData = "---\ntitle: stephanie\n---\n# Helloo from stephanie "
-
-//         const process = {
-//             dir: true,
-//             title: "stephanie",
-//             slug: "test",
-//             data: markdownData,
-//             extension: ".md"
-//         }
-
-//         // If file requires a directory
-
-//         if (process.dir === true) {
-
-//             //Control exactly the desired directory to create a folder
-
-//             fs.mkdir(pathToContent + process.title, (err) => {
-//                 if (err) {
-//                     return console.error(err)
-//                 }
-
-//                 console.log('Directory created successfully!')
-//             })
-//         }
-
-//         // Check if project is a directory. If Successful, generate an md file within said directory
-
-//         const check = process.dir === true ? process.title + "/" + process.slug + process.extension : process.slug + process.extension
-
-//         fs.writeFile(pathToContent + check  , process.data, (err) => {
-
-//             // If there is any error in writing to the file, return
-
-//             if (err) {
-//                 console.error(err)
-//                 return
-//             }
-
-//             // Log this message if the file was written to successfully
-//             console.log('wrote to file successfully')
-//         })
-
-//     })
-//     .catch(error => {
-//         console.log(error)
-//     })
-
-
+        removeDir.ifExist(rootContent, dirSlug, false, ".md", content.parentComponent);
+      }
+    }
+  });
+});
 // Listen the server
 
 consola.ready({
-  message: `QMS-Server listening on http://${host}:${port}`,
+  message: `Node-Server listening on http://${host}:${port}`,
   badge: true
-})
+});

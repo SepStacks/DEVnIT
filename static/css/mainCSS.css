@@ -1,0 +1,20 @@
+html, body, #app,p,div,
+.title,
+.display-4,
+.display-3,
+.display-2,
+.display-1,
+.headline,
+.subheading,
+.body-2,
+.body-1,
+.caption,
+p,
+a,
+body {
+    font-family: 'Montserrat', sans-serif !important;
+  }
+
+  ::-webkit-scrollbar {
+    display: none !important;
+}
