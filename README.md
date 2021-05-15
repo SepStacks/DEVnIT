@@ -18,9 +18,9 @@
    When I saw nuxt came out with an awesome update called nuxt@content, I was very existed since I'm already using nuxt in my day to day job and this new feature has alot of        potenial so I set on a mission to create a solution for my previous issue.
    
 ## Features
-    •	Node Js server
-    •	socket IO connected to app.
-    •	Ability to create .md files with a UI.
+    • Node Js server
+    • socket IO connected to app.
+    • Ability to create .md files with a UI.
     • Live code previewer when creating vue components (vuetify)
     • Ability to open up code within codepen
     
