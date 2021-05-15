@@ -1,7 +1,7 @@
 # DEVnIT
 
-    Documentation solution for frontend developers.
-    Made with Nuxt, Vuetify and Node
+  Documentation solution for frontend developers.
+  Made with Nuxt, Vuetify and Node
     
 ## DEMO
 ![til](./assets/devnit.gif)
