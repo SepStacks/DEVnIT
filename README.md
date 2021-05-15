@@ -20,7 +20,7 @@
 ## Features
     • Node Js server
     • socket IO connected to app.
-    • Ability to create .md files with a UI.
+    • Ability to create .md files and .vue components with a UI.
     • Live code previewer when creating vue components (vuetify)
     • Ability to open up code within codepen
     
