@@ -2,6 +2,10 @@
 
   Documentation solution for frontend developers.
   Made using with Nuxt/content, Vuetify and Node
+  
+## Disclaimer
+  
+  This currently only works within development, when creating components through the UI, it can then be pushed by the developer to github, gitlab, etc
     
 ## DEMO
 ![til](./assets/devnit.gif)
