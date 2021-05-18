@@ -98,7 +98,7 @@ export default {
   data() {
     return {
       dialog: false,
-      loader:false,
+      loader: false,
       copied: false,
       expand: false,
       selected: 'template',
@@ -170,11 +170,10 @@ export default {
 
   methods: {
     show() {
-
       this.dialog = true;
     },
     deleteComponent() {
-      this.dialog = false
+      this.dialog = false;
       //Check if component is parent or child
       let file = this.file.split(/[/]/);
       let fullComponentName = /[^/]*$/.exec(this.file)[0];
@@ -209,20 +208,17 @@ export default {
         // console.log({ content });
         // console.log(this.$route);
 
-
- let l = this.$router.resolve({
+        let l = this.$router.resolve({
           name: `/projects/${content.parent}/index`,
         });
         if (l.resolved.matched.length > 0) {
           //the route is exists.
-          this.loader = false
-          this.$router.push(`/projects/${content.parent}/${content.slug}`)
+          this.loader = false;
+          this.$router.push(`/projects/${content.parent}/${content.slug}`);
         } else {
           //the route does not exists.
           this.loader = true;
         }
-
-
 
         this.$socket.client.emit('deleteProperty', { content });
         // this.$router.push(`/projects`);

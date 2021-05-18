@@ -17,7 +17,7 @@
             <v-list-item-title>{{ item.text }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <item-list :items="item.children"  />
+        <item-list :items="item.children" />
       </v-list-group>
 
       <div :key="item.index" v-else>
@@ -54,7 +54,7 @@ export default {
         },
 
         { text: 'item_2', icon: 'la-image' },
-        { text: 'item_3', icon: 'la-image' }
+        { text: 'item_3', icon: 'la-image' },
       ],
     },
   },

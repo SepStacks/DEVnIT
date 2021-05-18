@@ -1,10 +1,9 @@
 <template>
   <div>
-    <v-card width="350px"   height="600"
-    class="mx-auto">
+    <v-card width="350px" height="600" class="mx-auto">
       <v-navigation-drawer
-      permanent
-      absolute
+        permanent
+        absolute
         class="elevation-10"
         v-model="drawer"
         fixed
@@ -31,6 +30,10 @@
                   :class="$vuetify.breakpoint.mdAndDown ? '' : 'mt-3'"
                 >
                   <v-col cols="6" class="d-flex justify-center" align-center>
+                    <img
+                      src="https://avatars.githubusercontent.com/u/55579426?v=4"
+                      width="80%"
+                    />
                   </v-col>
                 </v-row>
               </v-container>
@@ -71,7 +74,7 @@
 </template>
 
 <script>
-import ItemList from '~/components/examples/STYLEGUIDE/itemlist/STYLEGUIDE_itemlist-usage';
+import ItemList from '../itemlist/STYLEGUIDE_itemlist-usage';
 export default {
   components: {
     ItemList,
@@ -84,42 +87,34 @@ export default {
         {
           text: 'Dashboard',
           icon: 'mdi-view-dashboard',
-          path: '/dashboard',
         },
         {
           text: 'Users',
           icon: 'la-user-alt',
-          path: '/users',
           children: [
             {
               text: 'New User',
               icon: 'la-user-add',
-              path: '/dashboard',
             },
           ],
         },
         {
           text: 'Estate',
           icon: 'las la-desktop',
-          path: '/estate',
         },
         {
           text: 'Global Content',
           icon: 'las la-globe',
-          path: '/contact-us',
         },
         {
           text: 'Reports',
           icon: 'la-wpforms',
-          path: '/reports',
         },
       ],
     };
   },
-  computed: {},
 };
 </script>
-
 
 
 
