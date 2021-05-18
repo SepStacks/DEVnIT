@@ -2,7 +2,7 @@ var fs = require("fs");
 const { throttle } = require("lodash");
 
 // Check if directory exist
-const ifExist = (root, path, directory, fileType) => {
+const ifExist = (root, path, directory, fileType, fileName) => {
   // attach md file to dir only if the target to delete is the .md file
 
   fs.stat(root, (err, stats) => {
@@ -17,6 +17,7 @@ const ifExist = (root, path, directory, fileType) => {
 
           console.log(`${path} is deleted!`);
         });
+
       } else {
         fs.unlink(path + fileType, err => {
           if (err) throw err;

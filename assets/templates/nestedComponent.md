@@ -8,7 +8,7 @@ Prefix: "{{prefix}}"
 menuTitle: "{{slug}}-{{prefix}}"
 ---
 
-# {{title}}
+# {{prefix}}
 
 {{description}}
 

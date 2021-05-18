@@ -61,6 +61,9 @@
         <CodeVueFile :file="file" />
       </v-sheet>
     </v-sheet>
+
+    <Dialog @click="deleteComponent" v-model="dialog" :doc="dialogInfo" />
+    <OverlayLoader v-model="loader" />
   </div>
 </template>
 
@@ -94,6 +97,8 @@ export default {
 
   data() {
     return {
+      dialog: false,
+      loader:false,
       copied: false,
       expand: false,
       selected: 'template',
@@ -110,20 +115,20 @@ export default {
       return [
         {
           icon: 'la-edit',
-          path: `Edit ${this.name} component`,
+          path: `Edit-${this.name}-Component`,
           //feature: find a way distingush between child and parent components
           // if object does not have -usage in its name then attach + /child component to the route
           onClick: this.pushRoute,
         },
         {
           icon: 'la-trash',
-          path: `Delete ${this.name} component`,
-          onClick: this.deleteComponent,
+          path: `Delete-${this.name}-Component`,
+          onClick: this.show,
         },
 
         {
           icon: 'la-codepen',
-          path: 'Edit-in-codepen',
+          path: 'Open-in-Codepen',
           onClick: this.sendToCodepen,
         },
         {
@@ -133,25 +138,43 @@ export default {
         },
       ];
     },
+    dialogInfo() {
+      //Check if component is parent or child
+      let file = this.file.split(/[/]/);
+      let fullComponentName = /[^/]*$/.exec(this.file)[0];
+      let parent = file[0];
+      let parentComponent = file[1];
+      let isParent = fullComponentName.endsWith('usage');
+      if (isParent) {
+        //delete parent component
+        return {
+          parent: parent,
+          slug: this.name,
+          path: this.$route.path,
+          type: 'component',
+          extention: '.md',
+        };
+      } else {
+        //delete child component
+        return {
+          parent: parent,
+          slug: this.name,
+          parentComponent: parentComponent,
+          path: this.$route.path,
+          type: 'childComponent',
+          extention: '.md',
+        };
+      }
+    },
   },
 
   methods: {
+    show() {
+
+      this.dialog = true;
+    },
     deleteComponent() {
-      //add loading here within settimeout function
-      // this.loading = true;
-      // const content = this.doc;
-
-      // console.log(content);
-      // //return to selected project route
-      // this.$router.push(`/projects`);
-
-      // this.$socket.client.emit('deleteProperty', {
-      //   content,
-      // });
-      // setTimeout(() => {
-      //   this.loading = false;
-      // }, 500);
-
+      this.dialog = false
       //Check if component is parent or child
       let file = this.file.split(/[/]/);
       let fullComponentName = /[^/]*$/.exec(this.file)[0];
@@ -177,17 +200,32 @@ export default {
         //delete child component
         const content = {
           parent: parent,
-          slug:  this.name,
+          slug: this.name,
           parentComponent: parentComponent,
           path: this.$route.path,
           type: 'childComponent',
           extention: '.md',
         };
-        console.log({ content });
-        console.log(this.$route);
+        // console.log({ content });
+        // console.log(this.$route);
+
+
+ let l = this.$router.resolve({
+          name: `/projects/${content.parent}/index`,
+        });
+        if (l.resolved.matched.length > 0) {
+          //the route is exists.
+          this.loader = false
+          this.$router.push(`/projects/${content.parent}/${content.slug}`)
+        } else {
+          //the route does not exists.
+          this.loader = true;
+        }
+
+
 
         this.$socket.client.emit('deleteProperty', { content });
-        this.$router.push(`/projects`);
+        // this.$router.push(`/projects`);
       }
     },
     pushRoute() {
