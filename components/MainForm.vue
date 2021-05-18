@@ -217,7 +217,7 @@
     </v-container>
     <!-- loader -->
 
-  <OverlayLoader v-model="loader"/>
+    <OverlayLoader v-model="loader" />
 
     <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
@@ -390,15 +390,18 @@ export default {
       } else {
         const parent = this.doc.parent + '';
         const slug = this.doc.slug + '';
-        const check = this.projects.filter(
+        const check = this.parentComponents.filter(
           (data) =>
             data.parent === parent.toString().toUpperCase() &&
             data.slug === slug.toString().toLowerCase()
         );
         console.log('check', check);
+        console.log('projects', this.parentComponents);
+        console.log({ parent });
+        console.log({ slug });
 
         return check.length === 1
-          ? ` The ${slug} component already exist please choose a
+          ? ` The ${slug} component already exists, please choose a
         different name`
           : true;
       }
@@ -613,6 +616,7 @@ export default {
         this.$router.push(`/projects/`);
       } else if (this.doc.type === 'component') {
         var self = this;
+
         // this.tempLoader = true;
 
         // Values for component
@@ -631,19 +635,11 @@ export default {
           css: self.doc.css,
           js: self.doc.js,
         };
+
         this.$socket.client.emit('properties', { content, modeType });
-        // navigate to route if it exists
-        let l = this.$router.resolve({
-          name: `/projects/${content.parent}/index`,
+        this.$nextTick(() => {
+          this.$router.push(`/projects/${content.parent}/${content.slug}`);
         });
-        if (l.resolved.matched.length > 0) {
-          //the route is exists.
-          this.loader = false
-          this.$router.push(`/projects/${content.parent}/${content.slug}`)
-        } else {
-          //the route does not exists.
-          this.loader = true;
-        }
       } else if (this.doc.parentComponent) {
         var self = this;
 
@@ -665,23 +661,26 @@ export default {
           js: self.doc.js,
         };
         this.$socket.client.emit('properties', { content, modeType });
-
-        let l = this.$router.resolve({
-          name: `/projects/${content.parent}/${content.parentComponent}`,
-        });
-        if (l.resolved.matched.length > 0) {
-          //the route is exists.
-          this.loader = false;
-          this.$router.push( `/projects/${content.parent}/${content.parentComponent}`)
-
-        } else {
-          //the route does not exists.
-          this.loader = true
-        }
+        this.$router.push(
+          `/projects/${content.parent}/${content.parentComponent}`
+        );
+        // let l = this.$router.resolve({
+        //   name: `/projects/${content.parent}/${content.parentComponent}`,
+        // });
+        // if (l.resolved.matched.length > 0) {
+        //   //the route is exists.
+        //   this.loader = false;
+        //   this.$router.push(
+        //     `/projects/${content.parent}/${content.parentComponent}`
+        //   );
+        // } else {
+        //   //the route does not exists.
+        //   this.loader = true;
+        // }
       }
 
-      // this.title = ''
-      this.$refs.form.validate();
+      // self.title = ''
+      self.$refs.form.validate();
     },
     discardChanges() {
       // check if any field has been edited

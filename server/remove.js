@@ -20,7 +20,18 @@ const ifExist = (root, path, directory, fileType, fileName) => {
             message: `Directory removed successfully`,
             badge: true
           });
+//remove project directory after sub-contents have been removed
+          // fs.rmdir(root, err => {
+          //   if (err) throw err;
+
+          //   consola.success({
+          //     message: `Removed empty directory at ${root}`,
+          //     badge: true
+          //   });
+
+          // });
         });
+
       } else {
         fs.unlink(path + fileType, err => {
           if (err) throw err;
@@ -45,14 +56,6 @@ const ifExist = (root, path, directory, fileType, fileName) => {
                   badge: true
                 });
 
-                // fs.rmdir(root, err => {
-                //   if (err) throw err;
-
-                //   consola.success({
-                //     message: `Removed empty directory at ${root}`,
-                //     badge: true
-                //   });
-                // });
               });
              }
           }

@@ -21,11 +21,13 @@
                 <nuxt-link :to="`/create_update/${doc.parent}`">
                   <v-btn>edit Project</v-btn>
                 </nuxt-link>
+                <v-btn @click="show = true">Delete Project</v-btn>
+
                 <Dialog
                   @click="deleteProject"
                   @loading="loading"
                   :doc="doc"
-                  v-model="dialog"
+                  v-model="show"
                 />
               </div>
               <nuxt-content :document="doc" ref="nuxtContent" />
@@ -87,6 +89,11 @@ export default {
       loading: false,
     };
   },
+  data() {
+    return {
+      show: false,
+    };
+  },
 
   computed: {
     nuxtContent() {
@@ -99,7 +106,6 @@ export default {
   },
 
   methods: {
-
     deleteProject() {
       //add loading here within settimeout function
       this.loading = true;

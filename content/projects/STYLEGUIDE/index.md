@@ -1,6 +1,6 @@
 ---
-title: "DOCUMENTATION"
-parent: "DOCUMENTATION"
+title: "STYLEGUIDE"
+parent: "STYLEGUIDE"
 type: "project"
 category: "Getting Started"
 position: 1
@@ -10,4 +10,4 @@ menuTitle: "Installation"
 
 # 
 
-Document stuff
+Project base components

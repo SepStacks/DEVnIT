@@ -208,7 +208,7 @@ io.on("connection", socket => {
         const root = dirComponent;
         // add seperately a function that would also remove an eddited project component
         // delete directory recursively
-        removeDir.ifExist(root, dirComponent, true);
+        removeDir.ifExist(root, dirComponent, false);
 
         removeDir.ifExist(root, dirSlug, false, ".md");
       } else {
