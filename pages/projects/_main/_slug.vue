@@ -8,16 +8,16 @@
         <v-container max-width="500px">
           <v-row justify="center">
             <v-col cols="11" md="8" lg="6">
-              <!-- <div v-if="doc.type === 'component'">
+              <div v-if="doc.type === 'component'">
                 <Dialog
                   @click="deleteSlug"
                   @loading="loading"
                   :doc="doc"
                   v-model="dialog"
                 />
-              </div> -->
+              </div>
 
-              <div>
+              <div v-else>
                 <nuxt-link :to="`/create_update/${doc.parent}`">
                   <v-btn>edit Project</v-btn>
                 </nuxt-link>
