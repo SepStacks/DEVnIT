@@ -4,7 +4,7 @@
       <!-- <div ref="iframe"></div> -->
       <div v-if="value">
         <iframe
-          :srcdoc="resultIFrameHtml"
+          :srcdoc="0 "
           ref="iframe"
           width="100%"
           frameborder="0"

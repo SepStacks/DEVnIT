@@ -10,7 +10,7 @@ menuTitle: "itemlist"
 prefix: "itemlist"
 ---
 
-# itemlist
+# Item list
 
 <!-- > This component was based on the itemlist component of [Vuetify](https://vuetifyjs.com/en/components/itemlist/ "Vuetify's itemlist component")
 

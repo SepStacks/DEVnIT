@@ -5,7 +5,7 @@
       v-model="show"
       width="500"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <!-- <template v-slot:activator="{ on, attrs }">
         <v-btn
           color="red lighten-2"
           dark
@@ -14,7 +14,7 @@
         >
          Delete Component
         </v-btn>
-      </template>
+      </template> -->
 
       <v-card>
         <v-card-title class="headline grey lighten-2">

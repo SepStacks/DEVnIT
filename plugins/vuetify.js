@@ -61,6 +61,7 @@ export default {
         accenthover: '#0599CB',
         secondaryhover: '#099ED3',
         infohover: '#01AEFF',
+        altronGrey: '#42596a'
       },
 
 

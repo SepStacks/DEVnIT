@@ -2,7 +2,6 @@
   <div>
     <div v-for="doc in docs" :key="doc.slug">
       <nuxt-content :document="doc" ref="nuxtContent" />
-      delete component
     </div>
   </div>
 </template>

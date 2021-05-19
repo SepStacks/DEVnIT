@@ -1,7 +1,8 @@
 <template>
   <div>
-    <v-card width="350px" height="600" class="mx-auto">
+    <v-card width="250px" height="600" class="mx-auto" id="component-container">
       <v-navigation-drawer
+        width="250px"
         permanent
         absolute
         class="elevation-10"
@@ -30,6 +31,7 @@
                   :class="$vuetify.breakpoint.mdAndDown ? '' : 'mt-3'"
                 >
                   <v-col cols="6" class="d-flex justify-center" align-center>
+                    <!-- Logo goes here -->
                     <img
                       src="https://avatars.githubusercontent.com/u/55579426?v=4"
                       width="80%"
