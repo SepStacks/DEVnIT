@@ -11,10 +11,13 @@ prefix: "stepper"
 ---
 
 # stepper
+component is still a wip, dynamic components has been added that will generate the component based on the component object
 
-<!-- > This component was based on the stepper component of [Vuetify](https://vuetifyjs.com/en/components/stepper/ "Vuetify's stepper component")
+### todo 
+#### add a list of items for radio buttons
+#### add  clear up text-field prop errors
 
-## Usage -->
+## Usage
 
 dynamic stepper component
 
