@@ -11,10 +11,9 @@ prefix: "itemlist"
 ---
 
 # kms Item list
+Please note that when you click on an item, it looks like its dissapeard, its not a bug. The text is just white, that's because, this component is used within the KMS navdrawer [link] as a nested component
 
-<!-- > This component was based on the itemlist-kmsitemlist component of [Vuetify](https://vuetifyjs.com/en/components/itemlist-kmsitemlist/ "Vuetify's itemlist-kmsitemlist component")
-
-## Usage -->
+## Usage
 
 additional styling for item-list
 

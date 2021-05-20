@@ -5,9 +5,9 @@
       <SideNav :categories="categories" />
 
       <v-main>
-        <v-container max-width="500px">
+        <v-container width="1000px">
           <v-row justify="center">
-            <v-col cols="11" md="8" lg="6">
+            <v-col cols="12" md="8" lg="6">
               <div v-if="doc.type === 'component'">
                 <Dialog
                   @click="deleteSlug"
