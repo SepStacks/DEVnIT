@@ -173,6 +173,10 @@ io.on("connection", socket => {
 
   socket.on("deleteProperty", ({ content }) => {
     if (content.type === "project") {
+      const projectRoot = path.join(
+        __dirname,
+        "../" + `/components/examples/${content.parent}`
+      );
       const dirProject = path.join(
         __dirname,
         "../" + `/components/examples/${content.parent}`
@@ -185,10 +189,10 @@ io.on("connection", socket => {
       // Delete Function for project
 
       // Delete project dir and its components
-      removeDir.ifExist(dirProject, true);
+      removeDir.ifExist(projectRoot,dirProject, true);
 
       // Delete project content and its pages
-      removeDir.ifExist(dirProjectSlug, true);
+      removeDir.ifExist(dirProjectSlug,dirProjectSlug, true);
     } else {
       if(content.type === 'component') {
       // Delete Function for component0
@@ -203,16 +207,17 @@ io.on("connection", socket => {
 
       // add seperately a function that would also remove an eddited project component
       // delete directory recursively
-      removeDir.ifExist(dirComponent, true);
+      removeDir.ifExist(dirComponent,dirComponent, true);
 
       /* If you want to check file before delete whether it exist or not. So, use
       fs.stat or fs.statSync(Synchronous) instead of fs.exists. Because according to
       the latest node.js documentation, fs.exists now deprecated.*/
+      const rootContentChildComponentPage = path.join(__dirname, "../" + `/content/projects/${content.parent}/child`)
 
-      removeDir.ifExist(dirSlug, false);
+      removeDir.ifExist(rootContentChildComponentPage, dirSlug, false);
 
       } else {
-         // Delete Function for component0
+         // Delete Function for child component
 
       // directory path
       //use old parent variable incase project name has been changed
@@ -221,20 +226,22 @@ io.on("connection", socket => {
         "../" + `/components/examples/${content.parent}/${content.parentComponent}/${content.parent}_${content.slug}`
       );
       const dirSlug = path.join(__dirname, "../" + `/content/projects/${content.parent}/child/${content.parentComponent}/${content.slug}`);
-      const root =  path.join(
-        __dirname,
-        "../" + `/components/examples/${content.parent}/${content.parentComponent}`
-      );
+
       // add seperately a function that would also remove an eddited project component
       // delete directory recursively
       //set to false to remove file set to true to remove directory
-      removeDir.ifExist(root, dirComponent, false, '.vue');
+      const rootParentComponent =  path.join(
+        __dirname,
+        "../" + `/components/examples/${content.parent}/${content.parentComponent}`
+      );
+      removeDir.ifExist(rootParentComponent, dirComponent, false, '.vue');
 
       /* If you want to check file before delete whether it exist or not. So, use
       fs.stat or fs.statSync(Synchronous) instead of fs.exists. Because according to
       the latest node.js documentation, fs.exists now deprecated.*/
+      const rootContentChildComponentPage = path.join(__dirname, "../" + `/content/projects/${content.parent}/child`)
 
-      removeDir.ifExist(root, dirSlug, false, '.md');
+      removeDir.ifExist(rootContentChildComponentPage, dirSlug, false, '.md');
       }
 
     }

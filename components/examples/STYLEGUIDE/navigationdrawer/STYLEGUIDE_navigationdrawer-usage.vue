@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import ItemList from '../itemlist/STYLEGUIDE_itemlist-usage';
 export default {
   components: {
     ItemList,
