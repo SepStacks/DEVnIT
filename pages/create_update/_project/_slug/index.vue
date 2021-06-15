@@ -7,6 +7,7 @@
       :doc="getDoc"
       :showRadio="false"
       :mode="'edit'"
+      :parentComponents="parentComponents"
     />
   </div>
 </template>
