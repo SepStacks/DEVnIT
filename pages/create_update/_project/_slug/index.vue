@@ -1,7 +1,6 @@
 <template>
   <div>
     Primary Component Edit Page
-    {{ pen }}
     <LazyMainForm
       ref="primaryComponent"
       :projects="projects"
