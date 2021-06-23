@@ -1,5 +1,6 @@
 <template>
   <div>
+    Edit project
     <v-row justify="center" align="center">
       <LazyMainForm
         :projects="projectTitle"
@@ -77,9 +78,7 @@ export default {
     //             console.log(doc)
     //     },
   },
-  mounted() {
-    console.log(this);
-  },
+
 };
 </script>
 

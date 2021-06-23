@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-app-bar v-if="doc.type !== 'project'">
+      <v-btn @click="toggleSFC"> switch to Sfc </v-btn>
+    </v-app-bar>
     <v-container>
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
       <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
@@ -64,17 +67,6 @@
             >
             </v-checkbox>
           </v-container>
-          <!-- switch between parent and child components -->
-          <!-- <v-checkbox
-            v-if="
-              mode === 'create' ||
-              doc.type === 'component' ||
-              doc.type === 'childComponent'
-            "
-            v-model.lazy="isChild"
-            :label="`Add Child Component`"
-            @click="discardChanges"
-          ></v-checkbox> -->
 
           <v-container>
             <v-col v-if="makeTemplate" cols="12" md="4">
@@ -160,7 +152,7 @@
                 </client-only>
               </v-col>
 
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="4" v-if="sfc === false">
                 <client-only>
                   <div>CSS</div>
                   <codemirror
@@ -172,7 +164,7 @@
                 </client-only>
               </v-col>
 
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="4" v-if="sfc === false">
                 <client-only>
                   <div>JS</div>
                   <codemirror
@@ -187,9 +179,6 @@
           </v-container>
 
           <LazyUiPreviewer :value="preview" ref="iframe" />
-          <!-- <div v-else>
-              press run
-            </div> -->
         </div>
 
         <v-row justify="end" class="mt-3">
@@ -224,6 +213,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 // import 'some-codemirror-resource'
 import UiPreviewer from '~/components/ui/UiPreviewer';
 import Snackbar from '~/components/Snackbar';
@@ -285,11 +275,8 @@ export default {
     template: {
       type: Boolean,
       default: false,
-    },
+    }
 
-    // markdownTemplate: {
-    //     required: false
-    // }
   },
 
   data: () => ({
@@ -330,13 +317,19 @@ export default {
         Enter: 'emmetInsertLineBreak',
       },
     },
-
+    toggle: true
+    // sfc: true,
     // bodyTitle: '',
     // bodyDescription: '',
     // bodyContent: ''
   }),
 
   computed: {
+    sfc() {
+      const stateSfc = this.$store.state.component.sfc
+        return stateSfc
+
+    },
     // filterProjects() {
     //   if (this.doc.type === 'childComponent') {
     //     //only show projects that can have a child component
@@ -354,8 +347,7 @@ export default {
     dialogInfo() {
       return {
         title: 'Discard changes?',
-        text:
-          'Changes has not been submitted, Are you sure you want to discard changes?',
+        text: 'Changes has not been submitted, Are you sure you want to discard changes?',
         message: 'Warning unsaved data will be lost',
       };
     },
@@ -427,6 +419,12 @@ export default {
   },
 
   methods: {
+    toggleSFC() {
+      console.log(this.$store.state)
+      console.log(this.toggle)
+      this.toggle = !this.toggle
+      this.$store.commit('component/toggleSFC', this.toggle);
+    },
     async compile() {
       const code =
         this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
