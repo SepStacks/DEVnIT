@@ -2,6 +2,8 @@
   <div>
     <v-app-bar v-if="doc.type !== 'project'">
       <v-btn @click="toggleSFC"> switch to Sfc </v-btn>
+      <v-spacer />
+      <v-btn @click="download(doc)">Download</v-btn>
     </v-app-bar>
     <v-container>
       <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
@@ -154,9 +156,9 @@
 
               <v-col cols="12" md="4" v-if="sfc === false">
                 <client-only>
-                  <div>CSS</div>
+                  <div>JS</div>
                   <codemirror
-                    v-model="doc.css"
+                    v-model="doc.js"
                     :options="cmOption"
                     @focus="onCmFocus"
                   >
@@ -166,9 +168,9 @@
 
               <v-col cols="12" md="4" v-if="sfc === false">
                 <client-only>
-                  <div>JS</div>
+                  <div>CSS</div>
                   <codemirror
-                    v-model="doc.js"
+                    v-model="doc.css"
                     :options="cmOption"
                     @focus="onCmFocus"
                   >
@@ -275,8 +277,7 @@ export default {
     template: {
       type: Boolean,
       default: false,
-    }
-
+    },
   },
 
   data: () => ({
@@ -317,7 +318,7 @@ export default {
         Enter: 'emmetInsertLineBreak',
       },
     },
-    toggle: true
+    toggle: true,
     // sfc: true,
     // bodyTitle: '',
     // bodyDescription: '',
@@ -326,9 +327,8 @@ export default {
 
   computed: {
     sfc() {
-      const stateSfc = this.$store.state.component.sfc
-        return stateSfc
-
+      const stateSfc = this.$store.state.component.sfc;
+      return stateSfc;
     },
     // filterProjects() {
     //   if (this.doc.type === 'childComponent') {
@@ -419,10 +419,17 @@ export default {
   },
 
   methods: {
+    download(doc) {
+      var blob = new Blob([ this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css], { type: 'vue' });
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `${doc.slug}.vue`;
+      link.click();
+    },
     toggleSFC() {
-      console.log(this.$store.state)
-      console.log(this.toggle)
-      this.toggle = !this.toggle
+      console.log(this.$store.state);
+      console.log(this.toggle);
+      this.toggle = !this.toggle;
       this.$store.commit('component/toggleSFC', this.toggle);
     },
     async compile() {
