@@ -1,6 +1,5 @@
 <template>
   <div>
-    Primary Component Edit Page
     <LazyMainForm
       ref="primaryComponent"
       :projects="projects"

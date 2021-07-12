@@ -2,14 +2,17 @@
   <client-only>
     <v-sheet outlined>
       <!-- <div ref="iframe"></div> -->
-      <div v-if="value">
-        <iframe
+      <v-row v-if="value">
+      <v-col cols="12">
+          <iframe
           :srcdoc="resultIFrameHtml"
           ref="iframe"
-          width="100%"
           frameborder="0"
+          width="100%"
+          height="500vh"
         />
-      </div>
+      </v-col>
+      </v-row>
       <div v-else>value loading?</div>
     </v-sheet></client-only
   >
@@ -31,19 +34,15 @@ export default {
   props: ['value'],
   data() {
     return {
-      height: '',
+      height: '300px',
     };
   },
 
   computed: {
     resultIFrameHtml() {
       return `
-        <!DOCTYPE html><html><head>${this.value.head}</head><body>${this.value.body}
+        <!DOCTYPE html><html><head>${this.value.head}</head><body style="height:300px">${this.value.body}
         <style>
-            html {
-               overflow-y: auto !important;
-               height: auto !important;
-            }
 
             .theme--light.application {
             background: #fff !important;
@@ -90,8 +89,8 @@ export default {
   background-color: #fff;
 }
 
-.panel {
-  height: 500px;
-}
+/* .panel {
+  height: 900px;
+} */
 </style>
 
