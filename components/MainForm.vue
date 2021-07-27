@@ -2,7 +2,7 @@
   <div>
     <!-- title card -->
     <v-row dense>
-      <v-col cols="7">
+      <v-col cols="12" :md="doc.type === 'project' ? 12 : 7">
         <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
           <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
           <v-radio-group
@@ -49,11 +49,36 @@
               label="component name"
             ></v-text-field>
 
-            <div class="mt-5 font-weight-bold">
+            <div>
               <!-- add installation instructions here -->
-              Add installation instructions(optional)
 
-              <v-textarea v-model="doc.contentBody" />
+              <v-app-bar>
+                <v-btn
+                  color="accent"
+                  :loading="loader"
+                  class="mx-2"
+                  @click.prevent="emitToServer"
+                  :disabled="
+                    mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+                  "
+                >
+                  Save
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="accent darken-3"
+                  :disabled="!doc.title"
+                  @click="downloadMarkdownFile"
+                  >Download</v-btn
+                >
+              </v-app-bar>
+              <client-only>
+                <MarkdownEditor
+                  ref="input"
+                  v-model="doc.contentBody"
+                  class="pa-5"
+                />
+              </client-only>
             </div>
           </div>
 
@@ -131,6 +156,7 @@
                   <v-card
                     style="position: sticky !important; top: 0px !important"
                   >
+                    <!-- download component -->
                     <v-app-bar
                       v-if="doc.type !== 'project'"
                       style="
@@ -330,6 +356,7 @@ export default {
     preview: '',
     code: '',
     loadCompile: false,
+    contentBody: 'Enter markdown here',
     //Array of the code that will be applied to codemirror
     tempLoader: false,
     isEmptyTemplate: false,
@@ -462,6 +489,13 @@ export default {
   },
 
   methods: {
+    downloadMarkdownFile() {
+      var blob = new Blob([this.markdown], { type: 'md' });
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `${this.name}.md`;
+      link.click();
+    },
     download(doc) {
       var blob = new Blob(
         [
@@ -822,7 +856,5 @@ export default {
 .compile {
   white-space: pre;
 }
-
-
 </style>
 

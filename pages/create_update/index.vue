@@ -1,5 +1,6 @@
 <template>
   <div>
+    hello
     <MainForm
       :projects="projectTitle"
       :doc="doc"
@@ -17,7 +18,7 @@ export default {
   async asyncData({ $content, params, error }) {
     // const menus = await $content({ deep: true }).fetch();
     const projects = await $content({ deep: true })
-      .only(['title', 'slug', 'parent', 'category'])
+      // .only(['title', 'slug', 'parent', 'category'])
       .where({ type: 'project' })
       .fetch();
     const parentComponents = await $content({ deep: true })
