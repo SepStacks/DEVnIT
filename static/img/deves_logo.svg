@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="314" height="209" viewBox="0 0 314 209">
+  <g id="deves_logo" transform="translate(11082 -3890)">
+    <text id="Documentation_Solution" data-name="Documentation Solution" transform="translate(-11081 4093)" fill="#364b56" font-size="25" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Documentation Solution</tspan></text>
+    <g id="Group_1601" data-name="Group 1601" transform="translate(4)">
+      <text id="deves" transform="translate(-11086 4044)" fill="#364b56" font-size="88" font-family="Montserrat-Bold, Montserrat" font-weight="700"><tspan x="0" y="0">de</tspan><tspan y="0" fill="#52c3df" font-size="159">v</tspan><tspan y="0">es</tspan></text>
+      <g id="Path_1110" data-name="Path 1110" transform="translate(-10898 3987) rotate(180)" fill="#fff">
+        <path d="M 41.56457138061523 35.5 L 4.435427188873291 35.5 L 23 4.828096866607666 L 41.56457138061523 35.5 Z" stroke="none"/>
+        <path d="M 23 9.656185150146484 L 8.870849609375 33 L 37.129150390625 33 L 23 9.656185150146484 M 23 0 L 46 38 L 0 38 L 23 0 Z" stroke="none" fill="#364b56"/>
+      </g>
+    </g>
+  </g>
+</svg>

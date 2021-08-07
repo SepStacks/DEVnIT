@@ -1,200 +1,256 @@
 <template>
   <div>
-    <v-container>
-      <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
-      <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
-        <v-radio-group
-          v-show="showRadio"
-          v-model="doc.type"
-          row
-          v-if="projects.length > 0"
-        >
-          <v-radio
-            name="Project"
-            label="create new project"
-            value="project"
-          ></v-radio>
-          <v-radio
-            @change="reset"
-            name="Component"
-            label="create new main component"
-            value="component"
-          ></v-radio>
-          <v-radio
-            @change="reset"
-            name="Component"
-            label="create new nested component"
-            value="childComponent"
-          ></v-radio>
-        </v-radio-group>
+    <!-- title card -->
+    <v-row dense>
+      <v-col cols="12" :md="doc.type === 'project' ? 12 : 7">
+        <v-form ref="form" @submit.prevent="compile" v-model="isFormValid">
+          <div>{{ mode === 'create' ? 'Create Page' : 'Edit Page' }}</div>
+          <v-radio-group
+            v-show="showRadio"
+            v-model="doc.type"
+            row
+            v-if="projects.length > 0"
+          >
+            <v-radio
+              name="Project"
+              label="create new project"
+              value="project"
+            ></v-radio>
+            <v-radio
+              @change="reset"
+              name="Component"
+              label="create new main component"
+              value="component"
+            ></v-radio>
+            <v-radio
+              @change="reset"
+              name="Component"
+              label="create new nested component"
+              value="childComponent"
+            ></v-radio>
+          </v-radio-group>
 
-        <div v-if="doc.type === 'project'">
-          <v-text-field
-            class="text-capitalize"
-            v-model="doc.title"
-            :rules="[rules.required, rules.string, doesExist]"
-            label="title"
-            required
-          ></v-text-field>
-          <v-text-field
-            class="text-capitalize"
-            persistent-hint
-            hint="component name for project should always be index"
-            readonly
-            v-show="false"
-            v-model="doc.slug"
-            :value="(doc.slug = 'index')"
-            label="component name"
-          ></v-text-field>
+          <div v-if="doc.type === 'project'">
+            <v-text-field
+              class="text-capitalize"
+              v-model="doc.title"
+              :rules="[rules.required, rules.string, doesExist]"
+              label="title"
+              required
+            ></v-text-field>
+            <v-text-field
+              class="text-capitalize"
+              persistent-hint
+              hint="component name for project should always be index"
+              readonly
+              v-show="false"
+              v-model="doc.slug"
+              :value="(doc.slug = 'index')"
+              label="component name"
+            ></v-text-field>
 
-          <div class="mt-5 font-weight-bold">
-            <!-- add installation instructions here -->
-            Add installation instructions(optional)
+            <div>
+              <!-- add installation instructions here -->
 
-            <v-textarea v-model="doc.contentBody" />
+              <v-app-bar>
+                <v-btn
+                  color="accent"
+                  :loading="loader"
+                  class="mx-2"
+                  @click.prevent="emitToServer"
+                  :disabled="
+                    mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
+                  "
+                >
+                  Save
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="accent darken-3"
+                  :disabled="!doc.title"
+                  @click="downloadMarkdownFile"
+                  >Download</v-btn
+                >
+              </v-app-bar>
+              <client-only>
+                <MarkdownEditor
+                  ref="input"
+                  v-model="doc.contentBody"
+                  class="pa-5"
+                />
+              </client-only>
+            </div>
           </div>
-        </div>
 
-        <div v-if="doc.type === 'component' || doc.type === 'childComponent'">
-          <v-container class="px-0" fluid>
-            <v-checkbox
-              v-if="mode !== 'create'"
-              v-model="check"
-              :label="`create new component from this template`"
-            >
-            </v-checkbox>
-          </v-container>
-          <!-- switch between parent and child components -->
-          <!-- <v-checkbox
-            v-if="
-              mode === 'create' ||
-              doc.type === 'component' ||
-              doc.type === 'childComponent'
-            "
-            v-model.lazy="isChild"
-            :label="`Add Child Component`"
-            @click="discardChanges"
-          ></v-checkbox> -->
-
-          <v-container>
-            <v-col v-if="makeTemplate" cols="12" md="4">
-              <v-select
-                @input="isFormValid = true"
-                :items="projects"
-                v-model="doc.parent"
-                item-text="parent"
-                label="Select project"
-                :rules="[rules.required]"
-              ></v-select>
-              <v-text-field
-                v-if="doc.type === 'component'"
-                v-model="doc.slug"
-                label="Component name"
-                :rules="[rules.required, rules.string, doesExist]"
-              >
-              </v-text-field>
-
-              <v-select
-                v-else
-                @input="isFormValid = true"
-                :items="parentComponents"
-                v-model="doc.parentComponent"
-                item-text="slug"
-                label="Parent Component"
-                :rules="[rules.required]"
-              ></v-select>
-              <v-textarea
-                v-model="doc.description"
-                label="Description"
-                :rules="[rules.required]"
-              >
-              </v-textarea>
-              <v-text-field
-                v-if="doc.type === 'childComponent'"
-                class="text-capitalize"
-                persistent-hint
-                hint=""
-                v-model="doc.title"
-                :value="doc.slug !== 'index'"
-                label="component name"
-              ></v-text-field>
-              <v-text-field
-                v-if="doc.type === 'childComponent' && doc.parent"
-                class="text-capitalize"
-                persistent-hint
-                hint="prefix result"
-                readonly
-                :value="(doc.prefix = doc.parent)"
-                label="Prefix"
-              ></v-text-field>
-              <v-text-field
-                v-if="doc.type === 'childComponent' && doc.prefix && doc.title"
-                class="text-capitalize"
-                persistent-hint
-                hint=""
-                readonly
-                :value="
-                  mode === 'create'
-                    ? (doc.slug = doc.parentComponent + '-' + doc.title)
-                    : doc.slug
-                "
-                label="Slug"
-              ></v-text-field>
-            </v-col>
-            <!-- codemirror -->
-            <v-row
-              class="container"
-              v-if="doc.type === 'component' || doc.type === 'childComponent'"
-            >
-              <v-col cols="12" md="4">
-                <client-only placeholder="Codemirror Loading...">
-                  <div>HTML</div>
-                  <codemirror
-                    v-model="doc.html"
-                    :options="cmOption"
-                    @ready="onCmReady"
-                    @focus="onCmFocus"
-                    @input="onCmCodeChange"
+          <div v-if="doc.type === 'component' || doc.type === 'childComponent'">
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-select
+                    @input="isFormValid = true"
+                    :items="projects"
+                    v-model="doc.parent"
+                    item-text="parent"
+                    label="Select project"
+                    :rules="[rules.required]"
+                  ></v-select>
+                  <v-text-field
+                    v-if="doc.type === 'component'"
+                    v-model="doc.slug"
+                    label="Component name"
+                    :rules="[rules.required, rules.string, doesExist]"
                   >
-                  </codemirror>
-                </client-only>
-              </v-col>
+                  </v-text-field>
 
-              <v-col cols="12" md="4">
-                <client-only>
-                  <div>CSS</div>
-                  <codemirror
-                    v-model="doc.css"
-                    :options="cmOption"
-                    @focus="onCmFocus"
+                  <v-select
+                    v-else
+                    @input="isFormValid = true"
+                    :items="parentComponents"
+                    v-model="doc.parentComponent"
+                    item-text="slug"
+                    label="Parent Component"
+                    :rules="[rules.required]"
+                  ></v-select>
+                  <v-textarea
+                    v-model="doc.description"
+                    label="Description"
+                    :rules="[rules.required]"
                   >
-                  </codemirror>
-                </client-only>
-              </v-col>
+                  </v-textarea>
+                  <v-text-field
+                    v-if="doc.type === 'childComponent'"
+                    class="text-capitalize"
+                    persistent-hint
+                    hint=""
+                    v-model="doc.title"
+                    :value="doc.slug !== 'index'"
+                    label="component name"
+                  ></v-text-field>
+                  <v-text-field
+                    v-if="doc.type === 'childComponent' && doc.parent"
+                    class="text-capitalize"
+                    persistent-hint
+                    hint="prefix result"
+                    readonly
+                    :value="(doc.prefix = doc.parent)"
+                    label="Prefix"
+                  ></v-text-field>
+                  <v-text-field
+                    v-if="
+                      doc.type === 'childComponent' && doc.prefix && doc.title
+                    "
+                    class="text-capitalize"
+                    persistent-hint
+                    hint=""
+                    readonly
+                    :value="
+                      mode === 'create'
+                        ? (doc.slug = doc.parentComponent + '-' + doc.title)
+                        : doc.slug
+                    "
+                    label="Slug"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12" md="4">
-                <client-only>
-                  <div>JS</div>
-                  <codemirror
-                    v-model="doc.js"
-                    :options="cmOption"
-                    @focus="onCmFocus"
+                <v-col cols="12" class="pa-0 ma-0">
+                  <v-card
+                    style="position: sticky !important; top: 0px !important"
                   >
-                  </codemirror>
-                </client-only>
-              </v-col>
-            </v-row>
-          </v-container>
+                    <!-- download component -->
+                    <v-app-bar
+                      v-if="doc.type !== 'project'"
+                      style="
+                        z-index: 999;
+                        position: sticky !important;
+                        top: 0px !important;
+                      "
+                    >
+                      <v-btn @click="toggleSFC"> switch to Sfc </v-btn>
+                      <v-spacer />
+                      <v-btn color="accent" @click="download(doc)"
+                        >Download</v-btn
+                      >
+                    </v-app-bar>
+                    <v-col
+                      cols="12"
+                      v-show="
+                        doc.type === 'component' ||
+                        doc.type === 'childComponent'
+                      "
+                    >
+                      <client-only placeholder="Codemirror Loading...">
+                        <div>HTML</div>
+                        <codemirror
+                          v-model="doc.html"
+                          :options="cmOption"
+                          @ready="onCmReady"
+                          @focus="onCmFocus"
+                          @input="onCmCodeChange"
+                        >
+                        </codemirror>
+                      </client-only>
+                    </v-col>
 
-          <LazyUiPreviewer :value="preview" ref="iframe" />
-          <!-- <div v-else>
-              press run
-            </div> -->
-        </div>
+                    <v-col
+                      cols="12"
+                      v-if="sfc === false"
+                      v-show="
+                        doc.type === 'component' ||
+                        doc.type === 'childComponent'
+                      "
+                    >
+                      <client-only>
+                        <div>JS</div>
+                        <codemirror
+                          v-model="doc.js"
+                          :options="cmOption"
+                          @focus="onCmFocus"
+                        >
+                        </codemirror>
+                      </client-only>
+                    </v-col>
 
-        <v-row justify="end" class="mt-3">
-          <v-col cols="12">
+                    <v-col
+                      cols="12"
+                      v-if="sfc === false"
+                      v-show="
+                        doc.type === 'component' ||
+                        doc.type === 'childComponent'
+                      "
+                    >
+                      <client-only>
+                        <div>CSS</div>
+                        <codemirror
+                          v-model="doc.css"
+                          :options="cmOption"
+                          @focus="onCmFocus"
+                        >
+                        </codemirror>
+                      </client-only>
+                    </v-col>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
+          </div>
+        </v-form>
+      </v-col>
+      <v-col
+        class="pa-0 ma-0"
+        cols="12"
+        md="5"
+        v-show="doc.type === 'component' || doc.type === 'childComponent'"
+      >
+        <v-card
+          style="
+            position: sticky !important;
+            top: 0px !important;
+            height: 100vh;
+          "
+        >
+          <v-app-bar>
             <v-btn
+              color="accent"
               :loading="loader"
               class="mx-2"
               @click.prevent="emitToServer"
@@ -202,28 +258,33 @@
                 mode === 'Edit Page' ? (isFormValid = false) : !isFormValid
               "
             >
-              Submit
+              Save
             </v-btn>
             <v-btn
               :disabled="!doc.html"
               v-if="doc.type === 'component' || doc.type === 'childComponent'"
               type="submit"
             >
-              Run
+              Preview
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-    </v-container>
+          </v-app-bar>
+          <LazyUiPreviewer :value="preview" v-if="preview" ref="iframe" />
+          <div v-else>
+            <uiPreviewerEmpty />
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
     <!-- loader -->
 
-  <OverlayLoader v-model="loader"/>
+    <OverlayLoader v-model="loader" />
 
     <DialogsInfo :content="dialogInfo" @click="resetForm" v-model="dialog" />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 // import 'some-codemirror-resource'
 import UiPreviewer from '~/components/ui/UiPreviewer';
 import Snackbar from '~/components/Snackbar';
@@ -286,10 +347,6 @@ export default {
       type: Boolean,
       default: false,
     },
-
-    // markdownTemplate: {
-    //     required: false
-    // }
   },
 
   data: () => ({
@@ -299,6 +356,7 @@ export default {
     preview: '',
     code: '',
     loadCompile: false,
+    contentBody: 'Enter markdown here',
     //Array of the code that will be applied to codemirror
     tempLoader: false,
     isEmptyTemplate: false,
@@ -330,13 +388,18 @@ export default {
         Enter: 'emmetInsertLineBreak',
       },
     },
-
+    toggle: true,
+    // sfc: true,
     // bodyTitle: '',
     // bodyDescription: '',
     // bodyContent: ''
   }),
 
   computed: {
+    sfc() {
+      const stateSfc = this.$store.state.component.sfc;
+      return stateSfc;
+    },
     // filterProjects() {
     //   if (this.doc.type === 'childComponent') {
     //     //only show projects that can have a child component
@@ -354,8 +417,7 @@ export default {
     dialogInfo() {
       return {
         title: 'Discard changes?',
-        text:
-          'Changes has not been submitted, Are you sure you want to discard changes?',
+        text: 'Changes has not been submitted, Are you sure you want to discard changes?',
         message: 'Warning unsaved data will be lost',
       };
     },
@@ -390,15 +452,18 @@ export default {
       } else {
         const parent = this.doc.parent + '';
         const slug = this.doc.slug + '';
-        const check = this.projects.filter(
+        const check = this.parentComponents.filter(
           (data) =>
             data.parent === parent.toString().toUpperCase() &&
             data.slug === slug.toString().toLowerCase()
         );
         console.log('check', check);
+        console.log('projects', this.parentComponents);
+        console.log({ parent });
+        console.log({ slug });
 
         return check.length === 1
-          ? ` The ${slug} component already exist please choose a
+          ? ` The ${slug} component already exists, please choose a
         different name`
           : true;
       }
@@ -424,6 +489,37 @@ export default {
   },
 
   methods: {
+    downloadMarkdownFile() {
+      var blob = new Blob([this.markdown], { type: 'md' });
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `${this.name}.md`;
+      link.click();
+    },
+    download(doc) {
+      var blob = new Blob(
+        [
+          this.doc.html +
+            '\n' +
+            '\n' +
+            this.doc.js +
+            '\n' +
+            '\n' +
+            this.doc.css,
+        ],
+        { type: 'vue' }
+      );
+      let link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `${doc.slug}.vue`;
+      link.click();
+    },
+    toggleSFC() {
+      console.log(this.$store.state);
+      console.log(this.toggle);
+      this.toggle = !this.toggle;
+      this.$store.commit('component/toggleSFC', this.toggle);
+    },
     async compile() {
       const code =
         this.doc.html + '\n' + '\n' + this.doc.js + '\n' + '\n' + this.doc.css;
@@ -631,19 +727,11 @@ export default {
           css: self.doc.css,
           js: self.doc.js,
         };
+
         this.$socket.client.emit('properties', { content, modeType });
-        // navigate to route if it exists
-        let l = this.$router.resolve({
-          name: `/projects/${content.parent}/index`,
+        this.$nextTick(() => {
+          this.$router.push(`/projects/${content.parent}/${content.slug}`);
         });
-        if (l.resolved.matched.length > 0) {
-          //the route is exists.
-          this.loader = false
-          this.$router.push(`/projects/${content.parent}/${content.slug}`)
-        } else {
-          //the route does not exists.
-          this.loader = true;
-        }
       } else if (this.doc.parentComponent) {
         var self = this;
 
@@ -665,23 +753,26 @@ export default {
           js: self.doc.js,
         };
         this.$socket.client.emit('properties', { content, modeType });
-
-        let l = this.$router.resolve({
-          name: `/projects/${content.parent}/${content.parentComponent}`,
-        });
-        if (l.resolved.matched.length > 0) {
-          //the route is exists.
-          this.loader = false;
-          this.$router.push( `/projects/${content.parent}/${content.parentComponent}`)
-
-        } else {
-          //the route does not exists.
-          this.loader = true
-        }
+        this.$router.push(
+          `/projects/${content.parent}/${content.parentComponent}`
+        );
+        // let l = this.$router.resolve({
+        //   name: `/projects/${content.parent}/${content.parentComponent}`,
+        // });
+        // if (l.resolved.matched.length > 0) {
+        //   //the route is exists.
+        //   this.loader = false;
+        //   this.$router.push(
+        //     `/projects/${content.parent}/${content.parentComponent}`
+        //   );
+        // } else {
+        //   //the route does not exists.
+        //   this.loader = true;
+        // }
       }
 
-      // this.title = ''
-      this.$refs.form.validate();
+      // self.title = ''
+      self.$refs.form.validate();
     },
     discardChanges() {
       // check if any field has been edited

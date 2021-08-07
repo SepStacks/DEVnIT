@@ -5,27 +5,29 @@
       <SideNav :categories="categories" />
 
       <v-main>
-        <v-container max-width="500px">
+        <v-container width="1000px">
           <v-row justify="center">
-            <v-col cols="11" md="8" lg="6">
-              <!-- <div v-if="doc.type === 'component'">
+            <v-col cols="12" md="8" lg="6">
+              <div v-if="doc.type === 'component'">
                 <Dialog
                   @click="deleteSlug"
                   @loading="loading"
                   :doc="doc"
                   v-model="dialog"
                 />
-              </div> -->
+              </div>
 
-              <div>
+              <div v-else>
                 <nuxt-link :to="`/create_update/${doc.parent}`">
                   <v-btn>edit Project</v-btn>
                 </nuxt-link>
+                <v-btn @click="show = true">Delete Project</v-btn>
+
                 <Dialog
                   @click="deleteProject"
                   @loading="loading"
                   :doc="doc"
-                  v-model="dialog"
+                  v-model="show"
                 />
               </div>
               <nuxt-content :document="doc" ref="nuxtContent" />
@@ -87,6 +89,11 @@ export default {
       loading: false,
     };
   },
+  data() {
+    return {
+      show: false,
+    };
+  },
 
   computed: {
     nuxtContent() {
@@ -99,7 +106,6 @@ export default {
   },
 
   methods: {
-
     deleteProject() {
       //add loading here within settimeout function
       this.loading = true;

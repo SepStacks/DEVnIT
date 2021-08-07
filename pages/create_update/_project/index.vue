@@ -1,13 +1,12 @@
 <template>
   <div>
-    <v-row justify="center" align="center">
-      <LazyMainForm
-        :projects="projectTitle"
-        :doc="slugData"
-        :showRadio="false"
-        :mode="'edit'"
-      />
-    </v-row>
+    Edit project
+    <LazyMainForm
+      :projects="projectTitle"
+      :doc="slugData"
+      :showRadio="false"
+      :mode="'edit'"
+    />
   </div>
 </template>
 
@@ -21,9 +20,10 @@ export default {
   // components: { MainForm },
   // mixins: [content],
   // List the projects directory items
+
   async asyncData({ $content, params, error }) {
     const projects = await $content({ deep: true })
-      .only(['title', 'slug', 'parent', 'category'])
+      // .only(['title', 'slug', 'parent', 'category', 'contentBody'])
       .where({ type: 'project' })
       .fetch();
     const parentComponents = await $content({ deep: true })
@@ -34,7 +34,6 @@ export default {
     const slug = `${params.project}/index`;
     //Get current slug
     const slugData = await $content(`projects/${slug}`).fetch();
-
     return {
       projects,
       parentComponents,
@@ -76,9 +75,6 @@ export default {
     //             return doc
     //             console.log(doc)
     //     },
-  },
-  mounted() {
-    console.log(this);
   },
 };
 </script>

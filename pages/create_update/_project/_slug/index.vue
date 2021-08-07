@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- Primary Component Edit Page-->
-
     <LazyMainForm
+      ref="primaryComponent"
       :projects="projects"
       :doc="getDoc"
       :showRadio="false"
       :mode="'edit'"
+      :parentComponents="parentComponents"
     />
   </div>
 </template>
@@ -36,25 +36,47 @@ export default {
       slugData,
       pen: undefined,
       test: 'testings',
+      sfcComponent: null,
     };
+  },
+  watch: {
+    sfc() {
+      this.$nextTick(() => {
+        this.importTemplate();
+      });
+    },
   },
 
   computed: {
     //Import vue file as string and nest it into text field
-
+    sfc() {
+      const stateSfc = this.$store.state.component.sfc;
+      return stateSfc;
+    },
     getDoc() {
-      const doc = {
-        slug: this.slugData.slug,
-        description: this.slugData.description,
-        extention: '.md',
-        type: this.slugData.type,
-        parent: this.slugData.parent,
-        html: this.pen ? this.pen.template : '',
-        css: this.pen ? this.pen.style : '',
-        js: this.pen ? this.pen.script : '',
-      };
-      console.log({ doc });
-      return doc;
+      if (this.sfc === true) {
+        const doc = {
+          slug: this.slugData.slug,
+          description: this.slugData.description,
+          extention: '.md',
+          type: this.slugData.type,
+          parent: this.slugData.parent,
+          html: this.sfcComponent,
+        };
+        return doc;
+      } else {
+        const doc = {
+          slug: this.slugData.slug,
+          description: this.slugData.description,
+          extention: '.md',
+          type: this.slugData.type,
+          parent: this.slugData.parent,
+          html: this.pen ? this.pen.template : '',
+          css: this.pen ? this.pen.style : '',
+          js: this.pen ? this.pen.script : '',
+        };
+        return doc;
+      }
     },
   },
   methods: {
@@ -67,8 +89,9 @@ export default {
           // raw-loader is a loader for webpack that allows importing files as a String.
           `!raw-loader!~/components/examples/${this.getDoc.parent}/${this.getDoc.slug}/${this.getDoc.parent}_${this.getDoc.slug}-usage.vue`
         );
-
-        this.boot(template.default);
+        this.sfc === true
+          ? (this.sfcComponent = template.default)
+          : this.boot(template.default);
       } catch (err) {
         console.log(err);
       }
@@ -96,8 +119,10 @@ export default {
       return parsed[1] || '';
     },
   },
+
   created() {
-    this.imports, this.importTemplate();
+    // this.imports
+    this.importTemplate();
   },
 };
 </script>

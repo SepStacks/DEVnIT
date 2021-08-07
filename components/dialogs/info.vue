@@ -1,29 +1,22 @@
 
 <template>
   <div class="text-center">
-    <v-dialog
-      v-model="show"
-      width="500"
-    >
-      <!-- <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="red lighten-2"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-         Delete Component
-        </v-btn>
-      </template> -->
-
+    <v-dialog v-model="show" width="500">
       <v-card>
         <v-card-title class="headline grey lighten-2">
-         compoent will be deleted
+          {{ content.title }}
         </v-card-title>
+        <v-container>
+          <v-row>
+            <v-card-text class="mt-3">
+              {{content.text}}
+            </v-card-text>
 
-        <v-card-text>
-        Are you sure you want to delete the {{doc.slug}} component?
-        </v-card-text>
+            <v-card-text class="orange--text">
+              {{ content.message }}
+            </v-card-text>
+          </v-row>
+        </v-container>
 
         <v-divider></v-divider>
 
@@ -33,7 +26,7 @@
           <v-btn text v-on="{ ...$listeners }"> yes </v-btn>
 
           <v-btn color="primary" text @click.stop="show = false">
-            cancel
+            No
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -47,8 +40,7 @@
 export default {
   props: {
     value: Boolean,
-    doc: Object
-
+    content: Object,
   },
   // This allow me to open and close the modal without any issues
   computed: {

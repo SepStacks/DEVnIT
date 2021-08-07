@@ -75,6 +75,13 @@ export default {
 
 
   ],
+
+  server: {
+    port: 3080, // default: 3000
+    host: 'localhost', // default: localhost,
+    timing: false
+  },
+
   /*
   ** Nuxt.js dev-modules
   */

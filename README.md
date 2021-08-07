@@ -1,15 +1,6 @@
 # technotes
 
-Documentation solution for frontend developers.
-Made using with Nuxt/content, Vuetify and Node
-
-## Disclaimer
-
-This currently only works within development, when creating components through the UI, it can then be pushed by the developer to github, gitlab, etc
-
-## DEMO
-
-![til](./assets/devnit.gif)
+    Documentation solution for frontend developers.
 
 ## Motivation
 
@@ -20,27 +11,19 @@ I came to the conclusion that the best method to approach this issue was to crea
 my first attempt was with vuepress, although pretty powerful. it lacked alot of features I needed eg. a dynamic sidebar, I did however manage to create my own using node
 but it had some bugs so I was stuck abit and had to work on some other projects.
 
-When I saw nuxt came out with an awesome update called nuxt@content, I was very existed since I'm already using nuxt in my day to day job and this new feature has alot of potenial so I set on a mission to create a solution for my previous issue.
-
-## Features
-
-    • Node Js server
-    • socket IO connected to app.
-    • Ability to create .md files and .vue components with a UI.
-    • Live code previewer when creating vue components (vuetify)
-    • Ability to open up code within codepen
-
-## Installation
-
-To get started simply do the following:
-
 ```bash
-  git clone https://github.com/SepStacks/DEVnIT.git
-  cd devnit
-  yarn install
+# install dependencies
+$ yarn install
 
-  # serve with hot reload at localhost:3000
-  yarn dev
+# serve with hot reload at localhost:3000
+$ yarn dev
+
+# build for production and launch server
+$ yarn build
+$ yarn start
+
+# generate static project
+$ yarn generate
 ```
 
 ## Credits

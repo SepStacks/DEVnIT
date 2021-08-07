@@ -6,8 +6,7 @@ category: "Getting Started"
 position: 1
 version: 1.0
 menuTitle: "Installation"
+contentBody: "{{contentBody}}"
 ---
-
-# {{ menuTitle }}
 
 {{ contentBody }}

@@ -1,64 +1,43 @@
 var fs = require("fs");
 const { throttle } = require("lodash");
-/* If you want to check file before delete whether it exist or not. So, use
-   fs.stat or fs.statSync(Synchronous) instead of fs.exists. Because according to
-   the latest node.js documentation, fs.exists now deprecated.*/
 
 // Check if directory exist
-const ifExist = (root, path, directory, fileType, fileName) => {
+const ifExist = (root, path, directory, fileType) => {
   // attach md file to dir only if the target to delete is the .md file
 
   fs.stat(root, (err, stats) => {
     if (err) {
+      console.log('file does not exist')
       console.log(err);
     } else {
-      if (directory) {
-        fs.rm(root, { recursive: true, force: true }, err => {
-          if (err) throw err;
+      if (directory === true) {
+        fs.rmdir(path, { recursive: true }, err => {
+          if (err){
+            console.log(`unable to remove ${path} `)
+            console.log(err)
+          }
 
-          consola.success({
-            message: `Directory removed successfully`,
-            badge: true
-          });
+          console.log("Code has been");
+
+          console.log(`${path} is deleted!`);
         });
+
       } else {
+        //remove content (.md) files, this can be either parent or child components
         fs.unlink(path + fileType, err => {
           if (err) throw err;
-          consola.success({
-            message: `File removed successfully`,
-            badge: true
-          });
+          console.log("file deleted successfully");
+          console.log(path + fileType);
+
+          //remove folder if empty
+          fs.rmdir(root, function(err) {
+            if (err) {
+              throw err
+            } else {
+              console.log("Successfully removed the empty directory!")
+            }
+          })
         });
-
-        //remove directories if its empty
-        fs.readdir(root + '/' + fileName, function(err, files) {
-          if (err) {
-             // some sort of error
-          } else {
-             if (!files.length) {
-              // root + '/' + fileName,
-              fs.rmdir(root, err => {
-                if (err) throw err;
-
-                consola.success({
-                  message: `Removed empty directory at ${root}/${fileName}`,
-                  badge: true
-                });
-
-                // fs.rmdir(root, err => {
-                //   if (err) throw err;
-
-                //   consola.success({
-                //     message: `Removed empty directory at ${root}`,
-                //     badge: true
-                //   });
-                // });
-              });
-             }
-          }
-      });
-
-
       }
     }
   });
